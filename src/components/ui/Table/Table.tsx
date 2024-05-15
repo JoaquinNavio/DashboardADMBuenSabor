@@ -13,7 +13,7 @@ interface Props{
 
 const TableComponent: React.FC<Props> = ({ data, columns, onEdit, onDelete }) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [orderBy, setOrderBy] = useState<keyof Row>('');
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 

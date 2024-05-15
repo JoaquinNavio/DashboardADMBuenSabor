@@ -6,6 +6,7 @@ import InicioCard from "../../ui/Cards/InicioCard/InicioCard";
 
 
 // Contenido para las tarjetas de inicio
+/*
 const productosContent = {
     url: 'https://images.unsplash.com/photo-1615996001375-c7ef13294436?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     title: 'Productos',
@@ -29,10 +30,12 @@ const cardStyle = {
     width: "100%",
     height: "100%",
 };
-
+*/
 //Renderización del componente
 const Inicio: React.FC = () => {
     return (
+        <h1>Inicio</h1>
+        /*
         <Box component="main" sx={{ flexGrow: 1, pt: 10}}>
             <Container>
                 <Typography component="h1" variant="h5" color="initial" >Bienvenido</Typography>
@@ -67,7 +70,7 @@ const Inicio: React.FC = () => {
                     </Grid>
                 </Grid>
             </Container>
-        </Box>
+        </Box>*/
     );
 };
 
