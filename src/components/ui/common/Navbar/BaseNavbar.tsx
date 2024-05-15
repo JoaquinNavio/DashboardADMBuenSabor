@@ -60,7 +60,7 @@ export default function PrimarySearchAppBar() {
             component="div"
             sx={{ justifyContent: 'center' }}
           >
-            Administrador
+            El Buen Sabor Dashboard
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <IconButton
