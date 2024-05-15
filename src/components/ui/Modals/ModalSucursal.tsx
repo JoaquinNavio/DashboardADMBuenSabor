@@ -45,15 +45,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const empresaService = new EmpresaService();
 
   const [empresa, setEmpresa] = useState<IEmpresa>()
-  const [paises, setPaises] = useState<any[]>([]);
-  const [provincias, setProvincias] = useState<any[]>([]);
+
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
-  const [selectedPais, setSelectedPais] = useState<string>('');
-  const [selectedProvincia, setSelectedProvincia] = useState<string>('');
+
   const [selectedLocalidad, setSelectedLocalidad] = useState<string>('');
   const [casaMatriz, setCasaMatriz] = useState<boolean>(false); // Estado para casa matriz
-  const [provinciaNombre, setProvinciaNombre] = useState<string>('');
+
   const [localidadNombre, setLocalidadNombre] = useState<string>('');
   const [tooltipMessage, setTooltipMessage] = useState<string>(''); // Mensaje para el tooltip
 
@@ -66,33 +64,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     }
   };
 
-  
-  const fetchPaises = async () => {
-    try {
-      const paises = await paisService.getAll(`${URL}/pais`);
-      setPaises(paises);
-    } catch (error) {
-      console.error('Error al obtener los países:', error);
-    }
-  }
-
-    const fetchProvincias = async () => {
-      try {
-        if (selectedPais) {
-          const provincias = await provinciaService.getAll(`${URL}/provincia/findByPais/${selectedPais}`);
-          setProvincias(provincias);
-        }
-      } catch (error) {
-        console.error('Error al obtener las provincias:', error);
-      }
-    };
-
     const fetchLocalidades = async () => {
       try {
-        if (selectedProvincia) {
-          const localidades = await localidadService.getAll(`${URL}/localidad/findByProvincia/${selectedProvincia}`);
+
+          const localidades = await localidadService.getAll(`${URL}/localidad`);
           setLocalidades(localidades);
-        }
+          console.log(localidades);
+        
       } catch (error) {
         console.error('Error al obtener las localidades:', error);
       }
@@ -107,32 +85,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
 
   useEffect(() => {
+    console.log("ME EJECUTO");
     fetchEmpresa();
-    fetchPaises();
-    fetchProvincias();
     fetchLocalidades();
-  }, [URL,idEmpresa, selectedPais, selectedProvincia]);
+  }, [URL,idEmpresa]);
 
-  const handlePaisChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const paisNombre = event.target.value;
-    const paisSeleccionado = paises.find((pais) => pais.nombre === paisNombre);
-    if (paisSeleccionado) {
-      setSelectedPais(paisSeleccionado.id);
-      setSelectedProvincia('');
-      setSelectedLocalidad('');
-    }
-  };
-
-  // Función para manejar el cambio de provincia
-  const handleProvinciaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const provNombre = event.target.value;
-    const provSeleccionada = provincias.find((provincia) => provincia.nombre === provNombre);
-    if (provSeleccionada) {
-      setSelectedProvincia(provSeleccionada.id);
-      setSelectedLocalidad('');
-      setProvinciaNombre(provSeleccionada.nombre); // Actualizar el nombre de la provincia seleccionada
-    }
-  };
 
   // Función para manejar el cambio de localidad
   const handleLocalidadChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -270,28 +227,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
         <div style={{ display: 'flex', gap: '20px' }}>
         <div style={{ flex: 1 }}>
-          <SelectList
-            title="Países"
-            items={paises.map((pais: IPais) => pais.nombre)}
-            handleChange={handlePaisChange}
-            selectedValue={selectedPais}
-            disabled={isEditMode}
-          />
-          </div>
-          <div style={{ flex: 1 }}>
-          {selectedPais && (
-            <SelectList
-              title="Provincias"
-              items={provincias.map((provincia: IProvincia) => provincia.nombre)}
-              handleChange={handleProvinciaChange}
-              //selectedValue={selectedProvincia}
-              selectedValue={provinciaNombre}
-              disabled={isEditMode}
-            />
-          )}
-          </div>
-          <div style={{ flex: 1 }}>
-          {selectedProvincia && (
             <SelectList
               title="Localidades"
               items={localidades.map((localidad: ILocalidad) => localidad.nombre)}
@@ -300,7 +235,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               selectedValue={localidadNombre}
               disabled={isEditMode}
             />
-          )}
           </div>
         </div>
         {/* Checkbox para indicar si es la casa matriz */}
