@@ -4,16 +4,11 @@ import GenericModal from '../../ui/Modals/GenericModal';
 import TextFieldValue from '../../ui/TextFieldValue/TextFieldValue';
 import SucursalService from '../../../services/SucursalService';
 import Sucursal from '../../../types/ISucursal';
-import PaisService from '../../../services/PaisService';
-import ProvinciaService from '../../../services/ProvinciaService';
 import LocalidadService from '../../../services/LocalidadService';
 import SelectList from '../SelectList/SelectList';
 import ILocalidad from '../../../types/ILocalidad';
-import IProvincia from '../../../types/IProvincia';
-import IPais from '../../../types/IPais';
 import SucursalPost from '../../../types/post/SucursalPost';
 import ISucursal from '../../../types/ISucursal';
-import { CheckCircleOutline, HighlightOff } from '@mui/icons-material';
 import EmpresaService from '../../../services/EmpresaService';
 import IEmpresa from '../../../types/IEmpresa';
 
@@ -39,8 +34,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   
   const sucursalService = new SucursalService();
   const URL: string = import.meta.env.VITE_API_URL as string;
-  const paisService = new PaisService();
-  const provinciaService = new ProvinciaService();
   const localidadService = new LocalidadService();
   const empresaService = new EmpresaService();
 

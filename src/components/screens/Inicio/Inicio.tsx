@@ -1,8 +1,3 @@
-import { Box, Grid, Container, Typography } from "@mui/material";
-import ChartCard from "../../ui/Cards/ChartCard/ChartCard";
-import BaseBar from "../../ui/Charts/BaseBar";
-import BasePie from "../../ui/Charts/BasePie";
-import InicioCard from "../../ui/Cards/InicioCard/InicioCard";
 
 
 // Contenido para las tarjetas de inicio
