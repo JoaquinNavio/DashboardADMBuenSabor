@@ -1,5 +1,5 @@
 // Importamos el tipo de dato IUnidadMedida y la clase BackendClient
-import IUnidadMedida from "../types/UnidadMedida";
+import IUnidadMedida from "../types/IUnidadMedida";
 import  BackendClient  from "./BackendClient";
 
 // Clase UnidadMedidaService que extiende BackendClient para interactuar con la API de UNIDADMEDIDA

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import UnidadMedidaService from "../../services/UnidadMedidaService";
-import IUnidadMedida from "../../types/UnidadMedida";
+import IUnidadMedida from "../../types/IUnidadMedida";
 import { setUnidadMedida } from "../../redux/slices/UnidadMedidaReducer";
 import { Column } from "@coreui/react/dist/esm/components/table/types";
 import { Box, Typography } from "@mui/material";
@@ -11,11 +11,17 @@ import SearchBar from "../ui/common/SearchBar/SearchBar";
 import TableComponent from "../ui/Table/Table";
 import { toggleModal } from "../../redux/slices/ModalReducer";
 import { handleSearch, onDelete } from "../../utils/utils";
+import ModalUnidadMedida from "../ui/Modals/ModalUnidadMedida";
 
 const UnidadMedida = () => {
     const url = import.meta.env.VITE_API_URL;
     const dispatch = useAppDispatch();
     const  unidadMedidaService = new UnidadMedidaService();
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [unidadMedidaEditar, setunidadMedidaEditar] = useState<IUnidadMedida | undefined>();
+
+
     const globalUnidadMedida = useAppSelector(
         (state) => state.unidadMedida.data
       );
@@ -65,10 +71,16 @@ const UnidadMedida = () => {
         }
       };
 
+      const generateInitialUnidadMedida = (): IUnidadMedida  => {
+        return {
+          denominacion:''
+        };
+      };
 
       const handleEdit = (unidadMedida: IUnidadMedida) => {
       };
 
+      
       const columns: Column[] = [
         { id: "Denominacion", label: "Denominacion", renderCell: (unidadMedida) => <>{unidadMedida.denominacion}</> },
       ];
@@ -82,14 +94,8 @@ const UnidadMedida = () => {
           </Typography>
           <Button
             onClick={handleAddUnidadMedida}
-            sx={{
-              bgcolor: "#ha4444",
-              "&:hover": {
-                bgcolor: "#hb6666",
-              },
-            }}
-            variant="contained"
-            startIcon={<Add />}
+            style={{ backgroundColor: "blue", color: "white" }}
+
           >
             Añadir Unidad
           </Button>
@@ -99,6 +105,15 @@ const UnidadMedida = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteUnidadMedida} onEdit={handleEdit} />
       </Container>
+      <ModalUnidadMedida modalName="modal" initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getEmpresas={fetchEmpresas} />
+        <ModalUnidadMedida
+          modalName="modalUnidadMedida"
+          initialValues={unidadMedidaEditar ? generateInitialSucursal(empresaEditar.id) : generateInitialSucursal(0)}
+          isEditMode={false}
+          getSucursales={fetchEmpresas}
+          idEmpresa={empresaEditar?.id || 0} 
+          casaMatrizDisabled={false}
+          />
     </Box>
 
 

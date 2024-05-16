@@ -1,5 +1,5 @@
 
-import IUnidadMedida from '../../types/UnidadMedida';
+import IUnidadMedida from '../../types/IUnidadMedida';
 import { createGenericSlice } from './GenericReducer';
 
 
