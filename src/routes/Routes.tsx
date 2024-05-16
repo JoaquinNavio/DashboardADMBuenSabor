@@ -7,6 +7,7 @@ import './routes.css';
 import Inicio from '../components/screens/Inicio/Inicio';
 import Empresa from '../components/screens/Empresa/Empresa';
 import Sucursal from '../components/screens/Sucursal/Sucursal';
+import Categoria from '../components/screens/Categoria/Categoria';
 
 
 const Rutas: React.FC = () => {
@@ -22,6 +23,7 @@ const Rutas: React.FC = () => {
           <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/empresas" element={<Empresa />} />
+            <Route path="/categorias" element={<Categoria />} />
             <Route path="/empresas/:empresaId" element={<Sucursal />} />
           </Routes>
         </div>
