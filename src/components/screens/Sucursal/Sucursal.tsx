@@ -189,14 +189,14 @@ const fetchSucursal = async () => {
       <Container>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
           <Typography variant="h5" gutterBottom>
-            Sucursales de {nombreEmpresa}
+            Sucursales habilitadas de {nombreEmpresa}
           </Typography>
           <Button
             onClick={handleAddSucursal}
             sx={{
-              bgcolor: "#fb6376",
+              bgcolor: "#ha4444",
               "&:hover": {
-                bgcolor: "#d73754",
+                bgcolor: "#hb6666",
               },
             }}
             variant="contained"
