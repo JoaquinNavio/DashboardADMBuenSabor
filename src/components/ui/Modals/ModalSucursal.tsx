@@ -238,20 +238,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
           </div>
         </div>
         {/* Checkbox para indicar si es la casa matriz */}
+ 
         <label style={{ display: 'flex', alignItems: 'center' }} title={tooltipMessage}>
-          {casaMatriz ? (
-            <CheckCircleOutline color="primary" style={{ marginRight: '10px' }} />
-          ) : (
-            <HighlightOff color="error" style={{ marginRight: '10px' }} />
-          )}
+        <h3 style={{ fontSize: '1.2rem' }}>Es casa matriz?</h3>
           <input
             type="checkbox"
             checked={casaMatriz}
             onChange={handleCasaMatrizChange}
             disabled={casaMatrizDisabled} // Deshabilitar el checkbox si es necesario
-            style={{ marginRight: '10px' }}
+            style={{marginLeft:10}}
           />
-          <h3 style={{ fontSize: '1.2rem' }}>Casa Matriz</h3>
         </label>
         {casaMatrizDisabled && tooltipMessage && (
           <div style={{ fontSize: '1.1rem', color: 'red' }}>
