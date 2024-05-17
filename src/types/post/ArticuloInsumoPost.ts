@@ -6,4 +6,5 @@ export default interface ArticuloInsumoPost{
         stockActual:number,
         stockMaximo:number,
         esParaElaborar:boolean,
+        idCategoria: number
 }

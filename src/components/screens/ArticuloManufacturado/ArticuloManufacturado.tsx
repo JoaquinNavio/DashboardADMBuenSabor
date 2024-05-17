@@ -13,9 +13,7 @@ import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalArticuloManufacturado from "../../ui/Modals/ModalArticuloManufacturado";
-import ModalSucursal from "../../ui/Modals/ModalSucursal";
-import SucursalPost from "../../../types/post/SucursalPost";
-import ArticuloManufacturado from "../../../types/IArticuloManufacturado";
+import IArticuloManufacturado from "../../../types/IArticuloManufacturado";
 
 
 const ArticuloManufacturado= () => {
@@ -26,13 +24,13 @@ const ArticuloManufacturado= () => {
     (state) => state.articuloManufacturado.data
   );
 
-  const [filteredData, setFilteredData] = useState<ArticuloManufacturado[]>([]);
+  const [filteredData, setFilteredData] = useState<IArticuloManufacturado[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [articuloManufacturadoEditar, setArticuloManufacturadoEditar] = useState<ArticuloManufacturado | undefined>();
+  const [articuloManufacturadoEditar, setArticuloManufacturadoEditar] = useState<IArticuloManufacturado | undefined>();
 
   const fetchArticuloManufacturados = async () => {
     try {
-      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/articuloManufacturado');
+      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/ArticuloManufacturado');
       dispatch(setArticuloManufacturado(articuloManufacturados));
       setFilteredData(articuloManufacturados);
     } catch (error) {
@@ -48,12 +46,12 @@ const ArticuloManufacturado= () => {
     handleSearch(query, globalArticuloManufacturados, 'nombre', setFilteredData);
   };
 
-  const onDeleteArticuloManufacturado = async (articuloManufacturado: ArticuloManufacturado) => {
+  const onDeleteArticuloManufacturado = async (articuloManufacturado: IArticuloManufacturado) => {
     try {
       await onDelete(
         articuloManufacturado,
-        async (articuloManufacturadoToDelete: ArticuloManufacturado) => {
-          await articuloManufacturadoService.delete(url + '/articuloManufacturado', articuloManufacturadoToDelete.id);
+        async (articuloManufacturadoToDelete: IArticuloManufacturado) => {
+          await articuloManufacturadoService.delete(url + '/ArticuloManufacturado', articuloManufacturadoToDelete.id);
         },
         fetchArticuloManufacturados,
         () => {
@@ -67,62 +65,24 @@ const ArticuloManufacturado= () => {
     }
   };
 
-  const handleEdit = (articuloManufacturado: ArticuloManufacturado) => {
+  const handleEdit = (articuloManufacturado: IArticuloManufacturado) => {
     setIsEditing(true);
     setArticuloManufacturadoEditar(articuloManufacturado)
-    dispatch(toggleModal({ modalName: "modal" }));
+    dispatch(toggleModal({ modalName: "modalManu" }));
   };
 
   const handleAddArticuloManufacturado = () => {
     setIsEditing(false);
-    dispatch(toggleModal({ modalName: "modal" }));
+    dispatch(toggleModal({ modalName: "modalManu" }));
   };
 
-  const handleAddSucursal = (articuloManufacturado: ArticuloManufacturado) => {
-    dispatch(toggleModal({ modalName: "modalSucursal" }));
-    setArticuloManufacturadoEditar(articuloManufacturado);
-  };
-
-  const generateInitialSucursal = (idArticuloManufacturado: number): SucursalPost  => {
-    return {
-      nombre: '',
-      horarioApertura: '',
-      horarioCierre: '',
-      domicilio: {
-        calle: '',
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        idLocalidad: 0,
-      },
-      idArticuloManufacturado: idArticuloManufacturado,
-      esCasaMatriz:false
-    };
-  };
 
   const columns: Column[] = [
-    { id: "nombre", label: "Nombre", renderCell: (articuloManufacturado) => <>{articuloManufacturado.nombre}</> },
-    { id: "razonSocial", label: "Razón Social", renderCell: (articuloManufacturado) => <>{articuloManufacturado.razonSocial}</> },
-    { id: "cuil", label: "CUIL", renderCell: (articuloManufacturado) => <>{articuloManufacturado.cuil}</> },
-    {
-      id: "sucursales",
-      label: "Sucursales",
-      renderCell: (articuloManufacturado) => (
-        <>
-          <Tooltip title="Ver Sucursales">
-            <IconButton component={Link} to={`/articuloManufacturados/${articuloManufacturado.id}`} aria-label="Ver Sucursales">
-              <Visibility />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Agregar Sucursal">
-            <IconButton onClick={() => handleAddSucursal(articuloManufacturado as ArticuloManufacturado)} aria-label="Agregar Sucursal">
-              <AddCircle />
-            </IconButton>
-          </Tooltip>
-        </>
-      ),
-    },
+    { id: "denominacion", label: "Denominacion", renderCell: (articuloManufacturado) => <>{articuloManufacturado.denominacion}</> },
+    { id: "descripcion", label: "Descripcion", renderCell: (articuloManufacturado) => <>{articuloManufacturado.descripcion}</> },
+    { id: "preparacion", label: "Preparacion", renderCell: (articuloManufacturado) => <>{articuloManufacturado.preparacion}</> },
+    { id: "tiempoEstimadoMinutos", label: "Tiempo Estimado Minutos", renderCell: (articuloManufacturado) => <>{articuloManufacturado.tiempoEstimadoMinutos}</> },
+    { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
   ];
 
   return (
@@ -151,17 +111,15 @@ const ArticuloManufacturado= () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteArticuloManufacturado} onEdit={handleEdit} />
         <ModalArticuloManufacturado
-         modalName="modal"
-          initialValues={articuloManufacturadoEditar || { id: 0, eliminado: false, nombre: "",
-           razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getArticuloManufacturados={fetchArticuloManufacturados} />
-        <ModalSucursal
-          modalName="modalSucursal"
-          initialValues={articuloManufacturadoEditar ? generateInitialSucursal(articuloManufacturadoEditar.id) : generateInitialSucursal(0)}
-          isEditMode={false}
-          getSucursales={fetchArticuloManufacturados}
-          idArticuloManufacturado={articuloManufacturadoEditar?.id || 0} 
-          casaMatrizDisabled={false}
-          />
+          modalName="modalManu"
+          initialValues={articuloManufacturadoEditar || {
+            id: 0,
+            unidadMedida: { id: 0, eliminado: false, denominacion: "" },
+            eliminado: false,
+            denominacion: "",
+            descripcion: "", preparacion: "",
+            tiempoEstimadoMinutos: 0, precioVenta: 0
+          }} isEditMode={isEditing} getArticuloManufacturados={fetchArticuloManufacturados} />
       </Container>
     </Box>
   );

@@ -9,4 +9,5 @@ export default interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
     precioCompra: number,
     stockActual:number,
     stockMaximo: number
+    //FALTA CATEGORIAID
 }

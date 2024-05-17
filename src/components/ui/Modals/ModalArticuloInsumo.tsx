@@ -89,11 +89,12 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
         stockActual:values.stockActual,
         stockMaximo:values.stockMaximo,
         esParaElaborar:esParaElaborarValue,
+        idCategoria:1
       }
       if (isEditMode) {
-        await articuloInsumoService.put(`${URL}/ArticuloInsumo`, values.id, body); // Actualiza el articuloInsumo si está en modo de edición
+        await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body); // Actualiza el articuloInsumo si está en modo de edición
       } else {
-        await articuloInsumoService.post(`${URL}/ArticuloInsumo`, body); // Agrega un nuevo articuloInsumo si no está en modo de edición
+        await articuloInsumoService.postx(`${URL}/ArticuloInsumo`, body); // Agrega un nuevo articuloInsumo si no está en modo de edición
       }
       getArticuloInsumos(); // Actualiza la lista de articuloInsumos
     } catch (error) {
