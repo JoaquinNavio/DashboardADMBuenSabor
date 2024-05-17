@@ -30,7 +30,7 @@ const CategoriaComponent = () => {
 
   const fetchCategorias = async () => {
     try {
-      const categorias = await categoriaService.getAll(url + '/categorias');
+      const categorias = await categoriaService.getAll(url + '/categoria');
       dispatch(setCategoria(categorias));
       setFilteredData(categorias);
     } catch (error) {
@@ -80,7 +80,7 @@ const CategoriaComponent = () => {
 
   const columns: Column[] = [
     { id: "denominacion", label: "Denominacion", renderCell: (categoria) => <>{categoria.denominacion}</> },
-    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.es_insumo}</> },
+    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.es_insumo ? 'insumo' : 'no es insumo'}</> },
   ];
 
   return (

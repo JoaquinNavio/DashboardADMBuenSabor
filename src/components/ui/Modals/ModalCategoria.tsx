@@ -74,8 +74,8 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       isEditMode={isEditMode}
     >
       {/* Campos del formulario */}
-      <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominacion" />
-      <TextFieldValue label="Es_Insumo" name="es_insumo" type="text" placeholder="Es insumo?" />
+      <TextFieldValue label="Denominaciòn" name="denominacion" type="text" placeholder="Denominacion" />
+      <TextFieldValue label="Insumo" name="es_insumo" type="text" placeholder="Es insumo?" />
     </GenericModal>
   );
 };
