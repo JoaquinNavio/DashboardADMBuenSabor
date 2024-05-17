@@ -12,7 +12,7 @@ interface ModalProps {
   modalName: string; // Nombre del modal
   title: string; // Título del modal
   initialValues: any; // Valores iniciales del formulario
-  validationSchema: Yup.ObjectSchema<any>; // Esquema de validación con Yup
+  validationSchema: Yup.ObjectSchema<any> ; // Esquema de validación con Yup
   onSubmit: (values: any) => void; // Función a ejecutar cuando se envíe el formulario
   children?: React.ReactNode; // Componentes hijos opcionales
   isEditMode: boolean; // Indicador de si el formulario está en modo de edición

@@ -5,16 +5,16 @@ import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 
-// Define las props del componente de modal de empresa
+// Define las props del componente de modal de UnidadMedida
 interface ModalUnidadMedidaProps {
   modalName: string; // Nombre del modal
   initialValues: IUnidadMedida; // Valores iniciales del formulario
   isEditMode: boolean; // Indicador de modo de edición
-  getUnidades: () => Promise<void>; // Función para obtener empresas
-  UnidadAEditar?: IUnidadMedida; // Empresa a editar
+  getUnidades: () => Promise<void>; // Función para obtener UnidadMedida
+  UnidadAEditar?: IUnidadMedida; // UnidadMedida a editar
 }
 
-// Componente de modal de empresa
+// Componente de modal de UnidadMedida
 const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   modalName,
   initialValues,
@@ -35,6 +35,7 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (values: IUnidadMedida) => {
+    console.log("ENTRO")
     try {
       if (isEditMode) {
         await unidadMedidaService.put(`${URL}/UnidadMedida`, values.id, values); // Actualiza la empresa si está en modo de edición
@@ -55,7 +56,7 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
       denominacion: '',
     };
   }
-
+  
   // Renderiza el componente de modal genérico
   return (
     <GenericModal

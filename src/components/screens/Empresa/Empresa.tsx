@@ -79,7 +79,6 @@ const EmpresaComponent = () => {
   const handleAddSucursal = (empresa: Empresa) => {
     dispatch(toggleModal({ modalName: "modalSucursal" }));
     setEmpresaEditar(empresa);
-    console.log(empresa)
   };
 
   const generateInitialSucursal = (idEmpresa: number): SucursalPost  => {
@@ -149,7 +148,10 @@ const EmpresaComponent = () => {
           <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteEmpresa} onEdit={handleEdit} />
-        <ModalEmpresa modalName="modal" initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getEmpresas={fetchEmpresas} />
+        <ModalEmpresa
+         modalName="modal"
+          initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "",
+           razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getEmpresas={fetchEmpresas} />
         <ModalSucursal
           modalName="modalSucursal"
           initialValues={empresaEditar ? generateInitialSucursal(empresaEditar.id) : generateInitialSucursal(0)}

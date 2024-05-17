@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import UnidadMedidaService from "../../services/UnidadMedidaService";
-import IUnidadMedida from "../../types/IUnidadMedida";
-import { setUnidadMedida } from "../../redux/slices/UnidadMedidaReducer";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import UnidadMedidaService from "../../../services/UnidadMedidaService";
+import IUnidadMedida from "../../../types/IUnidadMedida";
+import { setUnidadMedida } from "../../../redux/slices/UnidadMedidaReducer";
 import { Column } from "@coreui/react/dist/esm/components/table/types";
 import { Box, Typography } from "@mui/material";
 import { Button, Container } from "react-bootstrap";
-import { Add } from "@mui/icons-material";
-import SearchBar from "../ui/common/SearchBar/SearchBar";
-import TableComponent from "../ui/Table/Table";
-import { toggleModal } from "../../redux/slices/ModalReducer";
-import { handleSearch, onDelete } from "../../utils/utils";
-import ModalUnidadMedida from "../ui/Modals/ModalUnidadMedida";
+import SearchBar from "../../ui/common/SearchBar/SearchBar";
+import TableComponent from "../../ui/Table/Table";
+import { toggleModal } from "../../../redux/slices/ModalReducer";
+import { handleSearch, onDelete } from "../../../utils/utils";
+import ModalUnidadMedida from "../../ui/Modals/ModalUnidadMedida";
 
 const UnidadMedida = () => {
     const url = import.meta.env.VITE_API_URL;
@@ -44,9 +43,7 @@ const UnidadMedida = () => {
 
 
 
-      const handleAddUnidadMedida = () => {
-        dispatch(toggleModal({ modalName: "modal" }));
-      };
+      
 
       const onSearch = (query: string) => {
         handleSearch(query, globalUnidadMedida, 'nombre', setFilteredData);
@@ -71,13 +68,17 @@ const UnidadMedida = () => {
         }
       };
 
-      const generateInitialUnidadMedida = (): IUnidadMedida  => {
-        return {
-          denominacion:''
-        };
+
+      const handleAddUnidadMedida = () => {
+        setIsEditing(false);
+        dispatch(toggleModal({ modalName: "modal" }));
       };
 
-      const handleEdit = (unidadMedida: IUnidadMedida) => {
+
+      const handleEditUnidadMedida = (unidadMedida: IUnidadMedida) => {
+        setunidadMedidaEditar(unidadMedida);
+        setIsEditing(true);
+        dispatch(toggleModal({ modalName: "modal" }));
       };
 
       
@@ -95,6 +96,7 @@ const UnidadMedida = () => {
           <Button
             onClick={handleAddUnidadMedida}
             style={{ backgroundColor: "blue", color: "white" }}
+
           >
             Añadir Unidad
           </Button>
@@ -102,18 +104,11 @@ const UnidadMedida = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} onDelete={onDeleteUnidadMedida} onEdit={handleEdit} />
+        <TableComponent data={filteredData} columns={columns} onDelete={onDeleteUnidadMedida} onEdit={handleEditUnidadMedida} />
       </Container>
-      <ModalUnidadMedida modalName="modal" initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getEmpresas={fetchEmpresas} />
-        <ModalUnidadMedida
-          modalName="modalUnidadMedida"
-          initialValues={unidadMedidaEditar ? generateInitialSucursal(empresaEditar.id) : generateInitialSucursal(0)}
-          isEditMode={false}
-          getSucursales={fetchEmpresas}
-          idEmpresa={empresaEditar?.id || 0} 
-          casaMatrizDisabled={false}
-          />
+      <ModalUnidadMedida modalName="modal" initialValues={unidadMedidaEditar || { id: 0, eliminado: false,denominacion:"" }} isEditMode={isEditing} getUnidades={fetchUnidadMedida} />
     </Box>
+
 
     </div>
   )

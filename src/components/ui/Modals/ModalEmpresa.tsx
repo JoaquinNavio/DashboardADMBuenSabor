@@ -63,7 +63,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
       sucursales: [],
     };
   }
-
+  console.log(this)
   // Renderiza el componente de modal genérico
   return (
     <GenericModal
