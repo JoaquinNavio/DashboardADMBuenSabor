@@ -4,6 +4,7 @@ import GenericModal from './GenericModal';
 import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
 import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService'; 
 import ArticuloManufacturado from '../../../types/IArticuloManufacturado'; 
+import SelectList from '../SelectList/SelectList';
 
 // Define las props del componente de modal de articuloManufacturado
 interface ModalArticuloManufacturadoProps {
@@ -36,6 +37,9 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       .required('Campo requerido'), // Campo CUIL requerido*/
   });
 
+  const [insumos, setInsumos] = useState<IArticuloInsumo[]>([]);
+  const [InsumoDenominacion, setInsumoDenominacion] = useState<string>('');
+
 
 
   // Función para manejar el envío del formulario
@@ -58,7 +62,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       id: 0,
       eliminado:false,
 
-      denominacion:'',
         descripcion:'',
         tiempoEstimadoMinutos:0,
         precioVenta:0,
@@ -78,9 +81,18 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       isEditMode={isEditMode}
     >
       {/* Campos del formulario */}
-      <TextFieldValue label="Nombre" name="nombre" type="text" placeholder="Nombre" />
-      <TextFieldValue label="Razón Social" name="razonSocial" type="text" placeholder="Razón Social" />
-      <TextFieldValue label="CUIL" name="cuil" type="number" placeholder="Ejemplo: 12345678901" />
+      <TextFieldValue label="descripcion" name="descripcion" type="text" placeholder="descripcion" />
+      <TextFieldValue label="tiempo_estimado" name="tiempo_estimado" type="number" placeholder="tiempo estimado" />
+      <TextFieldValue label="precio_venta" name="precio_venta" type="number" placeholder="precio de venta" />
+      <TextFieldValue label="preparacion" name="preparacion" type="text" placeholder="preparacion" />
+      <SelectList
+              title="Insumo"
+              items={insumos.map((insumo: IArticuloInsumo) => insumo.denominacion)}
+              handleChange={handleInsumoChange}
+              //selectedValue={selectedLocalidad}
+              selectedValue={InsumoDenominacion}
+              disabled={isEditMode}
+            />
     </GenericModal>
   );
 };
