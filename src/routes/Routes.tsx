@@ -9,8 +9,9 @@ import Inicio from '../components/screens/Inicio/Inicio';
 import Empresa from '../components/screens/Empresa/Empresa';
 import Sucursal from '../components/screens/Sucursal/Sucursal';
 import { ArticuloManufacturado } from '../components/screens/ArticuloManufacturado/ArticuloManufacturado';
-import UnidadMedida from '../components/UnidadMedida/UnidadMedida';
-import ArticuloInsumo from '../components/screens/ArticuloInsumo/ArticuloInsumo';
+import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida';
+//import ArticuloInsumo from '../components/screens/ArticuloInsumo/ArticuloInsumo';    <Route path="/articuloInsumos" element={<ArticuloInsumo/>} />
+
 
 const Rutas: React.FC = () => {
   return (
@@ -29,7 +30,6 @@ const Rutas: React.FC = () => {
             <Route path="/empresas/:empresaId" element={<Sucursal />} />
             <Route path="/articulosManufacturados" element={<ArticuloManufacturado/>} />
             <Route path="/unidadesMedida" element={<UnidadMedida/>} />
-            <Route path="/articuloInsumos" element={<ArticuloInsumo/>} />
           </Routes>
         </div>
     </Router>

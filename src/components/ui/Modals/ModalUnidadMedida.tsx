@@ -1,20 +1,18 @@
 import React from 'react';
 import * as Yup from 'yup';
-import GenericModal from './GenericModal'; 
-import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
+import GenericModal from './GenericModal';
+import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 
-// Define las props del componente de modal de UnidadMedida
 interface ModalUnidadMedidaProps {
-  modalName: string; // Nombre del modal
-  initialValues: IUnidadMedida; // Valores iniciales del formulario
-  isEditMode: boolean; // Indicador de modo de edición
-  getUnidades: () => Promise<void>; // Función para obtener UnidadMedida
-  UnidadAEditar?: IUnidadMedida; // UnidadMedida a editar
+  modalName: string;
+  initialValues: IUnidadMedida;
+  isEditMode: boolean;
+  getUnidades: () => Promise<void>;
+  UnidadAEditar?: IUnidadMedida;
 }
 
-// Componente de modal de UnidadMedida
 const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   modalName,
   initialValues,
@@ -22,55 +20,46 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   getUnidades,
   UnidadAEditar,
 }) => {
+  const unidadMedidaService = new UnidadMedidaService();
+  const URL = import.meta.env.VITE_API_URL;
 
-  const unidadMedidaService = new UnidadMedidaService(); // Instancia del servicio de empresa
-  const URL = import.meta.env.VITE_API_URL; // URL de la API
-
-  // Esquema de validación con Yup
   const validationSchema = Yup.object().shape({
-    nombre: Yup.string().required('Campo requerido'), // Campo nombre requerido
+    denominacion: Yup.string().required('Campo requerido'),
   });
 
-
-
-  // Función para manejar el envío del formulario
   const handleSubmit = async (values: IUnidadMedida) => {
-    console.log("ENTRO")
     try {
       if (isEditMode) {
-        await unidadMedidaService.put(`${URL}/UnidadMedida`, values.id, values); // Actualiza la empresa si está en modo de edición
+        await unidadMedidaService.put(`${URL}/UnidadMedida`, values.id, values);
       } else {
-        await unidadMedidaService.post(`${URL}/UnidadMedida`, values); // Agrega una nueva empresa si no está en modo de edición
+        await unidadMedidaService.post(`${URL}/UnidadMedida`, values);
       }
-      getUnidades(); // Actualiza la lista de empresas
+      getUnidades();
     } catch (error) {
-      console.error('Error al enviar los datos:', error); // Manejo de errores
+      console.error('Error al enviar los datos:', error);
     }
   };
 
-  // Si no está en modo de edición, se limpian los valores iniciales
   if (!isEditMode) {
     initialValues = {
       id: 0,
-      eliminado:false,
+      eliminado: false,
       denominacion: '',
     };
   }
-  
-  // Renderiza el componente de modal genérico
+
   return (
     <GenericModal
       modalName={modalName}
       title={isEditMode ? 'Editar UnidadMedida' : 'Añadir UnidadMedida'}
-      initialValues={UnidadAEditar || initialValues} // Usa la UnidadMedida a editar si está disponible, de lo contrario, usa los valores iniciales
+      initialValues={UnidadAEditar || initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
     >
-      {/* Campos del formulario */}
       <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominación" />
     </GenericModal>
   );
 };
 
-export default ModalUnidadMedida; // Exporta el componente ModalUnidadMedida
+export default ModalUnidadMedida;

@@ -30,7 +30,7 @@ const CategoriaComponent = () => {
 
   const fetchCategorias = async () => {
     try {
-      const categorias = await categoriaService.getAll(url + '/categorias');
+      const categorias = await categoriaService.getAll(url + '/categoria');
       dispatch(setCategoria(categorias));
       setFilteredData(categorias);
     } catch (error) {

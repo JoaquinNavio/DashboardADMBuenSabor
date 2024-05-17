@@ -43,6 +43,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
 
   const [selectedLocalidad, setSelectedLocalidad] = useState<string>('');
+  
   const [casaMatriz, setCasaMatriz] = useState<boolean>(false); // Estado para casa matriz
 
   const [localidadNombre, setLocalidadNombre] = useState<string>('');

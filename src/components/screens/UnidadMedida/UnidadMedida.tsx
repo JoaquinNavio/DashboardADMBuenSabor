@@ -71,14 +71,14 @@ const UnidadMedida = () => {
 
       const handleAddUnidadMedida = () => {
         setIsEditing(false);
-        dispatch(toggleModal({ modalName: "modal" }));
+        dispatch(toggleModal({ modalName: "modalUnidad" }));
       };
 
 
       const handleEditUnidadMedida = (unidadMedida: IUnidadMedida) => {
         setunidadMedidaEditar(unidadMedida);
         setIsEditing(true);
-        dispatch(toggleModal({ modalName: "modal" }));
+        dispatch(toggleModal({ modalName: "modalUnidad" }));
       };
 
       
@@ -106,7 +106,7 @@ const UnidadMedida = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteUnidadMedida} onEdit={handleEditUnidadMedida} />
       </Container>
-      <ModalUnidadMedida modalName="modal" initialValues={unidadMedidaEditar || { id: 0, eliminado: false,denominacion:"" }} isEditMode={isEditing} getUnidades={fetchUnidadMedida} />
+      <ModalUnidadMedida modalName="modalUnidad" initialValues={unidadMedidaEditar || { id: 0, eliminado: false,denominacion:"" }} isEditMode={isEditing} getUnidades={fetchUnidadMedida} />
     </Box>
 
 
