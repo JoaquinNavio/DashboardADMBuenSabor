@@ -7,6 +7,7 @@ import PaisReducer from '../slices/PaisReducer'
 import SucursalReducer from '../slices/SucursalReducer'
 import CategoriaReducer from '../slices/CategoriaReducer'
 import UnidadMedidaReducer from '../slices/UnidadMedidaReducer'
+import ArticuloInsumoReducer from '../slices/ArticuloInsumoReducer'
 
 export const store = configureStore({
   reducer: {
@@ -18,8 +19,7 @@ export const store = configureStore({
     sucursal: SucursalReducer,
     categoria: CategoriaReducer,
     unidadMedida:UnidadMedidaReducer,
-
-
+    articuloInsumo:ArticuloInsumoReducer
   },
 })
 

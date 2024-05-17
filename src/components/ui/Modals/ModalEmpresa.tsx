@@ -10,7 +10,7 @@ interface ModalEmpresaProps {
   modalName: string; // Nombre del modal
   initialValues: Empresa; // Valores iniciales del formulario
   isEditMode: boolean; // Indicador de modo de edición
-  getEmpresas: Function; // Función para obtener empresas
+  getEmpresas: () => Promise<void>; // Función para obtener empresas
   empresaAEditar?: Empresa; // Empresa a editar
 }
 

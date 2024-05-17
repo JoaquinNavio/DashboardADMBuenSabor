@@ -80,7 +80,7 @@ const BasicSidebar: React.FC = () => {
                         </CNavItem>
                     </CNavGroup>
                     <CNavItem>
-                        <Link to="/insumos" className="nav-link">
+                        <Link to="/articuloInsumos" className="nav-link">
                             <CIcon customClassName="nav-icon" icon={cilCart} />
                             Insumos
                         </Link>

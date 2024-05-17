@@ -16,7 +16,7 @@ interface ModalSucursalProps {
   modalName: string;
   initialValues: SucursalPost | ISucursal;
   isEditMode: boolean;
-  getSucursales: Function;
+  getSucursales: () => Promise<void>;
   sucursalAEditar?: Sucursal;
   idEmpresa: number;
   casaMatrizDisabled: boolean; // Nuevo prop para deshabilitar el checkbox de casa matriz

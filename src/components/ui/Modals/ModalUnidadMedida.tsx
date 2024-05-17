@@ -2,17 +2,16 @@ import React from 'react';
 import * as Yup from 'yup';
 import GenericModal from './GenericModal'; 
 import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
-import Empresa from '../../../types/IEmpresa'; 
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 
 // Define las props del componente de modal de empresa
 interface ModalUnidadMedidaProps {
   modalName: string; // Nombre del modal
-  initialValues: Empresa; // Valores iniciales del formulario
+  initialValues: IUnidadMedida; // Valores iniciales del formulario
   isEditMode: boolean; // Indicador de modo de edición
-  getUnidades: Function; // Función para obtener empresas
-  UnidadAEditar?: Empresa; // Empresa a editar
+  getUnidades: () => Promise<void>; // Función para obtener empresas
+  UnidadAEditar?: IUnidadMedida; // Empresa a editar
 }
 
 // Componente de modal de empresa
@@ -53,10 +52,7 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
     initialValues = {
       id: 0,
       eliminado:false,
-      nombre: '',
-      razonSocial: '',
-      cuil: 0,
-      sucursales: [],
+      denominacion: '',
     };
   }
 
@@ -64,18 +60,16 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar Empresa' : 'Añadir Empresa'}
-      initialValues={UnidadAEditar || initialValues} // Usa la empresa a editar si está disponible, de lo contrario, usa los valores iniciales
+      title={isEditMode ? 'Editar UnidadMedida' : 'Añadir UnidadMedida'}
+      initialValues={UnidadAEditar || initialValues} // Usa la UnidadMedida a editar si está disponible, de lo contrario, usa los valores iniciales
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
     >
       {/* Campos del formulario */}
-      <TextFieldValue label="Nombre" name="nombre" type="text" placeholder="Nombre" />
-      <TextFieldValue label="Razón Social" name="razonSocial" type="text" placeholder="Razón Social" />
-      <TextFieldValue label="CUIL" name="cuil" type="number" placeholder="Ejemplo: 12345678901" />
+      <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominación" />
     </GenericModal>
   );
 };
 
-export default ModalUnidadMedida; // Exporta el componente ModalEmpresa
+export default ModalUnidadMedida; // Exporta el componente ModalUnidadMedida
