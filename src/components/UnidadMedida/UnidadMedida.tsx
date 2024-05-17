@@ -95,7 +95,6 @@ const UnidadMedida = () => {
           <Button
             onClick={handleAddUnidadMedida}
             style={{ backgroundColor: "blue", color: "white" }}
-
           >
             Añadir Unidad
           </Button>
@@ -115,7 +114,6 @@ const UnidadMedida = () => {
           casaMatrizDisabled={false}
           />
     </Box>
-
 
     </div>
   )
