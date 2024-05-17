@@ -5,6 +5,7 @@ import ProvinciaReducer from '../slices/ProvinciaReducer'
 import ModalReducer from '../slices/ModalReducer'
 import PaisReducer from '../slices/PaisReducer'
 import SucursalReducer from '../slices/SucursalReducer'
+import CategoriaReducer from '../slices/CategoriaReducer'
 import UnidadMedidaReducer from '../slices/UnidadMedidaReducer'
 
 export const store = configureStore({
@@ -15,7 +16,10 @@ export const store = configureStore({
     pais: PaisReducer,
     modal: ModalReducer,
     sucursal: SucursalReducer,
+    categoria: CategoriaReducer,
     unidadMedida:UnidadMedidaReducer,
+
+
   },
 })
 

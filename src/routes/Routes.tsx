@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import BaseNavbar from '../components/ui/common/Navbar/BaseNavbar';
 import BasicSidebar from '../components/ui/common/Sidebar/BasicSidebar';
+import Categoria from '../components/screens/Categoria/Categoria';
 
 import './routes.css'; 
 import Inicio from '../components/screens/Inicio/Inicio';
@@ -24,6 +25,7 @@ const Rutas: React.FC = () => {
           <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/empresas" element={<Empresa />} />
+            <Route path="/categorias" element={<Categoria />} />
             <Route path="/empresas/:empresaId" element={<Sucursal />} />
             <Route path="/articulosManufacturados" element={<ArticuloManufacturado/>} />
             <Route path="/unidadesMedida" element={<UnidadMedida/>} />
