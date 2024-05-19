@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import GenericModal from './GenericModal'; 
 import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
 import CategoriaService from '../../../services/CategoriaService'; 
 import Categoria from '../../../types/ICategoria'; 
+import SelectList from '../SelectList/SelectList';
+import { useAppDispatch } from '../../../hooks/redux';
+import { setCategoria } from '../../../redux/slices/CategoriaReducer';
+import ICategoria from '../../../types/ICategoria';
 
 // Define las props del componente de modal de categoria
 interface ModalCategoriaProps {
@@ -28,15 +32,9 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
 
   // Esquema de validación con Yup
   const validationSchema = Yup.object().shape({
-    /*nombre: Yup.string().required('Campo requerido'), // Campo nombre requerido
-    razonSocial: Yup.string().required('Campo requerido'), // Campo razón social requerido
-    cuil: Yup.string()
-      .matches(/^[0-9]+$/, 'CUIL inválido. Solo se permiten números.') // CUIL solo números
-      .matches(/^\d{11}$/, 'CUIL inválido. Debe tener 11 dígitos.') // CUIL debe tener 11 dígitos
-      .required('Campo requerido'), // Campo CUIL requerido*/
+    denominacion: Yup.string()
+      .required('Campo requerido'), // Campo CUIL requerido
   });
-
-
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (values: Categoria) => {
@@ -61,7 +59,40 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       denominacion: '',
       es_insumo: false,
     };
-  }
+  }  
+
+
+  const url = import.meta.env.VITE_API_URL;
+  const dispatch = useAppDispatch();
+  const [filteredData, setFilteredData] = useState<Categoria[]>([]);
+  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
+
+  const fetchCategorias = async () => {
+    try {
+      const categorias = await categoriaService.getAll(url + '/categoria');
+      dispatch(setCategoria(categorias));
+      setFilteredData(categorias);
+    } catch (error) {
+      console.error("Error al obtener las Categorias:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+  
+  const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const categoriaDenominacion = event.target.value;
+    // Buscar la localidad por su nombre en el array de localidades
+    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
+    if (categoriaSeleccionada) {
+      // Asignar el ID de la localidad seleccionada
+      setCategoriaPadreId(categoriaSeleccionada.id);
+      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+    }
+  };
+
+
 
   // Renderiza el componente de modal genérico
   return (
@@ -75,6 +106,13 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
     >
       {/* Campos del formulario */}
       <TextFieldValue label="Denominaciòn" name="denominacion" type="text" placeholder="Denominacion" />
+      <SelectList
+              title="Categoria padre"
+              items={filteredData.map((categoria: ICategoria) => categoria.denominacion)}
+              handleChange={handleCategoriaChange}
+              selectedValue={categoriaDenominacion}
+              disabled={isEditMode}
+            />
       <TextFieldValue label="Insumo" name="es_insumo" type="text" placeholder="Es insumo?" />
     </GenericModal>
   );

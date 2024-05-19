@@ -6,11 +6,14 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import ArticuloInsumo from '../../../types/IArticuloInsumo'; 
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
-import { useAppDispatch } from '../../../hooks/redux';
 import { setUnidadMedida } from '../../../redux/slices/UnidadMedidaReducer';
 import SelectList from '../SelectList/SelectList';
 import ArticuloInsumoPost from '../../../types/post/ArticuloInsumoPost';
 import SwitchValue from '../Switch/Switch';
+import ICategoria from '../../../types/ICategoria';
+import { useAppDispatch } from '../../../hooks/redux';
+import CategoriaService from '../../../services/CategoriaService';
+import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 
 // Define las props del componente de modal de articuloInsumo
 interface ModalArticuloInsumoProps {
@@ -29,7 +32,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   getArticuloInsumos,
   articuloInsumoAEditar,
 }) => {
-
   const articuloInsumoService = new ArticuloInsumoService(); // Instancia del servicio de articuloInsumo
   const URL = import.meta.env.VITE_API_URL; // URL de la API
 
@@ -42,9 +44,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     stockMaximo: Yup.number().required('Campo requerido')
   });
 
-  const dispatch = useAppDispatch();
   const unidadMedidaService = new UnidadMedidaService();
   const [filteredData, setFilteredData] = useState<IUnidadMedida[]>([]);
+
+  const dispatch = useAppDispatch();
 
   const fetchUnidadMedida = async () => {
     try {
@@ -121,6 +124,40 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     };
   }
 
+  const url = import.meta.env.VITE_API_URL;
+  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
+  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
+  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
+
+  const fetchCategorias = async () => {
+    try {
+      const categorias = await categoriaService.getAll(url + '/categoria');
+      dispatch(setCategoria(categorias));
+      setFilteredData2(categorias);
+    } catch (error) {
+      console.error("Error al obtener las Categorias:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+  
+  const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const categoriaDenominacion = event.target.value;
+    // Buscar la localidad por su nombre en el array de localidades
+    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
+    if (categoriaSeleccionada) {
+      // Asignar el ID de la localidad seleccionada
+      setCategoriaPadreId(categoriaSeleccionada.id);
+      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+    }
+  };
+
+
+
+
+
   // Renderiza el componente de modal genérico
   return (
     <GenericModal
@@ -149,6 +186,13 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
       <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
       <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
       <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
+      <SelectList
+              title="Categoria padre"
+              items={filteredData2.map((categoria: ICategoria) => categoria.denominacion)}
+              handleChange={handleCategoriaChange}
+              selectedValue={categoriaDenominacion}
+              disabled={isEditMode}
+            />
     </GenericModal>
   );
 };

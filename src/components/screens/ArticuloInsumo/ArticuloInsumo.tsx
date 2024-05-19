@@ -83,12 +83,20 @@ const ArticuloInsumoComponent = () => {
 
   const columns: Column[] = [
     { id: "denominacion", label: "Denominacion", renderCell: (articuloInsumo) => <>{articuloInsumo.denominacion}</> },
-    { id: "precioVenta", label: "Precio Venta", renderCell: (articuloInsumo) => <>{articuloInsumo.precioVenta}</> },
+    { 
+      id: "precioVenta", 
+      label: "Precio Venta", 
+      renderCell: (articuloInsumo) => (
+        <>{articuloInsumo.precioVenta === 0 ? "No es para vender" : articuloInsumo.precioVenta}</>
+      ) 
+    },
     { id: "esParaElaborar", label: "Es Para Elaborar", renderCell: (articuloInsumo) => <>{articuloInsumo.esParaElaborar? "Si":"No"}</> },
     { id: "precioCompra", label: "Precio Compra", renderCell: (articuloInsumo) => <>{articuloInsumo.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (articuloInsumo) => <>{articuloInsumo.stockActual}</> },
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (articuloInsumo) => <>{articuloInsumo.stockMaximo}</> },
     { id: "unidadMedida", label: "Unidad Medida", renderCell: (articuloInsumo) => (articuloInsumo.unidadMedida.denominacion),},
+    { id: "categoria", label: "categoria", renderCell: (articuloInsumo) => (articuloInsumo.categoria.denominacion),},
+
   ];
 
   return (

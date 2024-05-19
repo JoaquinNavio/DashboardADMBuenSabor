@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Container, Tooltip, IconButton } from "@mui/material";
-import { Add, Visibility, AddCircle } from "@mui/icons-material";
+import { Box, Typography, Button, Container} from "@mui/material";
+import { Add} from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturadoReducer";
 
@@ -83,6 +83,9 @@ const ArticuloManufacturado= () => {
     { id: "preparacion", label: "Preparacion", renderCell: (articuloManufacturado) => <>{articuloManufacturado.preparacion}</> },
     { id: "tiempoEstimadoMinutos", label: "Tiempo Estimado Minutos", renderCell: (articuloManufacturado) => <>{articuloManufacturado.tiempoEstimadoMinutos}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
+    
+    { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
+
   ];
 
   return (
