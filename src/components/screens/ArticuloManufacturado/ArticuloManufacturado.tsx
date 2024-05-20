@@ -83,8 +83,7 @@ const ArticuloManufacturado= () => {
     { id: "preparacion", label: "Preparacion", renderCell: (articuloManufacturado) => <>{articuloManufacturado.preparacion}</> },
     { id: "tiempoEstimadoMinutos", label: "Tiempo Estimado Minutos", renderCell: (articuloManufacturado) => <>{articuloManufacturado.tiempoEstimadoMinutos}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
-    
-    { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
+    { id: "categoria", label: "Categoria", renderCell: (articuloManufacturado) => (articuloManufacturado.categoria.denominacion),},
 
   ];
 

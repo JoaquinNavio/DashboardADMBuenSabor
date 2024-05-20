@@ -1,4 +1,5 @@
 import DataModel from "./DataModel";
+import ICategoria from "./ICategoria";
 import IUnidadMedida from "./IUnidadMedida";
 
 export default interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
@@ -8,6 +9,6 @@ export default interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
     esParaElaborar: boolean,
     precioCompra: number,
     stockActual:number,
-    stockMaximo: number
-    //FALTA CATEGORIAID
+    stockMaximo: number,
+    categoria: ICategoria
 }

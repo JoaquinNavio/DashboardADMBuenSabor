@@ -9,6 +9,7 @@ import CategoriaReducer from '../slices/CategoriaReducer'
 import UnidadMedidaReducer from '../slices/UnidadMedidaReducer'
 import ArticuloInsumoReducer from '../slices/ArticuloInsumoReducer'
 import ArticuloManufacturadoReducer from '../slices/ArticuloManufacturadoReducer'
+import ArticuloManufacturadoDetalleReducer from '../slices/ArticuloManufacturadoDetalleReducer'
 
 export const store = configureStore({
   reducer: {
@@ -21,7 +22,8 @@ export const store = configureStore({
     categoria: CategoriaReducer,
     unidadMedida:UnidadMedidaReducer,
     articuloInsumo:ArticuloInsumoReducer,
-    articuloManufacturado:ArticuloManufacturadoReducer
+    articuloManufacturado:ArticuloManufacturadoReducer,
+    articuloManufacturadoDetalle:ArticuloManufacturadoDetalleReducer
   },
 })
 

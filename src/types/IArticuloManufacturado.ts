@@ -1,4 +1,5 @@
 import DataModel from "./DataModel";
+import ICategoria from "./ICategoria";
 import IUnidadMedida from "./IUnidadMedida";
 
 
@@ -9,6 +10,6 @@ export default interface IArticuloManufacturado extends DataModel<IArticuloManuf
     eliminado:boolean,
     denominacion:string,
     precioVenta:number,
-    unidadMedida: IUnidadMedida, 
-    //FALTA CATEGORIAID
+    unidadMedida: IUnidadMedida,
+    categoria: ICategoria
 }

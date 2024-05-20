@@ -11,7 +11,7 @@ import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalArticuloInsumo from "../../ui/Modals/ModalArticuloInsumo";
-import UnidadMedidaPost from "../../../types/post/UnidadMedidaPost";
+import IUnidadMedida from "../../../types/IUnidadMedida";
 
 const ArticuloInsumoComponent = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -73,7 +73,7 @@ const ArticuloInsumoComponent = () => {
     dispatch(toggleModal({ modalName: "modalArticulo" }));
   };
 
-  const generateInitialUnidadMedida = (): UnidadMedidaPost  => {
+  const generateInitialUnidadMedida = (): IUnidadMedida  => {
     return {
       id: 0,
       eliminado: false,
@@ -95,7 +95,7 @@ const ArticuloInsumoComponent = () => {
     { id: "stockActual", label: "Stock Actual", renderCell: (articuloInsumo) => <>{articuloInsumo.stockActual}</> },
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (articuloInsumo) => <>{articuloInsumo.stockMaximo}</> },
     { id: "unidadMedida", label: "Unidad Medida", renderCell: (articuloInsumo) => (articuloInsumo.unidadMedida.denominacion),},
-    { id: "categoria", label: "categoria", renderCell: (articuloInsumo) => (articuloInsumo.categoria.denominacion),},
+    { id: "categoria", label: "Categoria", renderCell: (articuloInsumo) => articuloInsumo.categoria ? articuloInsumo.categoria.denominacion : null },
 
   ];
 

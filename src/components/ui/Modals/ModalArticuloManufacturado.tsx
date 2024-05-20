@@ -10,6 +10,9 @@ import IArticuloInsumo from '../../../types/IArticuloInsumo';
 import { setArticuloInsumo } from '../../../redux/slices/ArticuloInsumoReducer';
 import ArticuloManufacturadoPost from '../../../types/post/ArticuloManufacturadoPost';
 import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
+import ICategoria from '../../../types/ICategoria';
+import CategoriaService from '../../../services/CategoriaService';
+import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 
 interface ModalArticuloManufacturadoProps {
   modalName: string; 
@@ -84,6 +87,36 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     setCantidades(newCantidades);
   };
 
+
+  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
+  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
+  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
+
+  const fetchCategorias = async () => {
+    try {
+      const categorias = await categoriaService.getAll(URL + '/categoria');
+      dispatch(setCategoria(categorias));
+      setFilteredData2(categorias);
+    } catch (error) {
+      console.error("Error al obtener las Categorias:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+  
+  const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const categoriaDenominacion = event.target.value;
+    // Buscar la localidad por su nombre en el array de localidades
+    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
+    if (categoriaSeleccionada) {
+      // Asignar el ID de la localidad seleccionada
+      setCategoriaPadreId(categoriaSeleccionada.id);
+      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+    }
+  };
+
   const handleSubmit = async (values: ArticuloManufacturado) => {
     try {
       const body: ArticuloManufacturadoPost = {
@@ -94,7 +127,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
-        idCategoria: 1
+        idCategoria: selectedCategoriaPadreId
       }
       if (isEditMode) {
         await articuloManufacturadoService.put(`${URL}/ArticuloManufacturado`, values.id, body);
@@ -121,6 +154,12 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         eliminado: false,
         denominacion: ''
       },
+      categoria: {
+        id:0,
+        eliminado: false,
+        denominacion: '',
+        es_insumo: false
+      }
     };
   }
 
@@ -138,6 +177,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       <TextFieldValue label="tiempoEstimado" name="tiempoEstimadoMinutos" type="number" placeholder="tiempo estimado" />
       <TextFieldValue label="precioVenta" name="precioVenta" type="number" placeholder="precio de venta" />
       <TextFieldValue label="preparacion" name="preparacion" type="text" placeholder="preparacion" />
+      <SelectList
+              title="Categoria"
+              items={filteredData2.map((categoria: ICategoria) => categoria.denominacion)}
+              handleChange={handleCategoriaChange}
+              selectedValue={categoriaDenominacion}
+              disabled={isEditMode}
+            />
 
       {articuloInsumos.map((articuloInsumo, index) => (
         <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
