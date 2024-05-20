@@ -1,8 +1,10 @@
 import DataModel from "./DataModel";
+import IArticuloInsumo from "./IArticuloInsumo";
+import IArticuloManufacturado from "./IArticuloManufacturado";
 
 
 export default interface IArticuloManufacturadoDetalle extends DataModel<IArticuloManufacturadoDetalle>{
     cantidad:number;
-    articuloInsumoId:number;
-    articuloManufacturadoId: number;
+    articuloInsumo:IArticuloInsumo;
+    articuloManufacturado: IArticuloManufacturado;
 }

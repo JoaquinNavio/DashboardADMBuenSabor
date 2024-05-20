@@ -45,9 +45,21 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   });
 
   const unidadMedidaService = new UnidadMedidaService();
+  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
+
   const [filteredData, setFilteredData] = useState<IUnidadMedida[]>([]);
+  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
+
+  const [unidadMedidaDen, setUnidadMedidaDenominacion] = useState<string>('');
+  const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number>(0);
+
+  
 
   const dispatch = useAppDispatch();
+  const url = import.meta.env.VITE_API_URL;
+
+
+  
 
   const fetchUnidadMedida = async () => {
     try {
@@ -63,24 +75,59 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     fetchUnidadMedida();
   }, []);
 
-const [unidadMedidaDen, setUnidadMedidaDenominacion] = useState<string>('');
-const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number>(0);
+
+  const fetchCategorias = async () => {
+    try {
+      const categorias = await categoriaService.getAll(url + '/categoria');
+      dispatch(setCategoria(categorias));
+      setFilteredData2(categorias);
+    } catch (error) {
+      console.error("Error al obtener las Categorias:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCategorias();
+  }, [])
+
+
+
+
+  const [categoriaDen, setCategoriaDenominacion] = useState<string>('');
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
+
+  const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+
+    const categoriaDenominacion = event.target.value;
+    console.log("categoriaDenominacion"+categoriaDenominacion)
+
+    const categoriaSeleccionada = filteredData2.find(articuloCategoria => articuloCategoria.denominacion === categoriaDenominacion);
+    console.log("categoriaSeleccionada"+categoriaSeleccionada)
+
+    if (categoriaSeleccionada) {
+      setCategoriaPadreId(categoriaSeleccionada.id);
+      setCategoriaDenominacion(categoriaSeleccionada.denominacion); 
+    }
+    console.log(selectedCategoriaPadreId);
+
+  };
 
 const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+
   const unidadMedidaDenominacion = event.target.value;
-  // Buscar la localidad por su nombre en el array de localidades
   const unidadMedidaSeleccionada = filteredData.find(unidadMedida => unidadMedida.denominacion === unidadMedidaDenominacion);
   if (unidadMedidaSeleccionada) {
-    // Asignar el ID de la localidad seleccionada
     setSelectedUnidadMedidaId(unidadMedidaSeleccionada.id);
-    setUnidadMedidaDenominacion(unidadMedidaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+    setUnidadMedidaDenominacion(unidadMedidaSeleccionada.denominacion); 
   }
-};
-  const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
+  console.log(selectedUnidadMedidaId);
 
+};
+
+const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
  const handleSwitchChange = (event:ChangeEvent) =>{
   setEsParaElaborarValue(event.target.checked);
  }
+
   // Función para manejar el envío del formulario
   const handleSubmit = async (values: ArticuloInsumo) => {
     try {
@@ -92,7 +139,7 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
         stockActual:values.stockActual,
         stockMaximo:values.stockMaximo,
         esParaElaborar:esParaElaborarValue,
-        idCategoria:1
+        idCategoria:selectedCategoriaPadreId
       }
       if (isEditMode) {
         await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body); // Actualiza el articuloInsumo si está en modo de edición
@@ -120,44 +167,17 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
         esParaElaborar: false,
         precioCompra: 0,
         stockActual: 0,
-        stockMaximo: 0
+        stockMaximo: 0,
+        categoria: {
+          id:0,
+          eliminado: false,
+          denominacion: "",
+          es_insumo:false
+        },
     };
   }
 
-  const url = import.meta.env.VITE_API_URL;
-  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
-  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
-  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
-  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
-
-  const fetchCategorias = async () => {
-    try {
-      const categorias = await categoriaService.getAll(url + '/categoria');
-      dispatch(setCategoria(categorias));
-      setFilteredData2(categorias);
-    } catch (error) {
-      console.error("Error al obtener las Categorias:", error);
-    }
-  };
-  useEffect(() => {
-    fetchCategorias();
-  }, []);
   
-  const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const categoriaDenominacion = event.target.value;
-    // Buscar la localidad por su nombre en el array de localidades
-    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
-    if (categoriaSeleccionada) {
-      // Asignar el ID de la localidad seleccionada
-      setCategoriaPadreId(categoriaSeleccionada.id);
-      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
-    }
-  };
-
-
-
-
-
   // Renderiza el componente de modal genérico
   return (
     <GenericModal
@@ -177,7 +197,6 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
               title="UnidadMedida"
               items={filteredData.map((unidadMedida: IUnidadMedida) => unidadMedida.denominacion)}
               handleChange={handleUnidadMedidaChange}
-              //selectedValue={selectedLocalidad}
               selectedValue={unidadMedidaDen}
             />
         </div>
@@ -190,8 +209,7 @@ const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
               title="Categoria padre"
               items={filteredData2.map((categoria: ICategoria) => categoria.denominacion)}
               handleChange={handleCategoriaChange}
-              selectedValue={categoriaDenominacion}
-              disabled={isEditMode}
+              selectedValue={categoriaDen}
             />
     </GenericModal>
   );

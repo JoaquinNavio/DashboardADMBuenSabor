@@ -13,6 +13,9 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
 import { setCategoria } from '../../../redux/slices/CategoriaReducer';
+import ArticuloManufacturadoDetallePost from '../../../types/post/ArticuloManufacturadoDetallePost';
+import ArticuloManufacturadoDetalleService from '../../../services/ArticuloManufacturadoDetalleService';
+import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
 
 interface ModalArticuloManufacturadoProps {
   modalName: string; 
@@ -58,6 +61,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
   const [articuloInsumos, setArticuloInsumos] = useState<{ denominacion: string, id: number, unidadMedida: string }[]>([]);
   const [cantidades, setCantidades] = useState<number[]>([]);
+
+  //  ESTO ES PARA CDO PONGA EL FETCH const [detalles, setDetalles] = useState<IArticuloManufacturadoDetalle[]>([]);
 
   const handleArticuloInsumoChange = (event: ChangeEvent<HTMLSelectElement>, index: number) => {
     const articuloInsumoDenominacion = event.target.value;
@@ -109,13 +114,14 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const categoriaDenominacion = event.target.value;
     // Buscar la localidad por su nombre en el array de localidades
-    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
+    const categoriaSeleccionada = filteredData2.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
     if (categoriaSeleccionada) {
       // Asignar el ID de la localidad seleccionada
       setCategoriaPadreId(categoriaSeleccionada.id);
       setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
     }
   };
+  const articuloManufacturadoDetalleService= new ArticuloManufacturadoDetalleService();
 
   const handleSubmit = async (values: ArticuloManufacturado) => {
     try {
@@ -123,22 +129,47 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         tiempoEstimadoMinutos: values.tiempoEstimadoMinutos,
         descripcion: values.descripcion,
         preparacion: values.preparacion,
-        eliminado:  values.eliminado,
+        eliminado: values.eliminado,
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
         idCategoria: selectedCategoriaPadreId
-      }
+      };
+  
       if (isEditMode) {
         await articuloManufacturadoService.put(`${URL}/ArticuloManufacturado`, values.id, body);
       } else {
         await articuloManufacturadoService.post(`${URL}/ArticuloManufacturado`, body);
       }
+  
+      // Obtener el último id de articuloManufacturado
+      const articulos = await articuloManufacturadoService.getAll(URL + '/ArticuloManufacturado');
+      const ultimoId = articulos[articulos.length - 1].id;
+      
+      // Crear el array de ArticuloManufacturadoDetallePost
+      const detalles: ArticuloManufacturadoDetallePost[] = articuloInsumos.map((articuloInsumo, index) => ({
+        cantidad: cantidades[index],
+        idArticuloInsumo: articuloInsumo.id,
+        idArticuloManufacturado: isEditMode ? values.id : ultimoId
+      }));
+      
+      await Promise.all(detalles.map(async (detalle) => {
+        console.log("primero entra");
+        await articuloManufacturadoDetalleService.post(`${URL}/ArticuloManufacturadoDetalle`, detalle);
+        console.log("despues");
+      }));
+  
+
+      
       getArticuloManufacturados();
     } catch (error) {
       console.error('Error al enviar los datos:', error);
     }
   };
+  
+  
+  
+  
 
   if (!isEditMode) {
     initialValues = {
@@ -159,7 +190,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         eliminado: false,
         denominacion: '',
         es_insumo: false
-      }
+      },
     };
   }
 

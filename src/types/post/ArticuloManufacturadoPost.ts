@@ -1,3 +1,5 @@
+
+
 export default interface ArticuloManufacturadoPost{
     tiempoEstimadoMinutos: number,
     descripcion:string,
