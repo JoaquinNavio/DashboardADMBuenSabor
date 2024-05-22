@@ -141,6 +141,7 @@ const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
         esParaElaborar:esParaElaborarValue,
         idCategoria:selectedCategoriaPadreId
       }
+      console.log(values)
       if (isEditMode) {
         await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body); // Actualiza el articuloInsumo si está en modo de edición
       } else {
