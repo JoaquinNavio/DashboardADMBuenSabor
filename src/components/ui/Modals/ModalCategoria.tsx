@@ -8,13 +8,14 @@ import SelectList from '../SelectList/SelectList';
 import { useAppDispatch } from '../../../hooks/redux';
 import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 import ICategoria from '../../../types/ICategoria';
+import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 
 // Define las props del componente de modal de categoria
 interface ModalCategoriaProps {
   modalName: string; // Nombre del modal
   initialValues: Categoria; // Valores iniciales del formulario
   isEditMode: boolean; // Indicador de modo de edición
-  getCategorias: Function; // Función para obtener categorias
+  getCategorias: () => Promise<void>; // Función para obtener categorias
   categoriaAEditar?: Categoria; // Categoria a editar
 }
 
@@ -113,7 +114,17 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
               selectedValue={categoriaDenominacion}
               disabled={isEditMode}
             />
-      <TextFieldValue label="Insumo" name="es_insumo" type="text" placeholder="Es insumo?" />
+      <SelectFieldValue
+        label="Insumo"
+        name="es_insumo"
+        type='text'
+        options={[
+          { label: 'Sí', value: 'true' },
+          { label: 'No', value: 'false' }
+        ]}
+        placeholder="Es insumo?"
+        disabled={isEditMode}
+      />
     </GenericModal>
   );
 };
