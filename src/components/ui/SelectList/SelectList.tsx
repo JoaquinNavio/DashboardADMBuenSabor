@@ -2,7 +2,7 @@ import './select.css'
 
 interface SelectListProps{
     title: string;
-    items: Map<number, string>;
+    items: Map<number, string>; //el key es el id, value es el texto de la opcion
     handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
     selectedValue: number | undefined;
     disabled?: boolean

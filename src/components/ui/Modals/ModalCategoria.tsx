@@ -8,6 +8,9 @@ import SelectList from '../SelectList/SelectList';
 import { useAppDispatch } from '../../../hooks/redux';
 import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
+import CategoriaPost from '../../../types/post/CategoriaPost';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 // Define las props del componente de modal de categoria
 interface ModalCategoriaProps {
@@ -26,6 +29,8 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   getCategorias,
   categoriaAEditar,
 }) => {
+console.log(initialValues)
+  const showModal = useSelector((state: RootState) => state.modal[modalName]);
 
   const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
   const URL = import.meta.env.VITE_API_URL; // URL de la API
@@ -38,11 +43,16 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (values: Categoria) => {
+    const body: CategoriaPost = {
+      categoriaPadreId:selectedCategoriaPadreId ,
+      denominacion:values.denominacion,
+      esInsumo:values.esInsumo,
+    }
     try {
       if (isEditMode) {
-        await categoriaService.put(`${URL}/categoria`, values.id, values); // Actualiza la categoria si está en modo de edición
+        await categoriaService.putx(`${URL}/categoria`, values.id, body); // Actualiza la categoria si está en modo de edición
       } else {
-        await categoriaService.post(`${URL}/categoria`, values); // Agrega una nueva categoria si no está en modo de edición
+        await categoriaService.postx(`${URL}/categoria`, body); // Agrega una nueva categoria si no está en modo de edición
       }
       getCategorias(); // Actualiza la lista de categorias
     } catch (error) {
@@ -55,9 +65,9 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
     initialValues = {
       id: 0,
       eliminado:false,
-
       denominacion: '',
-      es_insumo: false,
+      esInsumo: false,
+      categoriaPadre:undefined
     };
   }  
 
@@ -67,18 +77,19 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   const [filteredData, setFilteredData] = useState<Categoria[]>([]);
   const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number | undefined>(0);
 
-  const fetchCategorias = async () => {
-    try {
-      const categorias = await categoriaService.getAll(url + '/categoria');
-      dispatch(setCategoria(categorias));
-      setFilteredData(categorias);
-    } catch (error) {
-      console.error("Error al obtener las Categorias:", error);
-    }
-  };
+  
   useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const categorias = await categoriaService.getAll(url + '/categoria');
+        dispatch(setCategoria(categorias));
+        setFilteredData(categorias);
+      } catch (error) {
+        console.error("Error al obtener las Categorias:", error);
+      }
+    };
     fetchCategorias();
-  }, []);
+  }, [showModal] );
   
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const idCategoriaSelected = parseInt(event.target.value);
@@ -113,11 +124,11 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
                 return mapa
               }, new Map<number, string>())}
               handleChange={handleCategoriaChange}
-              selectedValue={selectedCategoriaPadreId}
+              selectedValue={selectedCategoriaPadreId || (initialValues.categoriaPadre?.id)}
             />
       <SelectFieldValue
-        label="Insumo"
-        name="es_insumo"
+        label="Es insumo?"
+        name="esInsumo"
         type='text'
         options={[
           { label: 'Sí', value: 'true' },

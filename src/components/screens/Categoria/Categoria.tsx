@@ -11,7 +11,6 @@ import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import CategoriaService from "../../../services/CategoriaService";
-import { setCategoria } from "../../../redux/slices/CategoriaReducer";
 import ModalCategoria from "../../ui/Modals/ModalCategoria";
 
 const CategoriaComponent = () => {
@@ -24,15 +23,15 @@ const CategoriaComponent = () => {
     (state) => state.categoria.data
   );
 
-  const [filteredData, setFilteredData] = useState<Categoria[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [categoriaEditar, setCategoriaEditar] = useState<Categoria | undefined>();
 
   const fetchCategorias = async () => {
     try {
       const categorias = await categoriaService.getAll(url + '/categoria');
-      dispatch(setCategoria(categorias));
-      setFilteredData(categorias);
+      setCategorias(categorias);
+      console.log(categorias)
     } catch (error) {
       console.error("Error al obtener las Categorias:", error);
     }
@@ -40,10 +39,10 @@ const CategoriaComponent = () => {
 
   useEffect(() => {
     fetchCategorias();
-  }, [dispatch]);
+  }, []);
 
   const onSearch = (query: string) => {
-    handleSearch(query, globalCategorias, 'nombre', setFilteredData);
+    handleSearch(query, globalCategorias, 'denominacion', setCategorias);
   };
 
   const onDeleteCategoria = async (categoria: Categoria) => {
@@ -80,7 +79,7 @@ const CategoriaComponent = () => {
 
   const columns: Column[] = [
     { id: "denominacion", label: "Denominacion", renderCell: (categoria) => <>{categoria.denominacion}</> },
-    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.es_insumo ? 'insumo' : 'no es insumo'}</> },
+    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.esInsumo ? 'insumo' : 'no es insumo'}</> },
   ];
 
   return (
@@ -107,8 +106,8 @@ const CategoriaComponent = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} onDelete={onDeleteCategoria} onEdit={handleEdit} />
-        <ModalCategoria modalName="modal" initialValues={categoriaEditar || { id: 0, eliminado: false, denominacion: "", es_insumo: false}} isEditMode={isEditing} getCategorias={fetchCategorias} />
+        <TableComponent data={categorias} columns={columns} onDelete={onDeleteCategoria} onEdit={handleEdit} />
+        <ModalCategoria modalName="modal" initialValues={categoriaEditar || { id: 0, eliminado: false, denominacion: "", esInsumo: false,categoriaPadre:undefined}} isEditMode={isEditing} getCategorias={fetchCategorias} />
       </Container>
     </Box>
   );

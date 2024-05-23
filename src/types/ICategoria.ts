@@ -2,6 +2,7 @@ import DataModel from "./DataModel";
 
 
 export default interface ICategoria extends DataModel<ICategoria>{
+    categoriaPadre:ICategoria | undefined;
     denominacion:string;
-    es_insumo:boolean;
+    esInsumo:boolean;
 }

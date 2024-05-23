@@ -62,7 +62,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     fetchArticuloInsumos();
   }, [showModal]);
 
-  const [articulosInsumosItemsX, setArticulosInsumosItemsX] = useState<{
+  const [articulosInsumosItems, setArticulosInsumosItems] = useState<{
     idComponent: number;
     selectedArticuloInsumoId?: number;
     cantidad?: number;
@@ -70,15 +70,25 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   }[]>([]);
   
   const addNewItem = () => {
-    setArticulosInsumosItemsX([...articulosInsumosItemsX, {idComponent: articulosInsumosItemsX.length}]);
+    setArticulosInsumosItems([...articulosInsumosItems, {idComponent: articulosInsumosItems.length}]);
   }
   
-  const removeItem = (idComponent: number) => {
-    setArticulosInsumosItemsX(articulosInsumosItemsX.filter(item => item.idComponent !== idComponent))
+  const removeItem = (idComponent: number, idDetalle?: number) => {
+    //si tiene idDetalle esta en la base de datos
+    //lo que verifica que se muestre la alerta solo en el modal de edicion
+    if(idDetalle){
+      const userConfirmed = window.confirm('¿Estás seguro, se eliminara permanentemente?');
+      if (userConfirmed) {
+        articuloManufacturadoDetalleService.delete(`${URL}/ArticuloManufacturadoDetalle`, idDetalle)
+      }else{
+        return;
+      }
+    }
+    setArticulosInsumosItems(articulosInsumosItems.filter(item => item.idComponent !== idComponent))
   }
 
   const handleItemChange = (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idDetalle?: number) => {
-    setArticulosInsumosItemsX(articulosInsumosItemsX.map(item => {
+    setArticulosInsumosItems(articulosInsumosItems.map(item => {
       if (item.idComponent === idComponent){
         return {
           idComponent,
@@ -128,7 +138,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
-        idCategoria: selectedCategoriaId || 0
+        idCategoria: selectedCategoriaId || initialValues.categoria.id
       };
   
       let articuloGuardado: ArticuloManufacturado;
@@ -140,7 +150,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       
       // Crear el array de ArticuloManufacturadoDetallePost
       
-      for (const item of articulosInsumosItemsX) {
+      for (const item of articulosInsumosItems) {
         const detalle = {
           cantidad: item.cantidad || 0,
           idArticuloInsumo: item.selectedArticuloInsumoId || 0,
@@ -185,7 +195,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
   const onClose = ()=>{
     setSelectedCategoriaId(undefined);
-    setArticulosInsumosItemsX([]);
+    setArticulosInsumosItems([]);
     setDetalles([]);
   }
 
@@ -194,7 +204,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     const fetchDetalles = async() =>{
       const detallitos :IArticuloManufacturadoDetalle[] = await articuloManufacturadoService.getDetalles(`${URL}/ArticuloManufacturado`, initialValues.id)
       setDetalles(detallitos)
-      setArticulosInsumosItemsX(
+      setArticulosInsumosItems(
         detallitos.map((det, ix /* JOAKO => IX ES UN NUMERO RANDOM */) => ({
           idComponent: ix,
           selectedArticuloInsumoId: det.articuloInsumo.id,
@@ -229,52 +239,26 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
               }, new Map<number, string>())}
               handleChange={handleCategoriaChange}
               selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
-            />
+      />
+
       {
-      
-      articulosInsumosItemsX.map( item => {
+      articulosInsumosItems.map( item => {
         const detalle = detalles.find(detalle => detalle.id === item.idDetalle)
         return (
         <ItemDetalleArticuloManufacturado 
           key={item.idComponent} 
           idComponent={item.idComponent} 
           idDetalle={detalle?.id}
-          items={articulosInsumo} 
+          insumos={articulosInsumo} 
           handleItemChange={handleItemChange}
           removeComponent={removeItem} 
           selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
-          cantidad={item.cantidad || detalle?.cantidad}/>
+          cantidad={item.cantidad || detalle?.cantidad}
+          categorias = {categorias}
+          />
+          
       )
       })}
-      {/* {articulosInsumosItems.map((articuloInsumo, index) => (
-        <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <SelectList
-            title="Insumo"
-            items={articulosInsumo.reduce((mapa, insumo) => {
-              mapa.set(insumo.id, insumo.denominacion);
-              return mapa
-            }, new Map<number, string>())}
-            handleChange={handleArticuloInsumoChange}
-            selectedValue={articuloInsumo.id}
-          />
-          <div style={{ marginLeft: '10px' }}>
-            <input
-              type="number"
-              placeholder={`Cantidad en: ${articuloInsumo.unidadMedida}`}
-              value={cantidades[index] || ''}
-              onChange={(event) => handleCantidadChange(event, index)}
-              disabled={isEditMode}
-            />
-          </div>
-          <button 
-            type="button" 
-            onClick={() => removeArticuloInsumo(index)} 
-            style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer' }}
-          >
-            &times;
-          </button>
-        </div>
-      ))} */}
       <button type="button" onClick={addNewItem}>Agregar Insumo</button>
     </GenericModal>
   );

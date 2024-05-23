@@ -97,12 +97,12 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       const body: ArticuloInsumoPost = {
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
-        idUnidadMedida: selectedUnidadMedidaId || 0,
+        idUnidadMedida: selectedUnidadMedidaId || values.unidadMedida.id,
         precioCompra: values.precioCompra,
         stockActual:values.stockActual,
         stockMaximo:values.stockMaximo,
         esParaElaborar:values.esParaElaborar,
-        idCategoria:selectedCategoriaId || 0
+        idCategoria:selectedCategoriaId || values.categoria.id
       }
       console.log(values)
       if (isEditMode) {
@@ -115,7 +115,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       console.error('Error al enviar los datos:', error); // Manejo de errores
     }
   };
-
+  //es para cargar los objetos de la bd
   // Si no está en modo de edición, se limpian los valores iniciales
   if (!isEditMode) {
     initialValues = {
@@ -136,7 +136,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
           id:0,
           eliminado: false,
           denominacion: "",
-          es_insumo:false
+          esInsumo:false,
+          categoriaPadre: undefined,
         },
     };
   }
