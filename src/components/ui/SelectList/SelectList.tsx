@@ -1,47 +1,31 @@
-import React, { useEffect, useState } from 'react';
 import './select.css'
 
-interface SelectListProps {
+interface SelectListProps{
     title: string;
-    items: string[];
+    items: Map<number, string>;
     handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-    selectedValue: string;
+    selectedValue: number | undefined;
     disabled?: boolean
 }
 
-const SelectList: React.FC<SelectListProps> = ({ title, items, handleChange, selectedValue, disabled }) => {
-    const [currentSelectedValue, setCurrentSelectedValue] = useState(selectedValue);
-
-    useEffect(() => {
-        // Verificar si el valor seleccionado actual sigue siendo válido en la nueva lista de items
-        if (!items.includes(currentSelectedValue)) {
-            // Si no, seleccionar el primer elemento de la lista
-            setCurrentSelectedValue(items[0] || '');
-        }
-    }, [items]);
-
-    useEffect(() => {
-        // Actualizar el valor seleccionado actual cuando cambie selectedValue
-        setCurrentSelectedValue(selectedValue);
-    }, [selectedValue]);
-
+export default function SelectList (props:SelectListProps) {
+    const options:JSX.Element[] = [];
+    props.items.forEach((value, key)=>{
+        options.push(<option key={key} value={key}>{value}</option>)
+    })
     return (
         <div className="select-list-container">
-            <label htmlFor={`${title}-select`} className="select-label"><b>{title}</b></label>
+            <label htmlFor={`${props.title}-select`} className="select-label"><b>{props.title}</b></label>
             <select
-                id={`${title}-select`}
+                id={`${props.title}-select`}
                 className="select-list"
-                onChange={handleChange}
-                value={currentSelectedValue}
-                disabled={disabled}
+                onChange={props.handleChange}
+                value={props.selectedValue}
+                disabled={props.disabled}
             >
-                <option value="" disabled>Seleccione una opción</option>
-                {items.map((item, index) => (
-                    <option key={index} value={item}>{item}</option>
-                ))}
+                <option selected disabled>Seleccione una opción</option>
+                {options}
             </select>
         </div>
     );
-};
-
-export default SelectList;
+}

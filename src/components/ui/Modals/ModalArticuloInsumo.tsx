@@ -6,14 +6,11 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import ArticuloInsumo from '../../../types/IArticuloInsumo'; 
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
-import { setUnidadMedida } from '../../../redux/slices/UnidadMedidaReducer';
 import SelectList from '../SelectList/SelectList';
 import ArticuloInsumoPost from '../../../types/post/ArticuloInsumoPost';
-import SwitchValue from '../Switch/Switch';
 import ICategoria from '../../../types/ICategoria';
-import { useAppDispatch } from '../../../hooks/redux';
 import CategoriaService from '../../../services/CategoriaService';
-import { setCategoria } from '../../../redux/slices/CategoriaReducer';
+import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 
 // Define las props del componente de modal de articuloInsumo
 interface ModalArticuloInsumoProps {
@@ -21,7 +18,6 @@ interface ModalArticuloInsumoProps {
   initialValues: ArticuloInsumo; // Valores iniciales del formulario
   isEditMode: boolean; // Indicador de modo de edición
   getArticuloInsumos: () => Promise<void>; // Función para obtener articulosInsumos
-  articuloInsumoAEditar?: ArticuloInsumo; // articuloInsumo a editar
 }
 
 // Componente de modal de articuloInsumo
@@ -29,9 +25,9 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   modalName,
   initialValues,
   isEditMode,
-  getArticuloInsumos,
-  articuloInsumoAEditar,
+  getArticuloInsumos
 }) => {
+  console.log("se esta renderizando el componente modal articulo insumo")
   const articuloInsumoService = new ArticuloInsumoService(); // Instancia del servicio de articuloInsumo
   const URL = import.meta.env.VITE_API_URL; // URL de la API
 
@@ -44,89 +40,56 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     stockMaximo: Yup.number().required('Campo requerido')
   });
 
-  const unidadMedidaService = new UnidadMedidaService();
-  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
 
-  const [filteredData, setFilteredData] = useState<IUnidadMedida[]>([]);
-  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
-
-  const [unidadMedidaDen, setUnidadMedidaDenominacion] = useState<string>('');
-  const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number>(0);
-
-  
-
-  const dispatch = useAppDispatch();
   const url = import.meta.env.VITE_API_URL;
 
-
-  
-
-  const fetchUnidadMedida = async () => {
-    try {
-      const unidades = await unidadMedidaService.getAll(URL + '/UnidadMedida');
-      dispatch(setUnidadMedida(unidades));
-      setFilteredData(unidades);
-      console.log(unidades)
-    } catch (error) {
-      console.error("Error al obtener las unidades:", error);
-    }
-  };
-  useEffect(() => {
+// BUSQUEDA DE UNIDADES DE MEDIDA
+  const unidadMedidaService = new UnidadMedidaService();
+  const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
+  useEffect(()=>{
+    const fetchUnidadMedida = async () => {
+      try {
+        const unidades = await unidadMedidaService.getAll(URL + '/UnidadMedida');
+        setUnidadesMedida(unidades)
+      } catch (error) {
+        console.error("Error al obtener las unidades:", error);
+      }
+    };
     fetchUnidadMedida();
   }, []);
 
-
-  const fetchCategorias = async () => {
-    try {
-      const categorias = await categoriaService.getAll(url + '/categoria');
-      dispatch(setCategoria(categorias));
-      setFilteredData2(categorias);
-    } catch (error) {
-      console.error("Error al obtener las Categorias:", error);
+  const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number | undefined>(undefined);
+  const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const unidadMedidaId = parseInt(event.target.value);
+    if (unidadMedidaId) {
+      setSelectedUnidadMedidaId(unidadMedidaId);
     }
   };
+
+  // BUSQUEDA DE CATEGORIAS
+  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
+  const [categorias, setCategorias] = useState<ICategoria[]>([]);
   useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const categorias = await categoriaService.getAll(url + '/categoria');
+        setCategorias(categorias);
+      } catch (error) {
+        console.error("Error al obtener las Categorias:", error);
+      }
+    };
     fetchCategorias();
   }, [])
 
-
-
-
-  const [categoriaDen, setCategoriaDenominacion] = useState<string>('');
-  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
-
+  const [selectedCategoriaId, setSelectedCategoriaId] = useState<number | undefined>(undefined);
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-
-    const categoriaDenominacion = event.target.value;
-    console.log("categoriaDenominacion"+categoriaDenominacion)
-
-    const categoriaSeleccionada = filteredData2.find(articuloCategoria => articuloCategoria.denominacion === categoriaDenominacion);
-    console.log("categoriaSeleccionada"+categoriaSeleccionada)
-
-    if (categoriaSeleccionada) {
-      setCategoriaPadreId(categoriaSeleccionada.id);
-      setCategoriaDenominacion(categoriaSeleccionada.denominacion); 
+    const categoriaId = parseInt(event.target.value);
+    if (categoriaId) {
+      setSelectedCategoriaId(categoriaId)
     }
-    console.log(selectedCategoriaPadreId);
-
   };
+// ----------------------------------------------------------------------------------------
 
-const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-
-  const unidadMedidaDenominacion = event.target.value;
-  const unidadMedidaSeleccionada = filteredData.find(unidadMedida => unidadMedida.denominacion === unidadMedidaDenominacion);
-  if (unidadMedidaSeleccionada) {
-    setSelectedUnidadMedidaId(unidadMedidaSeleccionada.id);
-    setUnidadMedidaDenominacion(unidadMedidaSeleccionada.denominacion); 
-  }
-  console.log(selectedUnidadMedidaId);
-
-};
-
-const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
- const handleSwitchChange = (event:ChangeEvent) =>{
-  setEsParaElaborarValue(event.target.checked);
- }
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (values: ArticuloInsumo) => {
@@ -134,12 +97,12 @@ const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
       const body: ArticuloInsumoPost = {
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
-        idUnidadMedida: selectedUnidadMedidaId,
+        idUnidadMedida: selectedUnidadMedidaId || 0,
         precioCompra: values.precioCompra,
         stockActual:values.stockActual,
         stockMaximo:values.stockMaximo,
-        esParaElaborar:esParaElaborarValue,
-        idCategoria:selectedCategoriaPadreId
+        esParaElaborar:values.esParaElaborar,
+        idCategoria:selectedCategoriaId || 0
       }
       console.log(values)
       if (isEditMode) {
@@ -178,16 +141,22 @@ const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
     };
   }
 
+  const onClose = () =>{
+    setSelectedCategoriaId(undefined)
+    setSelectedUnidadMedidaId(undefined)
+  }
+
   
   // Renderiza el componente de modal genérico
   return (
     <GenericModal
       modalName={modalName}
       title={isEditMode ? 'Editar ArticuloInsumo' : 'Añadir ArticuloInsumo'}
-      initialValues={articuloInsumoAEditar || initialValues} // Usa el articuloInsumo a editar si está disponible, de lo contrario, usa los valores iniciales
+      initialValues={initialValues} // Usa el articuloInsumo a editar si está disponible, de lo contrario, usa los valores iniciales
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
+      onClose={onClose}
     >
       {/* Campos del formulario */}
       <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominacion" />
@@ -196,21 +165,37 @@ const [esParaElaborarValue, setEsParaElaborarValue] = useState<boolean>(false);
         <div style={{ flex: 1 }}>
             <SelectList
               title="UnidadMedida"
-              items={filteredData.map((unidadMedida: IUnidadMedida) => unidadMedida.denominacion)}
+              items={unidadesMedida.reduce((mapa, unidadMedida) => {
+                mapa.set(unidadMedida.id, unidadMedida.denominacion); 
+                return mapa
+              }, new Map<number, string>())}
               handleChange={handleUnidadMedidaChange}
-              selectedValue={unidadMedidaDen}
+              selectedValue={selectedUnidadMedidaId || (initialValues.unidadMedida.id !== 0 ? initialValues.unidadMedida.id : undefined)}
             />
         </div>
       </div>
-      <SwitchValue  title="Es Para Elaborar" handleChange= {handleSwitchChange} selectedValue= {articuloInsumoAEditar?.esParaElaborar || esParaElaborarValue}/>
+      <SelectFieldValue
+        label="Es Para Elaborar"
+        name="esParaElaborar"
+        type='text'
+        options={[
+          { label: 'Sí', value: 'true' },
+          { label: 'No', value: 'false' }
+        ]}
+        placeholder="Es Para Elaborar?"
+        disabled={isEditMode}
+      />
       <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
       <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
       <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
       <SelectList
               title="Categoria padre"
-              items={filteredData2.map((categoria: ICategoria) => categoria.denominacion)}
+              items={categorias.reduce((mapa, categoria) => {
+                mapa.set(categoria.id, categoria.denominacion); 
+                return mapa
+              }, new Map<number, string>())}
               handleChange={handleCategoriaChange}
-              selectedValue={categoriaDen}
+              selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
             />
     </GenericModal>
   );

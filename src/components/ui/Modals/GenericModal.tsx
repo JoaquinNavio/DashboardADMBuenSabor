@@ -14,15 +14,17 @@ interface ModalProps {
   initialValues: any;
   validationSchema: Yup.ObjectSchema<any>;
   onSubmit: (values: any) => void;
+  onClose?: () => void;
   children?: React.ReactNode;
   isEditMode: boolean;
 }
 
-const GenericModal: React.FC<ModalProps> = ({ modalName, title, initialValues, validationSchema, onSubmit, children, isEditMode }) => {
+const GenericModal: React.FC<ModalProps> = ({ modalName, title, initialValues, validationSchema, onSubmit, children, isEditMode, onClose }) => {
   const dispatch = useDispatch();
   const showModal = useSelector((state: RootState) => state.modal[modalName]);
 
   const handleClose = () => {
+    if (onClose) onClose();
     dispatch(toggleModal({ modalName }));
   };
 

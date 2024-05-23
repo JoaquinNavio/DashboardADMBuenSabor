@@ -126,7 +126,17 @@ const ArticuloInsumoComponent = () => {
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteArticuloInsumo} onEdit={handleEdit} />
         <ModalArticuloInsumo 
         modalName="modalArticulo" 
-        initialValues={articuloInsumoEditar || { id:0, eliminado: false, denominacion: '', precioVenta: 0, unidadMedida: generateInitialUnidadMedida(), esParaElaborar: false, precioCompra: 0, stockActual: 0, stockMaximo: 0 }} 
+        initialValues={articuloInsumoEditar || { 
+          id:0, 
+          eliminado: false, 
+          denominacion: '', 
+          precioVenta: 0, 
+          unidadMedida: generateInitialUnidadMedida(), 
+          categoria: {id: 0, eliminado: false, denominacion:'', es_insumo: false},
+          esParaElaborar: false,
+          precioCompra: 0, 
+          stockActual: 0, 
+          stockMaximo: 0 }} 
         isEditMode={isEditing} 
         getArticuloInsumos={fetchArticuloInsumos} />
       </Container>

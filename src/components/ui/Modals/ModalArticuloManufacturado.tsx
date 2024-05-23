@@ -5,17 +5,19 @@ import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService'; 
 import ArticuloManufacturado from '../../../types/IArticuloManufacturado'; 
 import SelectList from '../SelectList/SelectList';
-import { useAppDispatch } from '../../../hooks/redux';
+// import { useAppDispatch } from '../../../hooks/redux';
 import IArticuloInsumo from '../../../types/IArticuloInsumo';
-import { setArticuloInsumo } from '../../../redux/slices/ArticuloInsumoReducer';
 import ArticuloManufacturadoPost from '../../../types/post/ArticuloManufacturadoPost';
 import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
-import { setCategoria } from '../../../redux/slices/CategoriaReducer';
+// import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 import ArticuloManufacturadoDetallePost from '../../../types/post/ArticuloManufacturadoDetallePost';
 import ArticuloManufacturadoDetalleService from '../../../services/ArticuloManufacturadoDetalleService';
+import ItemDetalleArticuloManufacturado from '../ItemDetalleArticuloManufacturado/ItemDetalleArticuloManufacturado';
 import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 interface ModalArticuloManufacturadoProps {
   modalName: string; 
@@ -33,6 +35,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   articuloManufacturadoAEditar,
 }) => {
 
+  const showModal = useSelector((state: RootState) => state.modal[modalName]);
+
   const articuloManufacturadoService = new ArticuloManufacturadoService();
   const URL = import.meta.env.VITE_API_URL;
 
@@ -40,88 +44,79 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     // Validaciones de Yup
   });
 
+  // BUSQUEDA ARTICULOS INSUMO
   const articuloInsumoService = new ArticuloInsumoService();
-  const dispatch = useAppDispatch();
-  const [filteredData, setFilteredData] = useState<IArticuloInsumo[]>([]);
-
-  const fetchArticuloInsumos = async () => {
-    try {
-      const articulos = await articuloInsumoService.getAll(URL + '/ArticuloInsumo');
-      dispatch(setArticuloInsumo(articulos));
-      setFilteredData(articulos);
-      console.log(articulos);
-    } catch (error) {
-      console.error("Error al obtener las unidades:", error);
-    }
-  };
-
+  // const dispatch = useAppDispatch();
+  const [articulosInsumo, setArticulosInsumo] = useState<IArticuloInsumo[]>([]);
   useEffect(() => {
+    const fetchArticuloInsumos = async () => {
+      try {
+        const articulos = await articuloInsumoService.getAll(URL + '/ArticuloInsumo');
+        // dispatch(setArticuloInsumo(articulos));
+        setArticulosInsumo(articulos);
+        console.log(articulos);
+      } catch (error) {
+        console.error("Error al obtener las unidades:", error);
+      }
+    };
     fetchArticuloInsumos();
-  }, []);
+  }, [showModal]);
 
-  const [articuloInsumos, setArticuloInsumos] = useState<{ denominacion: string, id: number, unidadMedida: string }[]>([]);
-  const [cantidades, setCantidades] = useState<number[]>([]);
-
-  //  ESTO ES PARA CDO PONGA EL FETCH const [detalles, setDetalles] = useState<IArticuloManufacturadoDetalle[]>([]);
-
-  const handleArticuloInsumoChange = (event: ChangeEvent<HTMLSelectElement>, index: number) => {
-    const articuloInsumoDenominacion = event.target.value;
-    const ArticuloInsumoSeleccionado = filteredData.find(articuloInsumo => articuloInsumo.denominacion === articuloInsumoDenominacion);
-    if (ArticuloInsumoSeleccionado) {
-      const newArticuloInsumos = [...articuloInsumos];
-      newArticuloInsumos[index] = { denominacion: ArticuloInsumoSeleccionado.denominacion, id: ArticuloInsumoSeleccionado.id, unidadMedida: ArticuloInsumoSeleccionado.unidadMedida.denominacion };
-      setArticuloInsumos(newArticuloInsumos);
-    }
-  };
-
-  const handleCantidadChange = (event: ChangeEvent<HTMLInputElement>, index: number) => {
-    const newCantidades = [...cantidades];
-    newCantidades[index] = parseFloat(event.target.value);
-    setCantidades(newCantidades);
-  };
-
-  const addArticuloInsumo = () => {
-    setArticuloInsumos([...articuloInsumos, { denominacion: '', id: 0, unidadMedida: '' }]);
-    setCantidades([...cantidades, 0]);
-  };
-
-  const removeArticuloInsumo = (index: number) => {
-    const newArticuloInsumos = articuloInsumos.filter((_, i) => i !== index);
-    const newCantidades = cantidades.filter((_, i) => i !== index);
-    setArticuloInsumos(newArticuloInsumos);
-    setCantidades(newCantidades);
-  };
-
-
-  const [filteredData2, setFilteredData2] = useState<ICategoria[]>([]);
-  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
-  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
-  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
-
-  const fetchCategorias = async () => {
-    try {
-      const categorias = await categoriaService.getAll(URL + '/categoria');
-      dispatch(setCategoria(categorias));
-      setFilteredData2(categorias);
-    } catch (error) {
-      console.error("Error al obtener las Categorias:", error);
-    }
-  };
-  useEffect(() => {
-    fetchCategorias();
-  }, []);
+  const [articulosInsumosItemsX, setArticulosInsumosItemsX] = useState<{
+    idComponent: number;
+    selectedArticuloInsumoId?: number;
+    cantidad?: number;
+    idDetalle?: number;
+  }[]>([]);
   
+  const addNewItem = () => {
+    setArticulosInsumosItemsX([...articulosInsumosItemsX, {idComponent: articulosInsumosItemsX.length}]);
+  }
+  
+  const removeItem = (idComponent: number) => {
+    setArticulosInsumosItemsX(articulosInsumosItemsX.filter(item => item.idComponent !== idComponent))
+  }
+
+  const handleItemChange = (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idDetalle?: number) => {
+    setArticulosInsumosItemsX(articulosInsumosItemsX.map(item => {
+      if (item.idComponent === idComponent){
+        return {
+          idComponent,
+          selectedArticuloInsumoId,
+          cantidad,
+          idDetalle
+        }
+      }
+      return item;
+    }))
+  }
+
+  // BUSCAR CATEGORIAS
+  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
+  const [categorias, setCategorias] = useState<ICategoria[]>([]);
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const categorias = await categoriaService.getAll(URL + '/categoria');
+        setCategorias(categorias);
+      } catch (error) {
+        console.error("Error al obtener las Categorias:", error);
+      }
+    };
+    fetchCategorias();
+  }, [showModal])
+  
+  const [selectedCategoriaId, setSelectedCategoriaId] = useState<number | undefined>(undefined);
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const categoriaDenominacion = event.target.value;
-    // Buscar la localidad por su nombre en el array de localidades
-    const categoriaSeleccionada = filteredData2.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
-    if (categoriaSeleccionada) {
+    const categoriaId = parseInt(event.target.value);
+    if (categoriaId) {
       // Asignar el ID de la localidad seleccionada
-      setCategoriaPadreId(categoriaSeleccionada.id);
-      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+      setSelectedCategoriaId(categoriaId);
     }
   };
-  const articuloManufacturadoDetalleService= new ArticuloManufacturadoDetalleService();
+  // -------------------------------------------------------------------------------
+
+  const articuloManufacturadoDetalleService = new ArticuloManufacturadoDetalleService();
 
   const handleSubmit = async (values: ArticuloManufacturado) => {
     try {
@@ -133,33 +128,31 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
-        idCategoria: selectedCategoriaPadreId
+        idCategoria: selectedCategoriaId || 0
       };
   
+      let articuloGuardado: ArticuloManufacturado;
       if (isEditMode) {
-        await articuloManufacturadoService.put(`${URL}/ArticuloManufacturado`, values.id, body);
+        articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado`, values.id, body);
       } else {
-        await articuloManufacturadoService.post(`${URL}/ArticuloManufacturado`, body);
+        articuloGuardado = await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado`, body);
       }
-  
-      // Obtener el último id de articuloManufacturado
-      const articulos = await articuloManufacturadoService.getAll(URL + '/ArticuloManufacturado');
-      const ultimoId = articulos[articulos.length - 1].id;
       
       // Crear el array de ArticuloManufacturadoDetallePost
-      const detalles: ArticuloManufacturadoDetallePost[] = articuloInsumos.map((articuloInsumo, index) => ({
-        cantidad: cantidades[index],
-        idArticuloInsumo: articuloInsumo.id,
-        idArticuloManufacturado: isEditMode ? values.id : ultimoId
-      }));
       
-      await Promise.all(detalles.map(async (detalle) => {
-        console.log("primero entra");
-        await articuloManufacturadoDetalleService.post(`${URL}/ArticuloManufacturadoDetalle`, detalle);
-        console.log("despues");
-      }));
-  
-
+      for (const item of articulosInsumosItemsX) {
+        const detalle = {
+          cantidad: item.cantidad || 0,
+          idArticuloInsumo: item.selectedArticuloInsumoId || 0,
+          idArticuloManufacturado: articuloGuardado.id
+        }
+        console.log()
+        if (item.idDetalle )
+          await articuloManufacturadoDetalleService.putx(`${URL}/ArticuloManufacturadoDetalle`, item.idDetalle, detalle)
+        else 
+          await articuloManufacturadoDetalleService.postx(`${URL}/ArticuloManufacturadoDetalle`, detalle);
+        
+      }
       
       getArticuloManufacturados();
     } catch (error) {
@@ -167,10 +160,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     }
   };
   
-  
-  
-  
-
   if (!isEditMode) {
     initialValues = {
       id: 0,
@@ -194,6 +183,29 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     };
   }
 
+  const onClose = ()=>{
+    setSelectedCategoriaId(undefined);
+    setArticulosInsumosItemsX([]);
+    setDetalles([]);
+  }
+
+  const [detalles, setDetalles] = useState<IArticuloManufacturadoDetalle[]>([]);
+  useEffect(() =>{
+    const fetchDetalles = async() =>{
+      const detallitos :IArticuloManufacturadoDetalle[] = await articuloManufacturadoService.getDetalles(`${URL}/ArticuloManufacturado`, initialValues.id)
+      setDetalles(detallitos)
+      setArticulosInsumosItemsX(
+        detallitos.map((det, ix /* JOAKO => IX ES UN NUMERO RANDOM */) => ({
+          idComponent: ix,
+          selectedArticuloInsumoId: det.articuloInsumo.id,
+          cantidad: det.cantidad,
+          idDetalle: det.id,
+        }))
+      )
+    }
+    fetchDetalles();
+  },[showModal]);
+
   return (
     <GenericModal
       modalName={modalName}
@@ -202,6 +214,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
+      onClose={onClose}
     >
       <TextFieldValue label="denominacion" name="denominacion" type="text" placeholder="denominacion" />
       <TextFieldValue label="descripcion" name="descripcion" type="text" placeholder="descripcion" />
@@ -210,20 +223,39 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       <TextFieldValue label="preparacion" name="preparacion" type="text" placeholder="preparacion" />
       <SelectList
               title="Categoria"
-              items={filteredData2.map((categoria: ICategoria) => categoria.denominacion)}
+              items={categorias.reduce((mapa, categoria) => {
+                mapa.set(categoria.id, categoria.denominacion); 
+                return mapa
+              }, new Map<number, string>())}
               handleChange={handleCategoriaChange}
-              selectedValue={categoriaDenominacion}
-              disabled={isEditMode}
+              selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
             />
-
-      {articuloInsumos.map((articuloInsumo, index) => (
+      {
+      
+      articulosInsumosItemsX.map( item => {
+        const detalle = detalles.find(detalle => detalle.id === item.idDetalle)
+        return (
+        <ItemDetalleArticuloManufacturado 
+          key={item.idComponent} 
+          idComponent={item.idComponent} 
+          idDetalle={detalle?.id}
+          items={articulosInsumo} 
+          handleItemChange={handleItemChange}
+          removeComponent={removeItem} 
+          selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
+          cantidad={item.cantidad || detalle?.cantidad}/>
+      )
+      })}
+      {/* {articulosInsumosItems.map((articuloInsumo, index) => (
         <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
           <SelectList
             title="Insumo"
-            items={filteredData.map((insumo: IArticuloInsumo) => insumo.denominacion)}
-            handleChange={(event) => handleArticuloInsumoChange(event, index)}
-            selectedValue={articuloInsumo.denominacion}
-            disabled={isEditMode}
+            items={articulosInsumo.reduce((mapa, insumo) => {
+              mapa.set(insumo.id, insumo.denominacion);
+              return mapa
+            }, new Map<number, string>())}
+            handleChange={handleArticuloInsumoChange}
+            selectedValue={articuloInsumo.id}
           />
           <div style={{ marginLeft: '10px' }}>
             <input
@@ -242,8 +274,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
             &times;
           </button>
         </div>
-      ))}
-      <button type="button" onClick={addArticuloInsumo}>Agregar Insumo</button>
+      ))} */}
+      <button type="button" onClick={addNewItem}>Agregar Insumo</button>
     </GenericModal>
   );
 };

@@ -1,15 +1,12 @@
 
-import React, { ChangeEvent } from 'react';
 import { Field } from 'formik';
 
 interface Props {
   label: string; // Etiqueta del campo
   name: string; // Nombre del campo
   type: string; // Tipo de campo (text, number, etc.)
-  value: string;
-  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   placeholder: string; // Placeholder del campo
-  disabled?: boolean; // Si el campo está deshabilitado
+  disabled: boolean; // Si el campo está deshabilitado
   options: { label: string; value: string | boolean }[]; // Opciones del select
 }
 

@@ -7,7 +7,6 @@ import Categoria from '../../../types/ICategoria';
 import SelectList from '../SelectList/SelectList';
 import { useAppDispatch } from '../../../hooks/redux';
 import { setCategoria } from '../../../redux/slices/CategoriaReducer';
-import ICategoria from '../../../types/ICategoria';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 
 // Define las props del componente de modal de categoria
@@ -66,8 +65,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const [filteredData, setFilteredData] = useState<Categoria[]>([]);
-  const [categoriaDenominacion, setCategoriaDenominacion] = useState<string>('');
-  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number>(0);
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number | undefined>(0);
 
   const fetchCategorias = async () => {
     try {
@@ -83,17 +81,17 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   }, []);
   
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const categoriaDenominacion = event.target.value;
+    const idCategoriaSelected = parseInt(event.target.value);
     // Buscar la localidad por su nombre en el array de localidades
-    const categoriaSeleccionada = filteredData.find(articuloInsumo => articuloInsumo.denominacion === categoriaDenominacion);
-    if (categoriaSeleccionada) {
+    if (idCategoriaSelected) {
       // Asignar el ID de la localidad seleccionada
-      setCategoriaPadreId(categoriaSeleccionada.id);
-      setCategoriaDenominacion(categoriaSeleccionada.denominacion); // Actualizar el nombre de la localidad seleccionada
+      setCategoriaPadreId(idCategoriaSelected);
     }
   };
 
-
+  function onClose(){
+    setCategoriaPadreId(undefined)
+  }
 
   // Renderiza el componente de modal genérico
   return (
@@ -104,15 +102,18 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
+      onClose={onClose}
     >
       {/* Campos del formulario */}
       <TextFieldValue label="Denominaciòn" name="denominacion" type="text" placeholder="Denominacion" />
       <SelectList
               title="Categoria padre"
-              items={filteredData.map((categoria: ICategoria) => categoria.denominacion)}
+              items={filteredData.reduce((mapa, categoria) => {
+                mapa.set(categoria.id, categoria.denominacion); 
+                return mapa
+              }, new Map<number, string>())}
               handleChange={handleCategoriaChange}
-              selectedValue={categoriaDenominacion}
-              disabled={isEditMode}
+              selectedValue={selectedCategoriaPadreId}
             />
       <SelectFieldValue
         label="Insumo"

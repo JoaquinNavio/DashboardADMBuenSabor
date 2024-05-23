@@ -223,8 +223,10 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         <div style={{ flex: 1 }}>
             <SelectList
               title="Localidades"
-              items={localidades.map((localidad: ILocalidad) => localidad.nombre)}
-              handleChange={handleLocalidadChange}
+              items={localidades.reduce((mapa, localidad) => {
+                mapa.set(localidad.id, localidad.nombre); 
+                return mapa
+              }, new Map<number, string>())}
               //selectedValue={selectedLocalidad}
               selectedValue={localidadNombre}
               disabled={isEditMode}
