@@ -42,11 +42,10 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
 
-  const [selectedLocalidad, setSelectedLocalidad] = useState<string>('');
+  const [selectedLocalidadId, setSelectedLocalidad] = useState<number | undefined>(undefined);
   
   const [casaMatriz, setCasaMatriz] = useState<boolean>(false); // Estado para casa matriz
 
-  const [localidadNombre, setLocalidadNombre] = useState<string>('');
   const [tooltipMessage, setTooltipMessage] = useState<string>(''); // Mensaje para el tooltip
 
   const fetchEmpresa = async () => {
@@ -87,13 +86,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   // Función para manejar el cambio de localidad
   const handleLocalidadChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const localidadNombre = event.target.value;
+    const localidadIdSelected = parseInt(event.target.value);
     // Buscar la localidad por su nombre en el array de localidades
-    const localidadSeleccionada = localidades.find(localidad => localidad.nombre === localidadNombre);
-    if (localidadSeleccionada) {
+    if (localidadIdSelected) {
       // Asignar el ID de la localidad seleccionada
-      setSelectedLocalidad(localidadSeleccionada.id.toString());
-      setLocalidadNombre(localidadSeleccionada.nombre); // Actualizar el nombre de la localidad seleccionada
+      setSelectedLocalidad(localidadIdSelected);
     }
   };
 
@@ -138,7 +135,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         cp: values.domicilio.cp,
         piso: values.domicilio.piso,
         nroDpto: values.domicilio.nroDpto,
-        idLocalidad: parseInt(selectedLocalidad), // Convertir a número entero
+        idLocalidad: selectedLocalidadId || 0, // Convertir a número entero
       };
 
       let sucursalData: SucursalPost | Sucursal;
@@ -227,8 +224,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                 mapa.set(localidad.id, localidad.nombre); 
                 return mapa
               }, new Map<number, string>())}
+              handleChange={handleLocalidadChange}
               //selectedValue={selectedLocalidad}
-              selectedValue={localidadNombre}
+              selectedValue={selectedLocalidadId}
               disabled={isEditMode}
             />
           </div>
