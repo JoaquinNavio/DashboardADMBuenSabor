@@ -10,7 +10,7 @@ export interface ItemDetalleArticuloManufacturadoProps {
     selectedArticuloInsumoId?: number;
     cantidad?: number;
     handleItemChange: (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idDetalle?: number) => void;
-    removeComponent: (idComponent: number) => void;
+    removeComponent: (idComponent: number,idDetalle? :number ) => void;
     categorias: ICategoria[];
 }
 
@@ -75,7 +75,7 @@ export default function ItemDetalleArticuloManufacturado(props: ItemDetalleArtic
             </div>
             <button
                 type="button"
-                onClick={() => props.removeComponent(props.idComponent)}
+                onClick={() => props.removeComponent(props.idComponent, props.idDetalle)}
                 style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer' }}
             >
                 &times;

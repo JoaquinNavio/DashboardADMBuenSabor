@@ -54,7 +54,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         const articulos = await articuloInsumoService.getAll(URL + '/ArticuloInsumo');
         // dispatch(setArticuloInsumo(articulos));
         setArticulosInsumo(articulos);
-        console.log(articulos);
       } catch (error) {
         console.error("Error al obtener las unidades:", error);
       }
@@ -73,7 +72,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     setArticulosInsumosItems([...articulosInsumosItems, {idComponent: articulosInsumosItems.length}]);
   }
   
-  const removeItem = (idComponent: number, idDetalle?: number) => {
+  const removeItem = (idComponent: number, idDetalle: number) => {
+
     //si tiene idDetalle esta en la base de datos
     //lo que verifica que se muestre la alerta solo en el modal de edicion
     if(idDetalle){
@@ -156,7 +156,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
           idArticuloInsumo: item.selectedArticuloInsumoId || 0,
           idArticuloManufacturado: articuloGuardado.id
         }
-        console.log()
         if (item.idDetalle )
           await articuloManufacturadoDetalleService.putx(`${URL}/ArticuloManufacturadoDetalle`, item.idDetalle, detalle)
         else 

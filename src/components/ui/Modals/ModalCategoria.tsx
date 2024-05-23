@@ -29,7 +29,6 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   getCategorias,
   categoriaAEditar,
 }) => {
-console.log(initialValues)
   const showModal = useSelector((state: RootState) => state.modal[modalName]);
 
   const categoriaService = new CategoriaService(); // Instancia del servicio de categoria

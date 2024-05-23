@@ -31,7 +31,6 @@ const CategoriaComponent = () => {
     try {
       const categorias = await categoriaService.getAll(url + '/categoria');
       setCategorias(categorias);
-      console.log(categorias)
     } catch (error) {
       console.error("Error al obtener las Categorias:", error);
     }

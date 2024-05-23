@@ -30,7 +30,6 @@ export default class ArticuloManufacturadoDetalleService extends BackendClient<I
           },
           body: JSON.stringify(data),
         };
-        console.log(data);
         return this.request(path, options);
         
       }
