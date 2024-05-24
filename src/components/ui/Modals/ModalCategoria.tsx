@@ -115,9 +115,27 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       onClose={onClose}
     >
       {/* Campos del formulario */}
-      <TextFieldValue label="Denominaciòn" name="denominacion" type="text" placeholder="Denominacion" />
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%'}}>
+        <div style={{ flex: '0 0 80%' }}>
+          <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación"/>
+        </div>
+        <div style={{ flex: '1' }}>
+            <SelectFieldValue
+            label="Es insumo"
+            name="esInsumo"
+            type='text'
+            options={[
+              { label: 'Sí', value: 'true' },
+              { label: 'No', value: 'false' }
+            ]}
+            placeholder="Es insumo"
+            disabled={isEditMode}
+            />
+        </div>
+      </div>
+      <div>
       <SelectList
-              title="Categoria padre"
+              title="Categoría padre"
               items={filteredData.reduce((mapa, categoria) => {
                 mapa.set(categoria.id, categoria.denominacion); 
                 return mapa
@@ -125,17 +143,9 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
               handleChange={handleCategoriaChange}
               selectedValue={selectedCategoriaPadreId || (initialValues.categoriaPadre?.id)}
             />
-      <SelectFieldValue
-        label="Es insumo?"
-        name="esInsumo"
-        type='text'
-        options={[
-          { label: 'Sí', value: 'true' },
-          { label: 'No', value: 'false' }
-        ]}
-        placeholder="Es insumo?"
-        disabled={isEditMode}
-      />
+      </div>
+      
+      
     </GenericModal>
   );
 };

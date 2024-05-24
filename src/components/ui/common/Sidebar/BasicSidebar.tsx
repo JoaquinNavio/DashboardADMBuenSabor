@@ -29,35 +29,41 @@ const BasicSidebar: React.FC = () => {
                             Empresas
                         </Link>
                     </CNavItem>
-                    <CNavGroup
-                        toggler={
-                            <>
-                                <CIcon customClassName="nav-icon" icon={cilFastfood} />
-                                Productos
-                            </>
-                        }
-                    >
-                        <CNavItem>
-                            <Link to="/productos" className="nav-link" >
-                                <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
-                                Lista de Productos
-                            </Link>
-                        </CNavItem>
-                        <CNavItem>
+                    
+                    <CNavItem>
                             <Link to="/categorias" className="nav-link">
                                 <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
                                 Categorías
                             </Link>
                         </CNavItem>
-                    </CNavGroup>
 
+                    
+
+                    
+                    <CNavItem>
+                        <Link to="/articuloInsumos" className="nav-link">
+                            <CIcon customClassName="nav-icon" icon={cilCart} />
+                            Insumos
+                        </Link>
+                    </CNavItem>
+                    <CNavItem>
+                        <Link to="/articulosManufacturados" className="nav-link">
+                            <CIcon customClassName="nav-icon" icon={cilFactory } />
+                            Articulos Manufacturados
+                        </Link>
+                    </CNavItem>
+                    <CNavItem>
+                        <Link to="/unidadesMedida" className="nav-link">
+                            <CIcon customClassName="nav-icon" icon={cilLineWeight } />
+                            Unidad Medida
+                        </Link>
+                    </CNavItem>
                     <CNavItem>
                         <Link to="/promociones" className="nav-link">
                             <CIcon customClassName="nav-icon" icon={cilDollar} />
                             Promociones
                         </Link>
                     </CNavItem>
-
                     <CNavGroup
                         toggler={
                             <>
@@ -79,24 +85,6 @@ const BasicSidebar: React.FC = () => {
                             </Link>
                         </CNavItem>
                     </CNavGroup>
-                    <CNavItem>
-                        <Link to="/articuloInsumos" className="nav-link">
-                            <CIcon customClassName="nav-icon" icon={cilCart} />
-                            Insumos
-                        </Link>
-                    </CNavItem>
-                    <CNavItem>
-                        <Link to="/articulosManufacturados" className="nav-link">
-                            <CIcon customClassName="nav-icon" icon={cilFactory } />
-                            Articulos Manufacturados
-                        </Link>
-                    </CNavItem>
-                    <CNavItem>
-                        <Link to="/unidadesMedida" className="nav-link">
-                            <CIcon customClassName="nav-icon" icon={cilLineWeight } />
-                            Unidad Medida
-                        </Link>
-                    </CNavItem>
                 </CSidebarNav>
             </CSidebar>
         </div>

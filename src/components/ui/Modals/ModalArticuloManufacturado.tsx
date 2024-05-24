@@ -18,6 +18,7 @@ import ItemDetalleArticuloManufacturado from '../ItemDetalleArticuloManufacturad
 import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import { Add } from '@mui/icons-material';
 
 interface ModalArticuloManufacturadoProps {
   modalName: string; 
@@ -225,11 +226,19 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       isEditMode={isEditMode}
       onClose={onClose}
     >
-      <TextFieldValue label="denominacion" name="denominacion" type="text" placeholder="denominacion" />
-      <TextFieldValue label="descripcion" name="descripcion" type="text" placeholder="descripcion" />
-      <TextFieldValue label="tiempoEstimado" name="tiempoEstimadoMinutos" type="number" placeholder="tiempo estimado" />
-      <TextFieldValue label="precioVenta" name="precioVenta" type="number" placeholder="precio de venta" />
-      <TextFieldValue label="preparacion" name="preparacion" type="text" placeholder="preparacion" />
+      
+      <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
+      <TextFieldValue label="Descripción" name="descripcion" type="text" placeholder="Ingrese descripción" />
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
+        <div>
+        <TextFieldValue label="Tiempo Estimado" name="tiempoEstimadoMinutos" type="number" placeholder="tiempo estimado" />
+        </div>
+        <div>
+        <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="precio de venta" />
+        </div>
+      </div>
+      <TextFieldValue label="Preparación" name="preparacion" type="text" placeholder="Ingrese preparación" />
+      <div style={{marginBottom: '15px'}}>
       <SelectList
               title="Categoria"
               items={categorias.reduce((mapa, categoria) => {
@@ -239,6 +248,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
               handleChange={handleCategoriaChange}
               selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
       />
+      </div>
+      
 
       {
       articulosInsumosItems.map( item => {
@@ -258,7 +269,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
           
       )
       })}
-      <button type="button" onClick={addNewItem}>Agregar Insumo</button>
+      <button type="button" style={{margin: '10px'}} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
     </GenericModal>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Add, CheckCircleOutline, HighlightOff } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 
@@ -78,7 +78,7 @@ const CategoriaComponent = () => {
 
   const columns: Column[] = [
     { id: "denominacion", label: "Denominacion", renderCell: (categoria) => <>{categoria.denominacion}</> },
-    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.esInsumo ? 'insumo' : 'no es insumo'}</> },
+    { id: "es_insumo", label: "Es Insumo", renderCell: (categoria) => <>{categoria.esInsumo ? <CheckCircleOutline color="primary" /> : <HighlightOff color="error" />}</> },
   ];
 
   return (

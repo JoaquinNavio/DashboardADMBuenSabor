@@ -40,7 +40,7 @@ const ArticuloInsumoComponent = () => {
   }, [dispatch]);
 
   const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloInsumos, 'nombre', setFilteredData);
+    handleSearch(query, globalArticuloInsumos, 'denominacion', setFilteredData);
   };
 
   const onDeleteArticuloInsumo = async (articuloInsumo: ArticuloInsumo) => {

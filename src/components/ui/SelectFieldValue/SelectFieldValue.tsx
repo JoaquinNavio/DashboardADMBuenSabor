@@ -12,7 +12,10 @@ interface Props {
 
 const SelectFieldValue: React.FC<Props> = ({ label, name, type, placeholder, options }) => (
   <div className="form-group">
-    <label htmlFor={name}>{label}</label>
+    <label htmlFor={name} style={{
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}>{label}</label>
     <Field as="select" id={name} name={name} type={type} placeholder={placeholder} className="form-control">
       {options.map(option => (
         <option key={option.value.toString()} value={option.value.toString()}>

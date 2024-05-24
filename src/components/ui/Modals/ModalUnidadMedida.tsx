@@ -51,13 +51,13 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar UnidadMedida' : 'Añadir UnidadMedida'}
+      title={isEditMode ? 'Editar Unidad Medida' : 'Añadir Unidad Medida'}
       initialValues={UnidadAEditar || initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
     >
-      <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominación" />
+      <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
     </GenericModal>
   );
 };

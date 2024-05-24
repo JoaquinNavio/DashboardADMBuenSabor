@@ -43,7 +43,7 @@ const ArticuloManufacturado= () => {
   }, [dispatch]);
 
   const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloManufacturados, 'nombre', setFilteredData);
+    handleSearch(query, globalArticuloManufacturados, 'denominacion', setFilteredData);
   };
 
   const onDeleteArticuloManufacturado = async (articuloManufacturado: IArticuloManufacturado) => {

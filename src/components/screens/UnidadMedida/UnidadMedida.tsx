@@ -4,13 +4,14 @@ import UnidadMedidaService from "../../../services/UnidadMedidaService";
 import IUnidadMedida from "../../../types/IUnidadMedida";
 import { setUnidadMedida } from "../../../redux/slices/UnidadMedidaReducer";
 import { Column } from "@coreui/react/dist/esm/components/table/types";
-import { Box, Typography } from "@mui/material";
-import { Button, Container } from "react-bootstrap";
+import { Box, Typography, Button } from "@mui/material";
+import { Container } from "react-bootstrap";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import { toggleModal } from "../../../redux/slices/ModalReducer";
 import { handleSearch, onDelete } from "../../../utils/utils";
 import ModalUnidadMedida from "../../ui/Modals/ModalUnidadMedida";
+import { Add } from "@mui/icons-material";
 
 const UnidadMedida = () => {
     const url = import.meta.env.VITE_API_URL;
@@ -46,7 +47,7 @@ const UnidadMedida = () => {
       
 
       const onSearch = (query: string) => {
-        handleSearch(query, globalUnidadMedida, 'nombre', setFilteredData);
+        handleSearch(query, globalUnidadMedida, 'denominacion', setFilteredData);
       };
 
       const onDeleteUnidadMedida = async (unidadMedida: IUnidadMedida) => {
@@ -95,10 +96,16 @@ const UnidadMedida = () => {
           </Typography>
           <Button
             onClick={handleAddUnidadMedida}
-            style={{ backgroundColor: "blue", color: "white" }}
-
+            sx={{
+              bgcolor: "#ha4444",
+              "&:hover": {
+                bgcolor: "#hb6666",
+              },
+            }}
+            variant="contained"
+            startIcon={<Add />}
           >
-            Añadir Unidad
+            Unidad Medida
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>

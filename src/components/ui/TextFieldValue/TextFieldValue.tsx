@@ -27,9 +27,7 @@ const TextFieldValue = ({ label, name, type, placeholder, disabled }: props) => 
         <label
           htmlFor={label}
           style={{
-            color: "black",
-            fontFamily: "sans-serif",
-            fontSize: "14px",
+            fontSize: "16px",
             fontWeight: "bold",
           }}
         >

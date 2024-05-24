@@ -152,7 +152,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar ArticuloInsumo' : 'Añadir ArticuloInsumo'}
+      title={isEditMode ? 'Editar Articulo Insumo' : 'Añadir Articulo Insumo'}
       initialValues={initialValues} // Usa el articuloInsumo a editar si está disponible, de lo contrario, usa los valores iniciales
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
@@ -160,8 +160,44 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       onClose={onClose}
     >
       {/* Campos del formulario */}
-      <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominacion" />
-      <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="Precio Venta" />
+      <div  style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%'}}>
+        <div style={{ flex: '0 0 80%' }}>
+        <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
+        </div>
+        <div style={{ flex: '1' }}>
+        <SelectFieldValue
+          label="Es Para Elaborar"
+          name="esParaElaborar"
+          type='text'
+          options={[
+            { label: 'Sí', value: 'true' },
+            { label: 'No', value: 'false' }
+          ]}
+          placeholder="Es Para Elaborar?"
+          disabled={isEditMode}
+        />
+        </div>
+      </div>
+      
+        
+        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
+          <div>
+          <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
+          </div>
+          <div>
+          <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="Precio Venta" />
+          </div>
+        </div>
+      
+         
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
+        <div>
+        <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
+        </div>
+        <div>
+        <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
+        </div>
+      </div>
       <div style={{ display: 'flex', gap: '20px' }}>
         <div style={{ flex: 1 }}>
             <SelectList
@@ -175,20 +211,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
             />
         </div>
       </div>
-      <SelectFieldValue
-        label="Es Para Elaborar"
-        name="esParaElaborar"
-        type='text'
-        options={[
-          { label: 'Sí', value: 'true' },
-          { label: 'No', value: 'false' }
-        ]}
-        placeholder="Es Para Elaborar?"
-        disabled={isEditMode}
-      />
-      <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
-      <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
-      <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
+      
       <SelectList
               title="Categoria padre"
               items={categorias.reduce((mapa, categoria) => {
