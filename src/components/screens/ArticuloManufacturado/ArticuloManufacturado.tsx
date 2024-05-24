@@ -92,7 +92,7 @@ const ArticuloManufacturado= () => {
       <Container>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
           <Typography variant="h5" gutterBottom>
-            ArticuloManufacturados
+            Articulo Manufacturado
           </Typography>
           <Button
             onClick={handleAddArticuloManufacturado}
@@ -105,7 +105,7 @@ const ArticuloManufacturado= () => {
             variant="contained"
             startIcon={<Add />}
           >
-            ArticuloManufacturado
+            Articulo Manufacturado
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
