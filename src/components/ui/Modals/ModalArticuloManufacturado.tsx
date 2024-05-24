@@ -219,7 +219,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar ArticuloManufacturado' : 'Añadir ArticuloManufacturado'}
+      title={isEditMode ? 'Editar Articulo Manufacturado' : 'Añadir Articulo Manufacturado'}
       initialValues={articuloManufacturadoAEditar || initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
