@@ -46,7 +46,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     return this.request(path, options);
   }
   
-  async getAll(url: string): Promise<T[]> {
+  async getAll(url: string ): Promise<T[]> {
     const path = url;
     const options: RequestInit = {
       method: "GET",

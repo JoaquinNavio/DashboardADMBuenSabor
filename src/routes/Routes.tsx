@@ -11,6 +11,7 @@ import Sucursal from '../components/screens/Sucursal/Sucursal';
 import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida';
 import ArticuloManufacturado from '../components/screens/ArticuloManufacturado/ArticuloManufacturado';
 import ArticuloInsumo from '../components/screens/ArticuloInsumo/ArticuloInsumo';
+import { Promocion } from '../components/screens/Promocion/Promocion';
 
 
 const Rutas: React.FC = () => {
@@ -31,6 +32,7 @@ const Rutas: React.FC = () => {
             <Route path="/articuloInsumos" element={<ArticuloInsumo/>} />
             <Route path="/articulosManufacturados" element={<ArticuloManufacturado/>} />
             <Route path="/unidadesMedida" element={<UnidadMedida/>} />
+            <Route path="/promociones" element={<Promocion></Promocion>} />
           </Routes>
         </div>
     </Router>

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { toggleModal } from '../../../redux/slices/ModalReducer';
 import Swal from 'sweetalert2';
-import './modal.css'
+import './modal.css';
 
 interface ModalProps {
   modalName: string;
@@ -58,21 +58,19 @@ const GenericModal: React.FC<ModalProps> = ({ modalName, title, initialValues, v
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {(formikProps: FormikProps<any>) => {
-            return (
-              <Form onSubmit={formikProps.handleSubmit}>
-                {children}
-                <Modal.Footer>
-                  <Button variant="outline-secondary" onClick={handleClose}>
-                    Cerrar
-                  </Button>
-                  <Button variant="outline-success" type="submit">
-                    {isEditMode ? "Guardar Cambios" : "Añadir"}
-                  </Button>
-                </Modal.Footer>
-              </Form>
-            );
-          }}
+          {(formikProps: FormikProps<any>) => (
+            <Form onSubmit={formikProps.handleSubmit}>
+              {children}
+              <Modal.Footer>
+                <Button variant="outline-secondary" onClick={handleClose}>
+                  Cerrar
+                </Button>
+                <Button variant="outline-success" type="submit">
+                  {isEditMode ? "Guardar Cambios" : "Añadir"}
+                </Button>
+              </Modal.Footer>
+            </Form>
+          )}
         </Formik>
       </Modal.Body>
     </Modal>

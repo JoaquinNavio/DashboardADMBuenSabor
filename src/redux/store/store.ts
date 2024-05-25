@@ -10,6 +10,8 @@ import UnidadMedidaReducer from '../slices/UnidadMedidaReducer'
 import ArticuloInsumoReducer from '../slices/ArticuloInsumoReducer'
 import ArticuloManufacturadoReducer from '../slices/ArticuloManufacturadoReducer'
 import ArticuloManufacturadoDetalleReducer from '../slices/ArticuloManufacturadoDetalleReducer'
+import PromocionReducer from '../slices/PromocionReducer'
+import PromocionDetalleReducer from '../slices/PromocionDetalleReducer'
 
 export const store = configureStore({
   reducer: {
@@ -23,7 +25,9 @@ export const store = configureStore({
     unidadMedida:UnidadMedidaReducer,
     articuloInsumo:ArticuloInsumoReducer,
     articuloManufacturado:ArticuloManufacturadoReducer,
-    articuloManufacturadoDetalle:ArticuloManufacturadoDetalleReducer
+    articuloManufacturadoDetalle:ArticuloManufacturadoDetalleReducer,
+    promociones:PromocionReducer,
+    promocionDetalle:PromocionDetalleReducer
   },
 })
 

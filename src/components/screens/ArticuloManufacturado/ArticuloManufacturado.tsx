@@ -7,7 +7,6 @@ import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufact
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
 import Column from "../../../types/Column";
 
-import { Link } from "react-router-dom";
 import { toggleModal } from "../../../redux/slices/ModalReducer";
 import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
@@ -120,7 +119,9 @@ const ArticuloManufacturado= () => {
             eliminado: false,
             denominacion: "",
             descripcion: "", preparacion: "",
-            tiempoEstimadoMinutos: 0, precioVenta: 0
+            tiempoEstimadoMinutos: 0,
+            precioVenta: 0,
+          //falta categoria
           }} isEditMode={isEditing} getArticuloManufacturados={fetchArticuloManufacturados} />
       </Container>
     </Box>
