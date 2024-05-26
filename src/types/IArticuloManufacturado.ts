@@ -1,4 +1,5 @@
 import DataModel from "./DataModel";
+import IArticuloManufacturadoDetalle from "./IArticuloManufacturadoDetalle";
 import ICategoria from "./ICategoria";
 import IUnidadMedida from "./IUnidadMedida";
 
@@ -12,4 +13,6 @@ export default interface IArticuloManufacturado extends DataModel<IArticuloManuf
     precioVenta:number,
     unidadMedida: IUnidadMedida,
     categoria: ICategoria
+    detalles:IArticuloManufacturadoDetalle[]
+
 }

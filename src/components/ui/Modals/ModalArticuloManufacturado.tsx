@@ -135,34 +135,30 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         tiempoEstimadoMinutos: values.tiempoEstimadoMinutos,
         descripcion: values.descripcion,
         preparacion: values.preparacion,
-        eliminado: values.eliminado,
+        eliminado: false,
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
-        idCategoria: selectedCategoriaId || initialValues.categoria.id
+        idCategoria: selectedCategoriaId || initialValues.categoria.id,
+        detalles:[]
       };
-  
-      let articuloGuardado: ArticuloManufacturado;
-      if (isEditMode) {
-        articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado`, values.id, body);
-      } else {
-        articuloGuardado = await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado`, body);
-      }
-      
-      // Crear el array de ArticuloManufacturadoDetallePost
-      
       for (const item of articulosInsumosItems) {
         const detalle = {
-          cantidad: item.cantidad || 0,
-          idArticuloInsumo: item.selectedArticuloInsumoId || 0,
-          idArticuloManufacturado: articuloGuardado.id
-        }
-        if (item.idDetalle )
-          await articuloManufacturadoDetalleService.putx(`${URL}/ArticuloManufacturadoDetalle`, item.idDetalle, detalle)
-        else 
-          await articuloManufacturadoDetalleService.postx(`${URL}/ArticuloManufacturadoDetalle`, detalle);
-        
+            cantidad: item.cantidad || 0,
+            idArticuloInsumo: item.selectedArticuloInsumoId || 0,
+        };
+        body.detalles.push(detalle);
+    }
+    console.log(body)
+    console.log(isEditMode)
+      let articuloGuardado: ArticuloManufacturado;
+      if (isEditMode) {
+        articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);
+      } else {
+        articuloGuardado = await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado/createWithDetails`, body);
       }
+      
+
       
       getArticuloManufacturados();
     } catch (error) {
