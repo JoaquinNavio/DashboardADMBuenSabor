@@ -1,6 +1,6 @@
 import DataModel from "./DataModel";
 import { TipoPromocion } from "./EnumTipoPromocion";
-import IArticuloInsumo from "./IArticuloInsumo";
+
 
 export default interface IPromocion extends DataModel<IPromocion>{
     denominacion: string;
@@ -12,5 +12,5 @@ export default interface IPromocion extends DataModel<IPromocion>{
     precioPromocional:number;
     tipoPromocion: TipoPromocion;
     eliminado:boolean;
-    insumos:IArticuloInsumo[]
+
 } 

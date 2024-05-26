@@ -43,6 +43,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
   const handleSubmit = async (values: IPromocion) => {
     try {
+      console.log(values)
       const body: PromocionPost = {
         denominacion: values.denominacion,
         fechaDesde: values.fechaDesde,
@@ -159,6 +160,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     fetchCategorias();
   }, [showModal])
 
+//metodo para calcular el total
+  const calcularTotalSubtotales = (): number => {
+    let total = 0;
+    for (const item of articulosInsumosItems) {
+      const subtotalItem = item.cantidad && item.selectedArticuloInsumoId ?
+        articulosManufacturado.find(articulo => articulo.id === item.selectedArticuloInsumoId)?.precioVenta * item.cantidad
+        : 0;
+      total += subtotalItem || 0;
+    }
+    return total;
+  };
+
   return (
     <GenericModal
       modalName={modalName}
@@ -171,7 +184,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     >
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ flex: 1 }}>
-            <TextFieldValue label="Nombre" name="nombre" type="text" placeholder="Nombre" />
+            <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominacion" />
           </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
@@ -220,10 +233,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           
         )
         })}
-      <button type="button" style={{margin: '10px'}} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
-
+      <button type="button" style={{margin: '10px'}} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Articulo</button>
+      <div style={{ display: 'flex' }}>
+        <div>Precio final sin descuento: {calcularTotalSubtotales()}</div>
+      </div>
       <div style={{ display: 'flex', gap: '10px' }}>
-      <h5>Precio Normal: </h5>
       <TextFieldValue label="Precio Promocional" name="precioPromocional" type="text" placeholder="Precio Promocional" />
         </div>
         

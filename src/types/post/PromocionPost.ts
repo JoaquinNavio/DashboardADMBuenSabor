@@ -1,5 +1,5 @@
 import { TipoPromocion } from "../EnumTipoPromocion";
-import ArticuloInsumoPost from "./ArticuloInsumoPost";
+
 
 
 export default interface PromocionPost{
@@ -12,5 +12,4 @@ export default interface PromocionPost{
     precioPromocional:number;
     tipoPromocion: TipoPromocion;
     eliminado:boolean;
-    insumosId:ArticuloInsumoPost[]
 } 
