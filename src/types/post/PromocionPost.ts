@@ -1,10 +1,9 @@
 import { TipoPromocion } from "../EnumTipoPromocion";
-
-
+import PromocionArticuloPost from "./PromocionArticuloPost";
 
 export default interface PromocionPost{
     denominacion: string;
-    fechaDesde:string; //maneja las fechas como strings
+    fechaDesde:string; 
     fechaHasta:string;
     horaDesde:string;
     horaHasta:string;
@@ -12,4 +11,6 @@ export default interface PromocionPost{
     precioPromocional:number;
     tipoPromocion: TipoPromocion;
     eliminado:boolean;
+    articulos:PromocionArticuloPost[]
+    //ARRAY DE PromocionArticuloPost
 } 

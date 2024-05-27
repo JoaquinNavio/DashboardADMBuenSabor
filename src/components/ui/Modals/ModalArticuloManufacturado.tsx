@@ -165,9 +165,11 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         const detalle = {
             cantidad: item.cantidad || 0,
             idArticuloInsumo: item.selectedArticuloInsumoId || 0,
+            idDetalle: item.idDetalle
         };
         body.detalles.push(detalle);
     }
+    console.log(articulosInsumosItems)
     console.log(body)
     console.log(isEditMode)
       let articuloGuardado: ArticuloManufacturado;
