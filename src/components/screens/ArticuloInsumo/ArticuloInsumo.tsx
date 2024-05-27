@@ -28,6 +28,7 @@ const ArticuloInsumoComponent = () => {
   const fetchArticuloInsumos = async () => {
     try {
       const articuloInsumos = await articuloInsumoService.getAll(url + '/ArticuloInsumo');
+      console.log(articuloInsumos);
       dispatch(setArticuloInsumo(articuloInsumos));
       setFilteredData(articuloInsumos);
     } catch (error) {
@@ -82,10 +83,11 @@ const ArticuloInsumoComponent = () => {
   };
 
   const columns: Column[] = [
+    { id: "image", label: "Imagen", renderCell: (articuloInsumo) => <img src={articuloInsumo.image?.url || "https://imgs.search.brave.com/RWwLZANOOYEVZjIBSJkFbk6jWyf4PAtQ7f5e-vhJ-sM/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9wb3dl/cnVzZXJzLm1pY3Jv/c29mdC5jb20vdDUv/aW1hZ2Uvc2VydmVy/cGFnZS9pbWFnZS1p/ZC85MzQxOWlDNzg1/NUU3OEUzOUZFNjNE/L2ltYWdlLXNpemUv/bGFyZ2UvaXMtbW9k/ZXJhdGlvbi1tb2Rl/L3RydWU_dj12MiZw/eD05OTk.jpeg"} width={75}/> },
     { id: "denominacion", label: "Denominacion", renderCell: (articuloInsumo) => <>{articuloInsumo.denominacion}</> },
     { 
       id: "precioVenta", 
-      label: "Precio Venta", 
+      label: "Precio Venta",
       renderCell: (articuloInsumo) => (
         <>{articuloInsumo.precioVenta === 0 ? "No es para vender" : articuloInsumo.precioVenta}</>
       ) 
@@ -127,7 +129,8 @@ const ArticuloInsumoComponent = () => {
         <ModalArticuloInsumo 
         modalName="modalArticulo" 
         initialValues={articuloInsumoEditar || { 
-          id:0, 
+          id:0,
+          image: {id:0, eliminado:false, url: "", name: ""},
           eliminado: false, 
           denominacion: '', 
           precioVenta: 0, 

@@ -1,3 +1,4 @@
+
 import ArticuloManufacturadoDetallePost from "./ArticuloManufacturadoDetallePost"
 
 
@@ -9,6 +10,7 @@ export default interface ArticuloManufacturadoPost{
     denominacion:string,
     precioVenta:number,
     idUnidadMedida:number,
-    idCategoria:number
-    detalles:ArticuloManufacturadoDetallePost[]
+    idCategoria:number,
+    detalles:ArticuloManufacturadoDetallePost[],
+    idImage: number
 }

@@ -18,11 +18,16 @@ import ItemDetalleArticuloManufacturado from '../ItemDetalleArticuloManufacturad
 import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import { Gallery } from '../Gallery/Gallery';
+import { TextField } from '@mui/material';
+import ImageService from '../../../services/ImageService';
+import { Button } from 'react-bootstrap';
+import IImage from '../../../types/IImage';
 import { Add } from '@mui/icons-material';
 
 interface ModalArticuloManufacturadoProps {
   modalName: string; 
-  initialValues: ArticuloManufacturado; 
+  initialValues: ArticuloManufacturado;
   isEditMode: boolean; 
   getArticuloManufacturados: () => Promise<void>; 
   articuloManufacturadoAEditar?: ArticuloManufacturado; 
@@ -39,6 +44,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   const showModal = useSelector((state: RootState) => state.modal[modalName]);
 
   const articuloManufacturadoService = new ArticuloManufacturadoService();
+  const imageService = new ImageService();
   const URL = import.meta.env.VITE_API_URL;
 
   const validationSchema = Yup.object().shape({
@@ -128,8 +134,20 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   // -------------------------------------------------------------------------------
 
   const articuloManufacturadoDetalleService = new ArticuloManufacturadoDetalleService();
+  const [imagenCargada, setImagenCargada] = useState<IImage | undefined>(undefined);
+  useEffect(() => {
+    if(showModal){
+      setImagenCargada(initialValues.image?.id!=0? initialValues.image : undefined);
+    }
+  }, [showModal])
 
   const handleSubmit = async (values: ArticuloManufacturado) => {
+    let imagenGuardada: any;
+    if(selectedFiles != null){
+      imagenGuardada = await imageService.uploadImagenes(selectedFiles,URL);
+    }
+    
+    const idImage = imagenCargada? imagenCargada.id : (imagenGuardada? imagenGuardada.ids[0] : null)
     try {
       const body: ArticuloManufacturadoPost = {
         tiempoEstimadoMinutos: values.tiempoEstimadoMinutos,
@@ -140,7 +158,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
         idCategoria: selectedCategoriaId || initialValues.categoria.id,
-        detalles:[]
+        detalles:[],
+        idImage
       };
       for (const item of articulosInsumosItems) {
         const detalle = {
@@ -157,9 +176,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       } else {
         articuloGuardado = await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado/createWithDetails`, body);
       }
-      
 
-      
       getArticuloManufacturados();
     } catch (error) {
       console.error('Error al enviar los datos:', error);
@@ -181,10 +198,18 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         denominacion: ''
       },
       categoria: {
-        id:0,
+        id: 0,
         eliminado: false,
         denominacion: '',
-        es_insumo: false
+        es_insumo: false,
+        categoriaPadre: undefined,
+        esInsumo: false
+      },
+      image:{
+        url: '',
+        name: '',
+        id: 0,
+        eliminado: false
       },
     };
   }
@@ -212,6 +237,24 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     fetchDetalles();
   },[showModal]);
 
+  //IMAGEN
+
+   // Estado para almacenar archivos seleccionados para subir
+   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+   useEffect(() =>{
+    if(showModal){
+      setSelectedFiles(null);
+    }
+  },[showModal]);
+
+   // Manejador de cambio de archivos seleccionados
+   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+     setSelectedFiles(event.target.files);
+   };
+
+  const handleDeleteImg = () => {
+   setImagenCargada(undefined);
+  };
   return (
     <GenericModal
       modalName={modalName}
@@ -244,6 +287,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
               handleChange={handleCategoriaChange}
               selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
       />
+      
+
       </div>
       
 
@@ -266,6 +311,35 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       )
       })}
       <button type="button" style={{margin: '10px'}} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
+      
+      <div>
+        <label style={{ fontWeight: 'bold' }}>Imagenes</label>
+        {
+          (isEditMode && imagenCargada) ? <Gallery images={[imagenCargada]} handleDeleteImg={handleDeleteImg} /> :
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "2vh",
+                padding: ".4rem",
+              }}
+            >
+              {/* Campo de entrada de archivos */}
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                type="file"
+                onChange={handleFileChange}
+                inputProps={{
+                  multiple: true,
+                }}
+              />
+            </div>
+        }
+
+      </div>
+
     </GenericModal>
   );
 };
