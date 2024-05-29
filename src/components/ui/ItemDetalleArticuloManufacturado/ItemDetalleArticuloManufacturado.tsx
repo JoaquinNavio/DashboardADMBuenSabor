@@ -42,7 +42,6 @@ export default function ItemDetalleArticuloManufacturado(props: ItemDetalleArtic
     // Filtrar las categorÃas para excluir aquellas que tienen un idCategoriaPadre
     const categoriasSinPadre = props.categorias.filter(categoria =>  categoria.esInsumo);
 
-    console.log(props.categorias)
     return (
         <div style={{ display: 'flex', flexDirection: 'column', borderRadius: '5px', padding: '10px', marginBottom: '20px', boxShadow: '0px -1px 15px -1px rgba(0,0,0,0.45)' }}>
             <div>

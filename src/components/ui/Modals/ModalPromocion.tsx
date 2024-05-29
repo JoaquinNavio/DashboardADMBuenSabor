@@ -3,15 +3,11 @@ import GenericModal from './GenericModal';
 import IPromocion from '../../../types/IPromocion';
 import PromocionService from '../../../services/PromocionService';
 import PromocionPost from '../../../types/post/PromocionPost';
-import { TipoPromocion } from '../../../types/EnumTipoPromocion';
 import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
-import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
-import IArticuloInsumo from '../../../types/IArticuloInsumo';
-import { ChangeEvent, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-import SelectList from '../SelectList/SelectList';
 import ItemPromocion from '../ItemPromocion/ItemPromocion';
 import IPromocionDetalle from '../../../types/IPromocionDetalle';
 import CategoriaService from '../../../services/CategoriaService';
@@ -19,6 +15,7 @@ import ICategoria from '../../../types/ICategoria';
 import { Add } from '@mui/icons-material';
 import IArticuloManufacturado from '../../../types/IArticuloManufacturado';
 import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService';
+import PromocionDetalleService from '../../../services/PromocionDetalleService';
 
 interface ModalPromocionProps {
   modalName: string;
@@ -35,6 +32,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 }) => {
   const promocionService = new PromocionService();
   const URL = import.meta.env.VITE_API_URL;
+  const promocionDetalleService = new PromocionDetalleService;
 
   const validationSchema = Yup.object().shape({
     // Define your validation schema here
@@ -53,16 +51,28 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         descripcionDescuento: values.descripcionDescuento,
         precioPromocional: values.precioPromocional,
         tipoPromocion: values.tipoPromocion,
-        eliminado: values.eliminado,
+        eliminado: false,
+        detalles:[],
       }
+      for (const item of articulosInsumosItems) {
+        const detalle = {
+            cantidad: item.cantidad || 0,
+            articuloId: item.selectedArticuloId || 0,
+            detalleId: item.idDetalle
+        };
+        body.detalles.push(detalle);
+    }
+    console.log("body")
+
+    console.log(body)
       if (isEditMode) {
-        await promocionService.putx(`${URL}/promociones`, values.id, body);
+        await promocionService.putx(`${URL}/promociones/updateWithDetails`, values.id, body);
       } else {
-        await promocionService.postx(`${URL}/promociones`, body);
+        await promocionService.postx(`${URL}/promociones/createWithDetails`, body);
       }
       getPromociones();
-    } catch (error) {
-      console.error('Error al enviar los datos:', error);
+    } catch (e) {
+      console.error('Error al enviar los datos:', e);
     }
   };
 
@@ -89,7 +99,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
   const [articulosInsumosItems, setArticulosInsumosItems] = useState<{
     idComponent: number;
-    selectedArticuloInsumoId?: number;
+    selectedArticuloId?: number;
     cantidad?: number;
     idDetalle?: number;
   }[]>([]);
@@ -97,27 +107,27 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const addNewItem = () => {
     setArticulosInsumosItems([...articulosInsumosItems, {idComponent: articulosInsumosItems.length}]);
   }
-  
   const removeItem = (idComponent: number, idPromocion: number) => {
 
     //si tiene idDetalle esta en la base de datos
     //lo que verifica que se muestre la alerta solo en el modal de edicion
-    /*if(idDetalle){
+    if(idPromocion){
       const userConfirmed = window.confirm('¿Estás seguro, se eliminara permanentemente?');
       if (userConfirmed) {
-        articuloManufacturadoDetalleService.delete(`${URL}/ArticuloManufacturadoDetalle`, idDetalle)
+        promocionDetalleService.delete(`${URL}/promocionDetalle`, idPromocion)
       }else{
         return;
       }
-    }*/
+    }
     setArticulosInsumosItems(articulosInsumosItems.filter(item => item.idComponent !== idComponent))
   }
-  const handleItemChange = (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idDetalle?: number) => {
+
+  const handleItemChange = (idComponent: number, selectedArticuloId?: number, cantidad?: number, idDetalle?: number) => {
     setArticulosInsumosItems(articulosInsumosItems.map(item => {
       if (item.idComponent === idComponent){
         return {
           idComponent,
-          selectedArticuloInsumoId,
+          selectedArticuloId,
           cantidad,
           idDetalle
         }
@@ -130,14 +140,15 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [detalles, setDetalles] = useState<IPromocionDetalle[]>([]);
   useEffect(() =>{
     const fetchDetalles = async() =>{
-      const detallitos :IPromocionDetalle[] = await promocionService.getDetallesPromos(`${URL}/ArticuloManufacturado`, initialValues.id)
+      const detallitos :IPromocionDetalle[] = await promocionService.getDetallesPromos(`${URL}/promociones`, initialValues.id)
       setDetalles(detallitos)
+
       setArticulosInsumosItems(
         detallitos.map((det, ix /* JOAKO => IX ES UN NUMERO RANDOM */) => ({
           idComponent: ix,
-          detalle: det.detalle,
-            eliminado:det.eliminado,
-            articulo:det.articulo,
+          selectedArticuloId: det.articulo.id,
+          cantidad: det.cantidad,
+          idDetalle: det.id,
         }))
       )
     }
@@ -164,8 +175,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const calcularTotalSubtotales = (): number => {
     let total = 0;
     for (const item of articulosInsumosItems) {
-      const subtotalItem = item.cantidad && item.selectedArticuloInsumoId ?
-        articulosManufacturado.find(articulo => articulo.id === item.selectedArticuloInsumoId)?.precioVenta * item.cantidad
+      const subtotalItem = item.cantidad && item.selectedArticuloId ?
+        articulosManufacturado.find(articulo => articulo.id === item.selectedArticuloId)?.precioVenta * item.cantidad
         : 0;
       total += subtotalItem || 0;
     }
@@ -209,8 +220,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             name="tipoPromocion"
             type='text'
             options={[
-              { label: 'Promocion', value: 'true' },
-              { label: 'Happy hour', value: 'false' }
+              { label: 'Promocion', value: '1' },
+              { label: 'Happy hour', value: '0' }
             ]}
             placeholder="Tipo de promocion"
             disabled={isEditMode}
@@ -223,11 +234,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         <ItemPromocion 
           key={item.idComponent} 
           idComponent={item.idComponent} 
-          idPromocion={detalle?.id}
+          idDetalle={detalle?.id}
+          cantidad={detalle?.cantidad}
           insumos={articulosManufacturado} 
           handleItemChange={handleItemChange}
           removeComponent={removeItem} 
-          selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
+          selectedArticuloId={item.selectedArticuloId || detalle?.id}
           categorias = {categorias}
           />
           
@@ -238,7 +250,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         <div>Precio final sin descuento: {calcularTotalSubtotales()}</div>
       </div>
       <div style={{ display: 'flex', gap: '10px' }}>
-      <TextFieldValue label="Precio Promocional" name="precioPromocional" type="text" placeholder="Precio Promocional" />
+      <TextFieldValue label="Precio Promocional" name="precioPromocional" type="number" placeholder="Precio Promocional" />
         </div>
         
     </div>

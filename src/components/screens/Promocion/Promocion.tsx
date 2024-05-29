@@ -62,11 +62,25 @@ export const Promocion = () => {
     }
   };
 
-  const handleEdit = (promocion: IPromocion) => {
+  enum TipoPromocion {
+    HAPPY_HOUR = 0,
+    PROMOCION = 1,
+    // Agrega otros tipos de promoción si los tienes
+}
+const handleEdit = (promocion: any) => {
     setIsEditing(true);
-    setPromocionEditar(promocion);
+
+    // Asegurar que tipoPromocion se compara como string
+    const tipoPromocionStr = promocion.tipoPromocion.toString();
+    const updatedPromocion = {
+        ...promocion,
+        tipoPromocion: tipoPromocionStr === "HAPPY_HOUR" ? TipoPromocion.HAPPY_HOUR : TipoPromocion.PROMOCION,
+    };
+
+    console.log(updatedPromocion);
+    setPromocionEditar(updatedPromocion);
     dispatch(toggleModal({ modalName: "modalPromocion" }));
-  };
+};
 
   const handleAddPromocion = () => {
     setIsEditing(false);
@@ -120,8 +134,7 @@ export const Promocion = () => {
             horaHasta: "",
             descripcionDescuento: "",
             precioPromocional: 0,
-            tipoPromocion: TipoPromocion.PROMOCION,
-            insumos:[]
+            tipoPromocion: 0,
           }} 
           isEditMode={isEditing} 
           getPromociones={fetchPromociones} 

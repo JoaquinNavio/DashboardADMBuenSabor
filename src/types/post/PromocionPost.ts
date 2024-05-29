@@ -1,4 +1,4 @@
-import { TipoPromocion } from "../EnumTipoPromocion";
+
 import PromocionArticuloPost from "./PromocionArticuloPost";
 
 export default interface PromocionPost{
@@ -9,8 +9,8 @@ export default interface PromocionPost{
     horaHasta:string;
     descripcionDescuento:string;
     precioPromocional:number;
-    tipoPromocion: TipoPromocion;
+    tipoPromocion: number;
     eliminado:boolean;
-    articulos:PromocionArticuloPost[]
-    //ARRAY DE PromocionArticuloPost
+
+    detalles:PromocionArticuloPost[]
 } 

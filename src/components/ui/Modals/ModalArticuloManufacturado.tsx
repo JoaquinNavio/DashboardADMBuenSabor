@@ -21,7 +21,6 @@ import { RootState } from '../../../redux/store/store';
 import { Gallery } from '../Gallery/Gallery';
 import { TextField } from '@mui/material';
 import ImageService from '../../../services/ImageService';
-import { Button } from 'react-bootstrap';
 import IImage from '../../../types/IImage';
 import { Add } from '@mui/icons-material';
 
@@ -169,9 +168,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         };
         body.detalles.push(detalle);
     }
-    console.log(articulosInsumosItems)
-    console.log(body)
-    console.log(isEditMode)
       let articuloGuardado: ArticuloManufacturado;
       if (isEditMode) {
         articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);

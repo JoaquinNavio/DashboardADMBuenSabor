@@ -10,7 +10,7 @@ export default interface IPromocion extends DataModel<IPromocion>{
     horaHasta:string;
     descripcionDescuento:string;
     precioPromocional:number;
-    tipoPromocion: TipoPromocion;
+    tipoPromocion: number;
     eliminado:boolean;
 
 } 

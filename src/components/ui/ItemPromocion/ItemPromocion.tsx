@@ -6,27 +6,29 @@ import IArticuloManufacturado from "../../../types/IArticuloManufacturado";
 
 export interface ItemPromocionProps {
     idComponent: number;
-    idPromocion?:number;
+    idDetalle?:number;
     insumos: IArticuloManufacturado[];
     cantidad?: number;
-    selectedArticuloInsumoId?: number;
-    handleItemChange: (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idPromocion?: number) => void;
+    selectedArticuloId?: number;
+    handleItemChange: (idComponent: number, selectedArticuloId?: number, cantidad?: number, idPromocion?: number) => void;
     removeComponent: (idComponent: number,idPromocion? :number ) => void;
     categorias: ICategoria[];
 }
 
 export default function ItemPromocion(props: ItemPromocionProps) {
     const [cantidad, setCantidad] = useState<number | undefined>(props.cantidad);
-    const [selectedId, setSelectedId] = useState<number | undefined>(props.selectedArticuloInsumoId);
+    const [selectedId, setSelectedId] = useState<number | undefined>(props.selectedArticuloId);
     const [selectedIdCategoria, setSelectedIdCategoria] = useState<number | undefined>(undefined);
     const [subtotal, setSubtotal] = useState<number | undefined>(0); // Estado para almacenar el subtotal
 
     const handleArticuloInsumoChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    
         const articuloInsumoId = parseInt(event.target.value);
         if (articuloInsumoId) {
             setSelectedId(articuloInsumoId);
-            props.handleItemChange(props.idComponent, articuloInsumoId,  props.idPromocion);
+            props.handleItemChange(props.idComponent, articuloInsumoId,  props.idDetalle);
         }
+        
     };
 
     const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -67,7 +69,7 @@ export default function ItemPromocion(props: ItemPromocionProps) {
                 }, new Map<number, string>())}
                 handleChange={handleCategoriaChange}
                 selectedValue={selectedIdCategoria}
-                disabled={!!props.idPromocion}
+                disabled={!!props.idDetalle}
             />
             </div>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%'}}>
@@ -80,7 +82,7 @@ export default function ItemPromocion(props: ItemPromocionProps) {
                 }, new Map<number, string>())}
                 handleChange={handleArticuloInsumoChange}
                 selectedValue={selectedId}
-                disabled={!!props.idPromocion}
+                disabled={!!props.idDetalle}
             />
             </div>
             
@@ -93,7 +95,7 @@ export default function ItemPromocion(props: ItemPromocionProps) {
                     onChange={(event) => {
                         const newCantidad = parseInt(event.target.value);
                         setCantidad(newCantidad);
-                        props.handleItemChange(props.idComponent, selectedId, newCantidad, props.idPromocion);
+                        props.handleItemChange(props.idComponent, selectedId, newCantidad, props.idDetalle);
                     }}
                     className="form-control"
                 />
@@ -104,7 +106,7 @@ export default function ItemPromocion(props: ItemPromocionProps) {
             <div style={{display: 'flex', justifyContent: 'end'}}>
             <button
                 type="button"
-                onClick={() => props.removeComponent(props.idComponent, props.idPromocion)}
+                onClick={() => props.removeComponent(props.idComponent, props.idDetalle)}
                 className="btn btn-danger"
                 style={{color: 'white'}}
             >

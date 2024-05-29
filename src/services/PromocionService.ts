@@ -31,7 +31,7 @@ export default class PromocionService extends BackendClient<IPromocion> {
         return this.request(path, options);
       }
       async getDetallesPromos(url: string, id: number): Promise<IPromocionDetalle[]> {
-        const path = `${url}/${id}/DetallesPromocion`;
+        const path = `${url}/${id}/Detalles`;
         const options: RequestInit = {
           method: "GET",
           headers: {
