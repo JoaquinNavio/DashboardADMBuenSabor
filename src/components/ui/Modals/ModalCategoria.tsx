@@ -46,6 +46,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       categoriaPadreId:selectedCategoriaPadreId ,
       denominacion:values.denominacion,
       esInsumo:values.esInsumo,
+      
     }
     try {
       if (isEditMode) {

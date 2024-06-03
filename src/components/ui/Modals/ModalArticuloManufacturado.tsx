@@ -168,6 +168,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         };
         body.detalles.push(detalle);
     }
+    console.log(body)
       let articuloGuardado: ArticuloManufacturado;
       if (isEditMode) {
         articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);

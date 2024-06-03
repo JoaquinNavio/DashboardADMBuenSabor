@@ -1,5 +1,5 @@
 import DataModel from "./DataModel";
-import { TipoPromocion } from "./EnumTipoPromocion";
+import IPromocionDetalle from "./IPromocionDetalle";
 
 
 export default interface IPromocion extends DataModel<IPromocion>{
@@ -13,4 +13,6 @@ export default interface IPromocion extends DataModel<IPromocion>{
     tipoPromocion: number;
     eliminado:boolean;
 
+    //hacia falta esto para el modal
+    detalles:IPromocionDetalle[];
 } 

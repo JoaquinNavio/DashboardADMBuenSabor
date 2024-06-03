@@ -13,7 +13,7 @@ import PromocionService from "../../../services/PromocionService";
 import IPromocion from "../../../types/IPromocion";
 import { setPromociones } from "../../../redux/slices/PromocionReducer";
 import ModalPromocion from "../../ui/Modals/ModalPromocion";
-import { TipoPromocion } from "../../../types/EnumTipoPromocion";
+
 
 export const Promocion = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -68,6 +68,7 @@ export const Promocion = () => {
     // Agrega otros tipos de promoción si los tienes
 }
 const handleEdit = (promocion: any) => {
+  console.log(promocion)
     setIsEditing(true);
 
     // Asegurar que tipoPromocion se compara como string
@@ -76,8 +77,6 @@ const handleEdit = (promocion: any) => {
         ...promocion,
         tipoPromocion: tipoPromocionStr === "HAPPY_HOUR" ? TipoPromocion.HAPPY_HOUR : TipoPromocion.PROMOCION,
     };
-
-    console.log(updatedPromocion);
     setPromocionEditar(updatedPromocion);
     dispatch(toggleModal({ modalName: "modalPromocion" }));
 };
@@ -135,6 +134,7 @@ const handleEdit = (promocion: any) => {
             descripcionDescuento: "",
             precioPromocional: 0,
             tipoPromocion: 0,
+            detalles:[]
           }} 
           isEditMode={isEditing} 
           getPromociones={fetchPromociones} 

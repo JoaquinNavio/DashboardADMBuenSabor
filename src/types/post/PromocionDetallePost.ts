@@ -1,6 +1,6 @@
 
 export default interface PromocionDetallePost {
-    detalle: string;
+    cantidad: string;
     articuloId:number;
     promocionId:number;
     

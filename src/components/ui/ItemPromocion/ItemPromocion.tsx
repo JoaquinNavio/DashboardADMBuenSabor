@@ -16,6 +16,7 @@ export interface ItemPromocionProps {
 }
 
 export default function ItemPromocion(props: ItemPromocionProps) {
+    console.log(props.cantidad)
     const [cantidad, setCantidad] = useState<number | undefined>(props.cantidad);
     const [selectedId, setSelectedId] = useState<number | undefined>(props.selectedArticuloId);
     const [selectedIdCategoria, setSelectedIdCategoria] = useState<number | undefined>(undefined);
