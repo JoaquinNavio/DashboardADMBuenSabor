@@ -12,7 +12,6 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
 // import { setCategoria } from '../../../redux/slices/CategoriaReducer';
-import ArticuloManufacturadoDetallePost from '../../../types/post/ArticuloManufacturadoDetallePost';
 import ArticuloManufacturadoDetalleService from '../../../services/ArticuloManufacturadoDetalleService';
 import ItemDetalleArticuloManufacturado from '../ItemDetalleArticuloManufacturado/ItemDetalleArticuloManufacturado';
 import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
@@ -294,14 +293,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       Una vez completada la solicitud (ya sea POST o PUT), 
       se llama a la función getArticuloManufacturados para actualizar la lista de artículos manufacturados 
       en el estado de la aplicación.*/
-    console.log(body)
-      let articuloGuardado: ArticuloManufacturado;
+
       if (isEditMode) {
         //solicitud PUT
-        articuloGuardado = await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);
+          await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);
       } else {
         //una solicitud POST
-        articuloGuardado = await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado/createWithDetails`, body);
+         await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado/createWithDetails`, body);
       }
       //actualizar la lista de artículos manufacturados
       getArticuloManufacturados();
@@ -337,12 +335,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         categoriaPadre: undefined,
         esInsumo: false
       },
+      detalles:[],
       image:{
         url: '',
         name: '',
         id: 0,
         eliminado: false
-      },
+      }
     };
   }
 
