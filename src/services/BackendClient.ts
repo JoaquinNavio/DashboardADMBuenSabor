@@ -70,6 +70,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
@@ -84,6 +85,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
@@ -96,6 +98,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     };
     await this.request(path, options, token);

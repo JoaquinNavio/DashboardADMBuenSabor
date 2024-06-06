@@ -3,6 +3,7 @@ import { Box, Typography, Button, Container, Tooltip, IconButton } from "@mui/ma
 import { Add, Visibility, AddCircle } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setEmpresa } from "../../../redux/slices/EmpresaReducer";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import EmpresaService from "../../../services/EmpresaService";
 import Column from "../../../types/Column";
@@ -19,10 +20,9 @@ import SucursalPost from "../../../types/post/SucursalPost";
 const EmpresaComponent = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  const { getAccessTokenSilently } = useAuth0();
   const empresaService = new EmpresaService();
-  const globalEmpresas = useAppSelector(
-    (state) => state.empresa.data
-  );
+  const globalEmpresas = useAppSelector((state) => state.empresa.data);
 
   const [filteredData, setFilteredData] = useState<Empresa[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,7 +30,10 @@ const EmpresaComponent = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const empresas = await empresaService.getAll(url + '/empresa');
+      const token = await getAccessTokenSilently();
+      console.log(token)
+
+      const empresas = await empresaService.getAll(url + '/empresa', token);
       dispatch(setEmpresa(empresas));
       setFilteredData(empresas);
     } catch (error) {
@@ -48,14 +51,16 @@ const EmpresaComponent = () => {
 
   const onDeleteEmpresa = async (empresa: Empresa) => {
     try {
+      const token = await getAccessTokenSilently();
+            console.log(token)
+
       await onDelete(
         empresa,
         async (empresaToDelete: Empresa) => {
-          await empresaService.delete(url + '/empresa', empresaToDelete.id);
+          await empresaService.delete(url + '/empresa', empresaToDelete.id, token);
         },
         fetchEmpresas,
-        () => {
-        },
+        () => {},
         (error: any) => {
           console.error("Error al eliminar empresa:", error);
         }
@@ -67,7 +72,7 @@ const EmpresaComponent = () => {
 
   const handleEdit = (empresa: Empresa) => {
     setIsEditing(true);
-    setEmpresaEditar(empresa)
+    setEmpresaEditar(empresa);
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
@@ -81,7 +86,7 @@ const EmpresaComponent = () => {
     setEmpresaEditar(empresa);
   };
 
-  const generateInitialSucursal = (idEmpresa: number): SucursalPost  => {
+  const generateInitialSucursal = (idEmpresa: number): SucursalPost => {
     return {
       nombre: '',
       horarioApertura: '',
@@ -95,7 +100,7 @@ const EmpresaComponent = () => {
         idLocalidad: 0,
       },
       idEmpresa: idEmpresa,
-      esCasaMatriz:false
+      esCasaMatriz: false
     };
   };
 
@@ -149,17 +154,19 @@ const EmpresaComponent = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteEmpresa} onEdit={handleEdit} />
         <ModalEmpresa
-         modalName="modal"
-          initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "",
-           razonSocial: "", cuil: 0, sucursales: [] }} isEditMode={isEditing} getEmpresas={fetchEmpresas} />
+          modalName="modal"
+          initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, sucursales: [] }}
+          isEditMode={isEditing}
+          getEmpresas={fetchEmpresas}
+        />
         <ModalSucursal
           modalName="modalSucursal"
           initialValues={empresaEditar ? generateInitialSucursal(empresaEditar.id) : generateInitialSucursal(0)}
           isEditMode={false}
           getSucursales={fetchEmpresas}
-          idEmpresa={empresaEditar?.id || 0} 
+          idEmpresa={empresaEditar?.id || 0}
           casaMatrizDisabled={false}
-          />
+        />
       </Container>
     </Box>
   );

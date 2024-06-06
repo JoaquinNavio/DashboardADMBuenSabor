@@ -5,12 +5,8 @@ import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import CategoriaService from '../../../services/CategoriaService'; 
 import Categoria from '../../../types/ICategoria'; 
 import SelectList from '../SelectList/SelectList';
-import { useAppDispatch } from '../../../hooks/redux';
-import { setCategoria } from '../../../redux/slices/CategoriaReducer';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 import CategoriaPost from '../../../types/post/CategoriaPost';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store/store';
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalCategoriaProps {
@@ -38,7 +34,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
 
   const handleSubmit = async (values: Categoria) => {
     const body: CategoriaPost = {
-      categoriaPadreId: selectedCategoriaPadreId,
+      categoriaPadreId: selectedCategoriaPadreId === 0 ? undefined : selectedCategoriaPadreId,
       denominacion: values.denominacion,
       esInsumo: values.esInsumo,
     };
@@ -46,11 +42,13 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
     try {
       const token = await getAccessTokenSilently();
       if (isEditMode) {
+        console.log(`PUT request to ${URL}/categoria/${values.id} with body:`, body);
         await categoriaService.putx(`${URL}/categoria`, values.id, body, token);
       } else {
+        console.log(`POST request to ${URL}/categoria with body:`, body);
         await categoriaService.postx(`${URL}/categoria`, body, token);
       }
-      getCategorias();
+      await getCategorias();
     } catch (error) {
       console.error('Error al enviar los datos:', error);
     }
@@ -69,7 +67,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   }
 
   const [filteredData, setFilteredData] = useState<Categoria[]>([]);
-  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number | undefined>(0);
+  const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number | undefined>(initialValues.categoriaPadre?.id);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -86,8 +84,10 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
 
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const idCategoriaSelected = parseInt(event.target.value);
-    if (idCategoriaSelected) {
+    if (!isNaN(idCategoriaSelected)) {
       setCategoriaPadreId(idCategoriaSelected);
+    } else {
+      setCategoriaPadreId(undefined);
     }
   };
 

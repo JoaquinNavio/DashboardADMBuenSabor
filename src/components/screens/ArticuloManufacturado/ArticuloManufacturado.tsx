@@ -11,29 +11,25 @@ import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalArticuloManufacturado from "../../ui/Modals/ModalArticuloManufacturado";
 import IArticuloManufacturado from "../../../types/IArticuloManufacturado";
-
+import { useAuth0 } from "@auth0/auth0-react";
 
 const ArticuloManufacturado= () => {
-  //url api
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  //Instancia de ArticuloManufacturadoService()
+  const { getAccessTokenSilently } = useAuth0();
   const articuloManufacturadoService = new ArticuloManufacturadoService();
   const globalArticuloManufacturados = useAppSelector(
     (state) => state.articuloManufacturado.data
   );
 
-  /*hook useState para gestionar el estado del componente. 
-  En este caso, se manejan los datos relacionados con los artículos manufacturados y el estado de edición*/
   const [filteredData, setFilteredData] = useState<IArticuloManufacturado[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [articuloManufacturadoEditar, setArticuloManufacturadoEditar] = useState<IArticuloManufacturado | undefined>();
 
-  /*fetchArticuloManufacturados: Se utiliza para obtener todos los artículos manufacturados. 
-  Se ejecuta al montar el componente y actualiza el estado con los datos obtenidos.*/
   const fetchArticuloManufacturados = async () => {
     try {
-      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/ArticuloManufacturado');
+      const token = await getAccessTokenSilently();
+      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/ArticuloManufacturado', token);
       console.log(articuloManufacturados);
       dispatch(setArticuloManufacturado(articuloManufacturados));
       setFilteredData(articuloManufacturados);
@@ -42,28 +38,24 @@ const ArticuloManufacturado= () => {
     }
   };
 
-
   useEffect(() => {
     fetchArticuloManufacturados();
   }, [dispatch]);
 
-  /*onSearch: Maneja la búsqueda de artículos manufacturados. Filtra los datos en función de un término de búsqueda(denominacion).*/
   const onSearch = (query: string) => {
     handleSearch(query, globalArticuloManufacturados, 'denominacion', setFilteredData);
   };
 
-  /*onDeleteArticuloManufacturado: Maneja la eliminación de un artículo manufacturado. 
-  Llama al servicio correspondiente para eliminar el artículo y luego actualiza los datos*/
   const onDeleteArticuloManufacturado = async (articuloManufacturado: IArticuloManufacturado) => {
     try {
+      const token = await getAccessTokenSilently();
       await onDelete(
         articuloManufacturado,
         async (articuloManufacturadoToDelete: IArticuloManufacturado) => {
-          await articuloManufacturadoService.delete(url + '/ArticuloManufacturado', articuloManufacturadoToDelete.id);
+          await articuloManufacturadoService.delete(url + '/ArticuloManufacturado', articuloManufacturadoToDelete.id, token);
         },
         fetchArticuloManufacturados,
-        () => {
-        },
+        () => {},
         (error: any) => {
           console.error("Error al eliminar articuloManufacturado:", error);
         }
@@ -73,25 +65,17 @@ const ArticuloManufacturado= () => {
     }
   };
 
-
-  /*handleEdit: Maneja la edición de un artículo manufacturado. 
-  Establece el estado de edición y abre un modal para editar el artículo.*/
   const handleEdit = (articuloManufacturado: IArticuloManufacturado) => {
     setIsEditing(true);
-    setArticuloManufacturadoEditar(articuloManufacturado)
+    setArticuloManufacturadoEditar(articuloManufacturado);
     dispatch(toggleModal({ modalName: "modalManu" }));
   };
 
-  /*handleAddArticuloManufacturado: Maneja la adición de un nuevo artículo manufacturado. 
-  Establece el estado de edición y abre un modal para añadir un nuevo artículo.*/
   const handleAddArticuloManufacturado = () => {
     setIsEditing(false);
     dispatch(toggleModal({ modalName: "modalManu" }));
   };
 
-
-  /*Define las columnas que se mostrarán en la tabla de artículos manufacturados. 
-  Cada columna especifica el identificador, etiqueta y función de representación de la celda.*/
   const columns: Column[] = [
     {
       id: "image",
@@ -109,14 +93,8 @@ const ArticuloManufacturado= () => {
     { id: "tiempoEstimadoMinutos", label: "Tiempo Estimado Minutos", renderCell: (articuloManufacturado) => <>{articuloManufacturado.tiempoEstimadoMinutos}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (articuloManufacturado) => <>{articuloManufacturado.precioVenta}</> },
     { id: "categoria", label: "Categoria", renderCell: (articuloManufacturado) => (articuloManufacturado.categoria.denominacion),},
-
   ];
 
-  /*Renderiza la interfaz de usuario del componente utilizando elementos de Material-UI
-   como Box, Typography, Button, Container, etc.
-  Incluye un botón para añadir un nuevo artículo manufacturado, una barra de búsqueda, y una tabla 
-  que muestra los artículos manufacturados.
-  También incluye un modal para editar o añadir artículos manufacturados. */
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 10 }}>
       <Container>

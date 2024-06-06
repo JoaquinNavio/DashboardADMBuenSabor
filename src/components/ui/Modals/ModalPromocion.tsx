@@ -16,6 +16,7 @@ import { Add } from '@mui/icons-material';
 import IArticuloManufacturado from '../../../types/IArticuloManufacturado';
 import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService';
 import PromocionDetalleService from '../../../services/PromocionDetalleService';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalPromocionProps {
   modalName: string;
@@ -30,6 +31,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   isEditMode,
   getPromociones
 }) => {
+  const { getAccessTokenSilently } = useAuth0();
   const promocionService = new PromocionService();
   const URL = import.meta.env.VITE_API_URL;
   const promocionDetalleService = new PromocionDetalleService;
@@ -41,6 +43,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
   const handleSubmit = async (values: IPromocion) => {
     try {
+      const token = await getAccessTokenSilently();
       const body: PromocionPost = {
         denominacion: values.denominacion,
         fechaDesde: values.fechaDesde,
@@ -62,9 +65,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         body.detalles.push(detalle);
       }
       if (isEditMode) {
-        await promocionService.putx(`${URL}/promociones/updateWithDetails`, values.id, body);
+        await promocionService.putx(`${URL}/promociones/updateWithDetails`, values.id, body, token);
       } else {
-        await promocionService.postx(`${URL}/promociones/createWithDetails`, body);
+        await promocionService.postx(`${URL}/promociones/createWithDetails`, body, token);
       }
       getPromociones();
     } catch (e) {
@@ -81,7 +84,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   useEffect(() => {
     const fetchArticuloInsumos = async () => {
       try {
-        const articulos = await articuloManufacturadoService.getAll(URL + '/ArticuloManufacturado');
+        const token = await getAccessTokenSilently();
+        const articulos = await articuloManufacturadoService.getAll(URL + '/ArticuloManufacturado', token);
         setArticulosManufacturado(articulos);
       } catch (error) {
         console.error("Error al obtener las unidades:", error);
@@ -131,7 +135,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   useEffect(() => {
     const fetchDetalles = async () => {
       if (isEditMode && initialValues.id) {
-        const detallitos: IPromocionDetalle[] = await promocionService.getDetallesPromos(`${URL}/promociones`, initialValues.id);
+        const token = await getAccessTokenSilently();
+        const detallitos: IPromocionDetalle[] = await promocionService.getDetallesPromos(`${URL}/promociones`, initialValues.id, token);
         setDetalles(detallitos);
 
         setArticulosInsumosItems(
@@ -152,7 +157,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const categorias = await categoriaService.getAll(URL + '/categoria');
+        const token = await getAccessTokenSilently();
+        const categorias = await categoriaService.getAll(URL + '/categoria', token);
         setCategorias(categorias);
       } catch (error) {
         console.error("Error al obtener las Categorias:", error);
@@ -247,5 +253,3 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 };
 
 export default ModalPromocion;
-
-

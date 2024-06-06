@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Container} from "@mui/material";
-import { Add} from "@mui/icons-material";
+import { Box, Typography, Button, Container } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-
 import Column from "../../../types/Column";
-
 import { toggleModal } from "../../../redux/slices/ModalReducer";
 import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
@@ -13,11 +11,12 @@ import PromocionService from "../../../services/PromocionService";
 import IPromocion from "../../../types/IPromocion";
 import { setPromociones } from "../../../redux/slices/PromocionReducer";
 import ModalPromocion from "../../ui/Modals/ModalPromocion";
-
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const Promocion = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  const { getAccessTokenSilently } = useAuth0();
 
   const promocionService = new PromocionService();
 
@@ -32,7 +31,8 @@ export const Promocion = () => {
 
   const fetchPromociones = async () => {
     try {
-      const promociones = await promocionService.getAll(url + '/promociones');
+      const token = await getAccessTokenSilently();
+      const promociones = await promocionService.getAll(url + '/promociones', token);
       dispatch(setPromociones(promociones));
       setFilteredData(promociones);
     } catch (error) {
@@ -44,12 +44,13 @@ export const Promocion = () => {
     fetchPromociones();
   }, [dispatch]);
 
-  const onDeletePromocion = async (articuloManufacturado: IPromocion) => {
+  const onDeletePromocion = async (promocion: IPromocion) => {
     try {
+      const token = await getAccessTokenSilently();
       await onDelete(
-        articuloManufacturado,
+        promocion,
         async (promocionToDelete: IPromocion) => {
-          await promocionService.delete(url + '/promociones', promocionToDelete.id);
+          await promocionService.delete(url + '/promociones', promocionToDelete.id, token);
         },
         fetchPromociones,
         () => {},
@@ -65,13 +66,11 @@ export const Promocion = () => {
   enum TipoPromocion {
     HAPPY_HOUR = 0,
     PROMOCION = 1,
-    // Agrega otros tipos de promoción si los tienes
-}
-const handleEdit = (promocion: any) => {
-  console.log(promocion)
-    setIsEditing(true);
+  }
 
-    // Asegurar que tipoPromocion se compara como string
+  const handleEdit = (promocion: any) => {
+    console.log(promocion)
+    setIsEditing(true);
     const tipoPromocionStr = promocion.tipoPromocion.toString();
     const updatedPromocion = {
         ...promocion,
@@ -79,7 +78,7 @@ const handleEdit = (promocion: any) => {
     };
     setPromocionEditar(updatedPromocion);
     dispatch(toggleModal({ modalName: "modalPromocion" }));
-};
+  };
 
   const handleAddPromocion = () => {
     setIsEditing(false);
@@ -122,7 +121,7 @@ const handleEdit = (promocion: any) => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeletePromocion} onEdit={handleEdit} />
         <ModalPromocion
-          modalName="modalPromocion" // Asegúrate de que coincida con el nombre del modal
+          modalName="modalPromocion"
           initialValues={promocionEditar || {
             id: 0,
             eliminado: false,

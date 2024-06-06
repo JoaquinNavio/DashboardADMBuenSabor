@@ -3,23 +3,25 @@ import * as Yup from 'yup';
 import GenericModal from '../../ui/Modals/GenericModal';
 import TextFieldValue from '../../ui/TextFieldValue/TextFieldValue';
 import SucursalService from '../../../services/SucursalService';
-import Sucursal from '../../../types/ISucursal';
+import SucursalPost from '../../../types/post/SucursalPost';
+import ISucursal from '../../../types/ISucursal';
 import LocalidadService from '../../../services/LocalidadService';
 import SelectList from '../SelectList/SelectList';
 import ILocalidad from '../../../types/ILocalidad';
-import SucursalPost from '../../../types/post/SucursalPost';
-import ISucursal from '../../../types/ISucursal';
-import EmpresaService from '../../../services/EmpresaService';
-import IEmpresa from '../../../types/IEmpresa';
+import IProvincia from '../../../types/IProvincia';
+import IPais from '../../../types/IPais';
+import ProvinciaService from '../../../services/ProvinciaService';
+import PaisService from '../../../services/PaisService';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalSucursalProps {
   modalName: string;
   initialValues: SucursalPost | ISucursal;
   isEditMode: boolean;
   getSucursales: () => Promise<void>;
-  sucursalAEditar?: Sucursal;
+  sucursalAEditar?: SucursalPost | ISucursal;
   idEmpresa: number;
-  casaMatrizDisabled: boolean; // Nuevo prop para deshabilitar el checkbox de casa matriz
+  casaMatrizDisabled: boolean;
 }
 
 const ModalSucursal: React.FC<ModalSucursalProps> = ({
@@ -29,84 +31,103 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   getSucursales,
   sucursalAEditar,
   idEmpresa,
-  casaMatrizDisabled, // Nuevo prop para deshabilitar el checkbox de casa matriz
+  casaMatrizDisabled,
 }) => {
-  
   const sucursalService = new SucursalService();
-  const URL: string = import.meta.env.VITE_API_URL as string;
-  const localidadService = new LocalidadService();
-  const empresaService = new EmpresaService();
+  const { getAccessTokenSilently } = useAuth0();
+  const URL = import.meta.env.VITE_API_URL;
 
-  const [empresa, setEmpresa] = useState<IEmpresa>()
+  const [token, setToken] = useState<string | null>(null);
 
+  const [paises, setPaises] = useState<IPais[]>([]);
+  const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
+  const [selectedPaisId, setSelectedPaisId] = useState<number | undefined>(undefined);
+  const [selectedProvinciaId, setSelectedProvinciaId] = useState<number | undefined>(undefined);
+  const [selectedLocalidadId, setSelectedLocalidadId] = useState<number | undefined>(undefined);
 
-  const [selectedLocalidadId, setSelectedLocalidad] = useState<number | undefined>(undefined);
-  
-  const [casaMatriz, setCasaMatriz] = useState<boolean>(false); // Estado para casa matriz
-
-  const [tooltipMessage, setTooltipMessage] = useState<string>(''); // Mensaje para el tooltip
-
-  const fetchEmpresa = async () => {
-    try {
-      const empre = await empresaService.get(`${URL}/empresa`, idEmpresa);
-      setEmpresa(empre);
-    } catch (error) {
-      console.error('Error al obtener la empresa:', error);
-    }
-  };
-
-    const fetchLocalidades = async () => {
+  useEffect(() => {
+    const fetchToken = async () => {
       try {
-
-          const localidades = await localidadService.getAll(`${URL}/localidad`);
-          setLocalidades(localidades);
-          console.log(localidades);
-        
+        const accessToken = await getAccessTokenSilently();
+        setToken(accessToken);
       } catch (error) {
-        console.error('Error al obtener las localidades:', error);
+        console.error('Error al obtener el token:', error);
       }
     };
 
-  const validationSchema = Yup.object().shape({
-    nombre: Yup.string().required('Campo requerido'),
-    horarioCierre: Yup.string().required('Campo requerido'),
-    horarioApertura: Yup.string().required('Campo requerido'),
-    //agregar calle, cp, numero, pais, provincia y localidad 
-  });
-
+    fetchToken();
+  }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    console.log("ME EJECUTO");
-    fetchEmpresa();
+    const fetchPaises = async () => {
+      if (token) {
+        try {
+          const paisService = new PaisService();
+          const paises = await paisService.getAll(`${URL}/pais`, token);
+          setPaises(paises);
+        } catch (error) {
+          console.error('Error al obtener los países:', error);
+        }
+      }
+    };
+
+    fetchPaises();
+  }, [token, URL]);
+
+  useEffect(() => {
+    const fetchProvincias = async () => {
+      if (token && selectedPaisId) {
+        try {
+          const provinciaService = new ProvinciaService();
+          const provincias = await provinciaService.getByPais(`${URL}/provincia/findByPais`, selectedPaisId, token);
+          setProvincias(provincias);
+        } catch (error) {
+          console.error('Error al obtener las provincias:', error);
+        }
+      }
+    };
+
+    fetchProvincias();
+  }, [selectedPaisId, token, URL]);
+
+  useEffect(() => {
+    const fetchLocalidades = async () => {
+      if (token && selectedProvinciaId) {
+        try {
+          const localidadService = new LocalidadService();
+          const localidades = await localidadService.getByProvincia(`${URL}/localidad/findByProvincia`, selectedProvinciaId, token);
+          setLocalidades(localidades);
+        } catch (error) {
+          console.error('Error al obtener las localidades:', error);
+        }
+      }
+    };
+
     fetchLocalidades();
-  }, [URL,idEmpresa]);
+  }, [selectedProvinciaId, token, URL]);
 
+  const handlePaisChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const paisIdSelected = parseInt(event.target.value);
+    setSelectedPaisId(paisIdSelected);
+    setSelectedProvinciaId(undefined);
+    setSelectedLocalidadId(undefined);
+    setProvincias([]);
+    setLocalidades([]);
+  };
 
-  // Función para manejar el cambio de localidad
+  const handleProvinciaChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const provinciaIdSelected = parseInt(event.target.value);
+    setSelectedProvinciaId(provinciaIdSelected);
+    setSelectedLocalidadId(undefined);
+    setLocalidades([]);
+  };
+
   const handleLocalidadChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const localidadIdSelected = parseInt(event.target.value);
-    // Buscar la localidad por su nombre en el array de localidades
-    if (localidadIdSelected) {
-      // Asignar el ID de la localidad seleccionada
-      setSelectedLocalidad(localidadIdSelected);
-    }
+    setSelectedLocalidadId(localidadIdSelected);
   };
-
-  // Función para manejar el cambio del checkbox de Casa Matriz
-  const handleCasaMatrizChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setCasaMatriz(event.target.checked);
-  };
-
-  // Mensaje para mostrar en el tooltip cuando se pase el mouse sobre el checkbox deshabilitado
-  useEffect(() => {
-    if (casaMatrizDisabled) {
-      setTooltipMessage('Ya hay una sucursal que es casa matriz');
-    } else {
-      setTooltipMessage('');
-    }
-  }, [casaMatrizDisabled]);
 
   if (!isEditMode) {
     initialValues = {
@@ -122,46 +143,44 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         idLocalidad: 0
       },
       idEmpresa: idEmpresa,
-      esCasaMatriz: false, // Agregar casa matriz con valor predeterminado
+      esCasaMatriz: false,
     };
   }
 
-  const handleSubmit = async (values: SucursalPost | Sucursal) => {
+  const handleSubmit = async (values: SucursalPost | ISucursal) => {
     try {
-      // Crear el objeto de domicilio
+      if (!token) {
+        throw new Error("Token no disponible");
+      }
+
       const domicilio = {
         calle: values.domicilio.calle,
         numero: values.domicilio.numero,
         cp: values.domicilio.cp,
         piso: values.domicilio.piso,
         nroDpto: values.domicilio.nroDpto,
-        idLocalidad: selectedLocalidadId || 0, // Convertir a número entero
+        idLocalidad: selectedLocalidadId || 0,
       };
 
-      let sucursalData: SucursalPost | Sucursal;
+      let sucursalData: SucursalPost | ISucursal;
 
       if (isEditMode) {
-        // Si estamos en modo de edición, es un objeto Sucursal, así que eliminamos el id del objeto
-        const { id, ...rest } = values as Sucursal;
+        const { id, ...rest } = values as ISucursal;
         sucursalData = {
           ...rest,
           domicilio: domicilio,
-          esCasaMatriz: casaMatriz,
+          esCasaMatriz: casaMatrizDisabled,
           idEmpresa: idEmpresa,
         };
-        console.log('Data a enviar en modo edición:', sucursalData);
-        await sucursalService.put(`${URL}/sucursal`, id, sucursalData);
+        await sucursalService.put(`${URL}/sucursal`, id, sucursalData, token);
       } else {
-        // Si no estamos en modo de edición, es un objeto SucursalPost y agregamos el id de la empresa
         sucursalData = {
           ...values,
           domicilio: domicilio,
-          esCasaMatriz: casaMatriz,
+          esCasaMatriz: casaMatrizDisabled,
           idEmpresa: idEmpresa,
         };
-        console.log('Data a enviar en modo creación:', sucursalData);
-        await sucursalService.post(`${URL}/sucursal`, sucursalData);
-        window.location.reload(); // Recargar la página después de eliminar la sucursal
+        await sucursalService.post(`${URL}/sucursal`, sucursalData, token);
       }
 
       getSucursales();
@@ -170,17 +189,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     }
   };
 
-
-
-
-
-
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar Sucursal' :  `Añadir Sucursal a ${empresa?.nombre}`}
+      title={isEditMode ? 'Editar Sucursal' : `Añadir Sucursal`}
       initialValues={sucursalAEditar || initialValues}
-      validationSchema={validationSchema}
+      validationSchema={Yup.object().shape({
+        nombre: Yup.string().required('Campo requerido'),
+        horarioCierre: Yup.string().required('Campo requerido'),
+        horarioApertura: Yup.string().required('Campo requerido'),
+      })}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
     >
@@ -198,60 +216,74 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Calle" name="domicilio.calle" type="text" placeholder="Calle" disabled={isEditMode} />
+            <TextFieldValue label="Calle" name="domicilio.calle" type="text" placeholder="Calle" />
           </div>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Número" name="domicilio.numero" type="number" placeholder="Número" disabled={isEditMode} />
+            <TextFieldValue label="Número" name="domicilio.numero" type="number" placeholder="Número" />
           </div>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Código Postal" name="domicilio.cp" type="number" placeholder="Código Postal" disabled={isEditMode} />
+            <TextFieldValue label="Código Postal" name="domicilio.cp" type="number" placeholder="Código Postal" />
           </div>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso" disabled={isEditMode} />
+            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso" />
           </div>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number" placeholder="Número de Departamento" disabled={isEditMode} />
+            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number" placeholder="Número de Departamento" />
           </div>
         </div>
-
         <div style={{ display: 'flex', gap: '20px' }}>
-        <div style={{ flex: 1 }}>
+          <div style={{ flex: 1 }}>
             <SelectList
-              title="Localidades"
-              items={localidades.reduce((mapa, localidad) => {
-                mapa.set(localidad.id, localidad.nombre); 
-                return mapa
+              title="País"
+              items={paises.reduce((mapa, pais) => {
+                mapa.set(pais.id, pais.nombre);
+                return mapa;
               }, new Map<number, string>())}
-              handleChange={handleLocalidadChange}
-              //selectedValue={selectedLocalidad}
-              selectedValue={selectedLocalidadId}
-              disabled={isEditMode}
+              handleChange={handlePaisChange}
+              selectedValue={selectedPaisId}
             />
           </div>
+          {selectedPaisId && (
+            <div style={{ flex: 1 }}>
+              <SelectList
+                title="Provincia"
+                items={provincias.reduce((mapa, provincia) => {
+                  mapa.set(provincia.id, provincia.nombre);
+                  return mapa;
+                }, new Map<number, string>())}
+                handleChange={handleProvinciaChange}
+                selectedValue={selectedProvinciaId}
+              />
+            </div>
+          )}
+          {selectedProvinciaId && (
+            <div style={{ flex: 1 }}>
+              <SelectList
+                title="Localidad"
+                items={localidades.reduce((mapa, localidad) => {
+                  mapa.set(localidad.id, localidad.nombre);
+                  return mapa;
+                }, new Map<number, string>())}
+                handleChange={handleLocalidadChange}
+                selectedValue={selectedLocalidadId}
+              />
+            </div>
+          )}
         </div>
-        {/* Checkbox para indicar si es la casa matriz */}
- 
-        <label style={{ display: 'flex', alignItems: 'center' }} title={tooltipMessage}>
-        <h3 style={{ fontSize: '1.2rem' }}>Es casa matriz?</h3>
+        <label style={{ display: 'flex', alignItems: 'center' }}>
+          <h3 style={{ fontSize: '1.2rem' }}>Es casa matriz?</h3>
           <input
             type="checkbox"
-            checked={casaMatriz}
-            onChange={handleCasaMatrizChange}
-            disabled={casaMatrizDisabled} // Deshabilitar el checkbox si es necesario
-            style={{marginLeft:10}}
+            checked={casaMatrizDisabled}
+            disabled={casaMatrizDisabled}
+            style={{ marginLeft: 10 }}
           />
         </label>
-        {casaMatrizDisabled && tooltipMessage && (
-          <div style={{ fontSize: '1.1rem', color: 'red' }}>
-            {tooltipMessage}
-          </div>
-        )}
       </div>
     </GenericModal>
   );
 };
 
 export default ModalSucursal;
-

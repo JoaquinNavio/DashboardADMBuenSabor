@@ -13,7 +13,7 @@ interface ModalProps {
   title: string;
   initialValues: any;
   validationSchema: Yup.ObjectSchema<any>;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any) => Promise<void>; // Cambiamos aquí para esperar una promesa
   onClose?: () => void;
   children?: React.ReactNode;
   isEditMode: boolean;

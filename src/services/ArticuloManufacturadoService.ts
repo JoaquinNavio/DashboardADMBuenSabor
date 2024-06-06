@@ -1,40 +1,35 @@
-// Importamos el tipo de dato IArticuloManufactutado y la clase BackendClient
-
 import IArticuloManufacturado from "../types/IArticuloManufacturado";
 import IArticuloManufacturadoDetalle from "../types/IArticuloManufacturadoDetalle";
 import ArticuloManufacturadoPost from "../types/post/ArticuloManufacturadoPost";
 import BackendClient from "./BackendClient";
 
-// Clase ArticuloManufacturadoService que extiende BackendClient para interactuar con la API de articuloManufacturado
-
 export default class ArticuloManufacturadoService extends BackendClient<IArticuloManufacturado> {
-  async postx(url: string, data: ArticuloManufacturadoPost): Promise<IArticuloManufacturado> {
+  async postx(url: string, data: ArticuloManufacturadoPost, token: string): Promise<IArticuloManufacturado> {
     const path = url;
     const options: RequestInit = {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
-    return this.request(path, options);
+    return this.request(path, options, token);
   }
 
-  async postz(url: string, data: ArticuloManufacturadoPost): Promise<IArticuloManufacturado> {
+  async postz(url: string, data: ArticuloManufacturadoPost, token: string): Promise<IArticuloManufacturado> {
     const path = url;
     const formData = new FormData();
 
-    // Añadir los campos del objeto data a FormData
     formData.append('denominacion', data.denominacion);
-    formData.append('descripcion', data.descripcion); // Convertir booleano a string
+    formData.append('descripcion', data.descripcion);
     formData.append('idCategoria', data.idCategoria.toString());
     formData.append('idUnidadMedida', data.idUnidadMedida.toString());
     formData.append('tiempoEstimadoMinutos', data.tiempoEstimadoMinutos.toString());
     formData.append('precioVenta', data.precioVenta.toString());
     formData.append('preparacion', data.preparacion);
 
-    // Añadir los detalles a FormData
     data.detalles.forEach((detalle, index) => {
       if (detalle.cantidad !== undefined) {
           formData.append(`detalles[${index}].cantidad`, detalle.cantidad.toString());
@@ -45,12 +40,11 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       if (detalle.idArticuloManufacturado !== undefined) {
           formData.append(`detalles[${index}].idArticuloManufacturado`, detalle.idArticuloManufacturado.toString());
       }
-  });
+    });
 
-    // Añadir las imágenes a FormData si fileList está definido
-    if (data.imagenes) { // Verifica que data.imagenes no sea null
+    if (data.imagenes) {
       Array.from(data.imagenes).forEach((file) => {
-        formData.append("files", file); // Utilizar 'files' como clave
+        formData.append("files", file);
       });
     }
 
@@ -58,34 +52,36 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       method: "POST",
       headers: {
         Accept: "application/json",
-        // 'Content-Type': no se especifica para permitir que el navegador establezca el límite correcto para multipart/form-data
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     };
 
-    return this.request(path, options);
+    return this.request(path, options, token);
   }
 
-  async putx(url: string, id: number, data: ArticuloManufacturadoPost): Promise<IArticuloManufacturado> {
+  async putx(url: string, id: number, data: ArticuloManufacturadoPost, token: string): Promise<IArticuloManufacturado> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
-    return this.request(path, options);
+    return this.request(path, options, token);
   }
 
-  async getDetalles(url: string, id: number): Promise<IArticuloManufacturadoDetalle[]> {
+  async getDetalles(url: string, id: number, token: string): Promise<IArticuloManufacturadoDetalle[]> {
     const path = `${url}/${id}/Detalles`;
     const options: RequestInit = {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       }
     };
     try {
@@ -97,7 +93,7 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       }
 
       if (response.status === 204 || response.headers.get("Content-Length") === "0") {
-        return []; // O algún otro valor predeterminado
+        return [];
       }
 
       return response.json();
@@ -106,5 +102,4 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       return Promise.reject(error);
     }
   }
-
 }
