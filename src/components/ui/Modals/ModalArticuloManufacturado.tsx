@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import GenericModal from './GenericModal'; 
-import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
-import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService'; 
-import ArticuloManufacturado from '../../../types/IArticuloManufacturado'; 
+import GenericModal from './GenericModal';
+import TextFieldValue from '../TextFieldValue/TextFieldValue';
+import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService';
+import ArticuloManufacturado from '../../../types/IArticuloManufacturado';
 import SelectList from '../SelectList/SelectList';
 // import { useAppDispatch } from '../../../hooks/redux';
 import IArticuloInsumo from '../../../types/IArticuloInsumo';
@@ -19,26 +19,24 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { Gallery } from '../Gallery/Gallery';
 import { TextField } from '@mui/material';
-import ImageService from '../../../services/ImageService';
-import IImage from '../../../types/IImage';
 import { Add } from '@mui/icons-material';
 
 /*ModalArticuloManufacturadoProps define las propiedades que se pueden pasar al componente ModalArticuloManufacturado.*/
 interface ModalArticuloManufacturadoProps {
-  modalName: string; 
+  modalName: string;
 
   /*Esta propiedad representa los valores iniciales que se utilizarán para inicializar el formulario dentro del modal. */
   initialValues: ArticuloManufacturado;
-  isEditMode: boolean; 
+  isEditMode: boolean;
 
   /*Esta propiedad es una función que se utilizará para actualizar la lista de artículos manufacturados
   después de que se realice una acción en el modal, como crear o editar un artículo manufacturado.  */
-  getArticuloManufacturados: () => Promise<void>; 
+  getArticuloManufacturados: () => Promise<void>;
 
   /*Esta propiedad es opcional y representa el artículo manufacturado que se está editando. 
   Se utiliza específicamente cuando el modal está en modo de edición 
   para proporcionar los datos del artículo que se está editando. */
-  articuloManufacturadoAEditar?: ArticuloManufacturado; 
+  articuloManufacturadoAEditar?: ArticuloManufacturado;
 }
 
 
@@ -59,7 +57,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
   //instancia del servicio ArticuloManufacturadoService
   const articuloManufacturadoService = new ArticuloManufacturadoService();
-  const imageService = new ImageService();
 
   //url api
   const URL = import.meta.env.VITE_API_URL;
@@ -74,7 +71,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
   //instancia del servicio ArticuloInsumoService.
   const articuloInsumoService = new ArticuloInsumoService();
-  
+
   /*Se utiliza el hook useState para inicializar un estado local llamado articulosInsumo.
   articulosInsumo es un array que contiene los artículos de insumo obtenidos del backend.
   setArticulosInsumo es una función que se utiliza para actualizar el estado de articulosInsumo. */
@@ -115,16 +112,16 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     cantidad?: number;
     idDetalle?: number;
   }[]>([]);
-  
+
 
   /*Esta función se encarga de agregar un nuevo elemento al array articulosInsumosItems.
   Se utiliza el spread operator ... para crear una nueva copia del array articulosInsumosItems y agregar un nuevo objeto al final.
   El nuevo objeto tiene la propiedad idComponent, cuyo valor es igual a la longitud actual del array articulosInsumosItems.
   Finalmente, se actualiza el estado de articulosInsumosItems con el nuevo array que contiene el nuevo elemento agregado.*/
   const addNewItem = () => {
-    setArticulosInsumosItems([...articulosInsumosItems, {idComponent: articulosInsumosItems.length}]);
+    setArticulosInsumosItems([...articulosInsumosItems, { idComponent: articulosInsumosItems.length }]);
   }
-  
+
 
   /*Esta función se encarga de eliminar un elemento del array articulosInsumosItems según su idComponent.
   Si el elemento tiene un idDetalle, significa que está en la base de datos y se solicita confirmación antes de eliminarlo permanentemente.
@@ -137,13 +134,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
     //si tiene idDetalle esta en la base de datos
     //lo que verifica que se muestre la alerta solo en el modal de edicion
-    if(idDetalle){
+    if (idDetalle) {
       //solicita confirmación antes de eliminarlo
       const userConfirmed = window.confirm('¿Estás seguro, se eliminara permanentemente?');
       if (userConfirmed) {
         //solicitud HTTP DELETE
         articuloManufacturadoDetalleService.delete(`${URL}/ArticuloManufacturadoDetalle`, idDetalle)
-      }else{
+      } else {
         return;
       }
     }
@@ -161,7 +158,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   const handleItemChange = (idComponent: number, selectedArticuloInsumoId?: number, cantidad?: number, idDetalle?: number) => {
     //iterar sobre el array articulosInsumosItems
     setArticulosInsumosItems(articulosInsumosItems.map(item => {
-      if (item.idComponent === idComponent){
+      if (item.idComponent === idComponent) {
         //idComponent coincide
         //se actualizan las propiedades
         return {
@@ -179,7 +176,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   //------------------------------------------------------------------
 
   // Instancia del servicio de categoria
-  const categoriaService = new CategoriaService(); 
+  const categoriaService = new CategoriaService();
 
   /*Aquí se define un estado llamado categorias utilizando el hook useState.
   Este estado almacenará un array de objetos de tipo ICategoria.
@@ -206,7 +203,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     };
     fetchCategorias();
   }, [showModal])
-  
+
   /*Se define otro estado llamado selectedCategoriaId utilizando el hook useState.
   Este estado almacenará el ID de la categoría seleccionada por el usuario.
   Se inicializa como undefined. */
@@ -233,24 +230,24 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   //Instancia de ArticuloManufacturadoDetalleService
   const articuloManufacturadoDetalleService = new ArticuloManufacturadoDetalleService();
 
-  const [imagenCargada, setImagenCargada] = useState<IImage | undefined>(undefined);
-  useEffect(() => {
-    if(showModal){
-      setImagenCargada(initialValues.image?.id!=0? initialValues.image : undefined);
-    }
-  }, [showModal])
+  // const [imagenCargada, setImagenCargada] = useState<IImage | undefined>(undefined);
+  // useEffect(() => {
+  //   if(showModal){
+  //     setImagenCargada(initialValues.image?.id!=0? initialValues.image : undefined);
+  //   }
+  // }, [showModal])
 
 
   /*handleSubmit se encarga de manejar el envío de datos del formulario que contiene información sobre el artículo manufacturado.*/
   const handleSubmit = async (values: ArticuloManufacturado) => {
     //Obtencion de imagen
-    let imagenGuardada: any;
-    if(selectedFiles != null){
-      imagenGuardada = await imageService.uploadImagenes(selectedFiles,URL);
-    }
-    const idImage = imagenCargada? imagenCargada.id : (imagenGuardada? imagenGuardada.ids[0] : null)
+    // let imagenGuardada: any;
+    // if(selectedFiles != null){
+    //   imagenGuardada = await imageService.uploadImagenes(selectedFiles,URL);
+    // }
+    // const idImage = imagenCargada? imagenCargada.id : (imagenGuardada? imagenGuardada.ids[0] : null)
 
-  
+
     try {
       /*Se crea un objeto body de tipo ArticuloManufacturadoPost 
       que contiene la información del artículo manufacturado a enviar al Backend.
@@ -268,8 +265,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         precioVenta: values.precioVenta,
         idUnidadMedida: 1,
         idCategoria: selectedCategoriaId || initialValues.categoria.id,
-        detalles:[],
-        idImage
+        detalles: [],
+        imagenes: selectedFiles
       };
 
       /*Se itera sobre el array articulosInsumosItems que contiene los detalles del artículo manufacturado 
@@ -279,13 +276,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       Este objeto detalle se añade al array detalles del objeto body */
       for (const item of articulosInsumosItems) {
         const detalle = {
-            cantidad: item.cantidad || 0,
-            idArticuloInsumo: item.selectedArticuloInsumoId || 0,
-            idDetalle: item.idDetalle
+          cantidad: item.cantidad || 0,
+          idArticuloInsumo: item.selectedArticuloInsumoId || 0,
+          idDetalle: item.idDetalle
         };
         //se añade al array detalles del objeto body
         body.detalles.push(detalle);
-    }
+      }
       /*Si isEditMode es verdadero, se realiza una solicitud PUT utilizando articuloManufacturadoService.putx, 
       que actualiza el artículo manufacturado existente en el servidor.
       De lo contrario, se realiza una solicitud POST 
@@ -296,10 +293,10 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
       if (isEditMode) {
         //solicitud PUT
-          await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);
+        await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body);
       } else {
         //una solicitud POST
-         await articuloManufacturadoService.postx(`${URL}/ArticuloManufacturado/createWithDetails`, body);
+        await articuloManufacturadoService.postz(`${URL}/ArticuloManufacturado/createWithDetails`, body);
       }
       //actualizar la lista de artículos manufacturados
       getArticuloManufacturados();
@@ -335,13 +332,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         categoriaPadre: undefined,
         esInsumo: false
       },
-      detalles:[],
-      image:{
-        url: '',
-        name: '',
-        id: 0,
-        eliminado: false
-      }
+      detalles: [],
+      imagenes: []
     };
   }
 
@@ -349,7 +341,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   Se encarga de realizar algunas limpiezas y restablecer valores.
   Se establece selectedCategoriaId como undefined.
   Se vacían los arrays articulosInsumosItems y detalles*/
-  const onClose = ()=>{
+  const onClose = () => {
     setSelectedCategoriaId(undefined);
     setArticulosInsumosItems([]);
     setDetalles([]);
@@ -366,10 +358,10 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   Los detalles obtenidos se establecen en el estado detalles y se actualiza el estado articulosInsumosItems 
   con los detalles de los insumos obtenidos, mapeándolos adecuadamente. 
   Cada detalle se convierte en un objeto con las propiedades necesarias para mostrarlos en el formulario del modal. */
-  useEffect(() =>{
-    const fetchDetalles = async() =>{
+  useEffect(() => {
+    const fetchDetalles = async () => {
       //obtener los detalles del artículo manufacturado
-      const detallitos :IArticuloManufacturadoDetalle[] = await articuloManufacturadoService.getDetalles(`${URL}/ArticuloManufacturado`, initialValues.id)
+      const detallitos: IArticuloManufacturadoDetalle[] = await articuloManufacturadoService.getDetalles(`${URL}/ArticuloManufacturado`, initialValues.id)
       setDetalles(detallitos)
       setArticulosInsumosItems(
         detallitos.map((det, ix /*IX ES UN NUMERO RANDOM */) => ({
@@ -381,26 +373,27 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       )
     }
     fetchDetalles();
-  },[showModal]);
+  }, [showModal]);
 
   //IMAGEN
   //--------------------------------------------------------------------------
 
-   // Estado para almacenar archivos seleccionados para subir
-   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-   useEffect(() =>{
-    if(showModal){
+  // Estado para almacenar archivos seleccionados para subir
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  useEffect(() => {
+    if (showModal) {
       setSelectedFiles(null);
     }
-  },[showModal]);
+  }, [showModal]);
 
-   // Manejador de cambio de archivos seleccionados
-   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-     setSelectedFiles(event.target.files);
-   };
+  // Manejador de cambio de archivos seleccionados
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
 
   const handleDeleteImg = () => {
-   setImagenCargada(undefined);
+    console.log("borrar");
+    //  setImagenCargada(undefined);
   };
   //---------------------------------------------------------------------------
 
@@ -431,78 +424,81 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       isEditMode={isEditMode}
       onClose={onClose}
     >
-      
+
       <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
       <TextFieldValue label="Descripción" name="descripcion" type="text" placeholder="Ingrese descripción" />
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px' }}>
         <div>
-        <TextFieldValue label="Tiempo Estimado" name="tiempoEstimadoMinutos" type="number" placeholder="tiempo estimado" />
+          <TextFieldValue label="Tiempo Estimado" name="tiempoEstimadoMinutos" type="number" placeholder="tiempo estimado" />
         </div>
         <div>
-        <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="precio de venta" />
+          <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="precio de venta" />
         </div>
       </div>
       <TextFieldValue label="Preparación" name="preparacion" type="text" placeholder="Ingrese preparación" />
-      <div style={{marginBottom: '15px'}}>
-      <SelectList
-              title="Categoria"
-              items={categorias.reduce((mapa, categoria) => {
-                mapa.set(categoria.id, categoria.denominacion); 
-                return mapa
-              }, new Map<number, string>())}
-              handleChange={handleCategoriaChange}
-              selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
-      />
-      
+      <div style={{ marginBottom: '15px' }}>
+        <SelectList
+          title="Categoria"
+          items={categorias.reduce((mapa, categoria) => {
+            mapa.set(categoria.id, categoria.denominacion);
+            return mapa
+          }, new Map<number, string>())}
+          handleChange={handleCategoriaChange}
+          selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
+        />
+
 
       </div>
-      
+
 
       {
-      articulosInsumosItems.map( item => {
-        const detalle = detalles.find(detalle => detalle.id === item.idDetalle)
-        return (
-        <ItemDetalleArticuloManufacturado 
-          key={item.idComponent} 
-          idComponent={item.idComponent} 
-          idDetalle={detalle?.id}
-          insumos={articulosInsumo} 
-          handleItemChange={handleItemChange}
-          removeComponent={removeItem} 
-          selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
-          cantidad={item.cantidad || detalle?.cantidad}
-          categorias = {categorias}
-          />
-          
-      )
-      })}
-      <button type="button" style={{margin: '10px'}} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
-      
+        articulosInsumosItems.map(item => {
+          const detalle = detalles.find(detalle => detalle.id === item.idDetalle)
+          return (
+            <ItemDetalleArticuloManufacturado
+              key={item.idComponent}
+              idComponent={item.idComponent}
+              idDetalle={detalle?.id}
+              insumos={articulosInsumo}
+              handleItemChange={handleItemChange}
+              removeComponent={removeItem}
+              selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
+              cantidad={item.cantidad || detalle?.cantidad}
+              categorias={categorias}
+            />
+
+          )
+        })}
+      <button type="button" style={{ margin: '10px' }} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
+
       <div>
-        <label style={{ fontWeight: 'bold' }}>Imagenes</label>
-        {
-          (isEditMode && imagenCargada) ? <Gallery images={[imagenCargada]} handleDeleteImg={handleDeleteImg} /> :
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "2vh",
-                padding: ".4rem",
-              }}
-            >
-              {/* Campo de entrada de archivos */}
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                type="file"
-                onChange={handleFileChange}
-                inputProps={{
-                  multiple: true,
-                }}
-              />
-            </div>
-        }
+        <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imagenes</label>
+        <div
+          title="Imagenes"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "2vh",
+            padding: ".4rem",
+          }}
+        >
+          {/* Campo de entrada de archivos */}
+          <TextField
+            id="outlined-basic"
+            variant="outlined"
+            type="file"
+            onChange={handleFileChange}
+            inputProps={{
+              multiple: true,
+            }}
+          />
+        </div>
+        {/* Componente de galería para mostrar las imágenes */}
+
+        {isEditMode && (
+          <Gallery images={initialValues.imagenes} handleDeleteImg={handleDeleteImg} />
+        )}
 
       </div>
 

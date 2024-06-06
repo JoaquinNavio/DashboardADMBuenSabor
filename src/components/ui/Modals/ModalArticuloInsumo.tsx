@@ -11,13 +11,15 @@ import ArticuloInsumoPost from '../../../types/post/ArticuloInsumoPost';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
+import { Gallery } from '../Gallery/Gallery';
+import { TextField } from '@mui/material';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalArticuloInsumoProps {
   modalName: string;
   initialValues: ArticuloInsumo;
   isEditMode: boolean;
   getArticuloInsumos: () => Promise<void>;
-  token: string;
 }
 
 const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
@@ -25,8 +27,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   initialValues,
   isEditMode,
   getArticuloInsumos,
-  token
 }) => {
+  const { getAccessTokenSilently } = useAuth0();
   const articuloInsumoService = new ArticuloInsumoService();
   const URL = import.meta.env.VITE_API_URL;
 
@@ -38,11 +40,13 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     stockMaximo: Yup.number().required('Campo requerido')
   });
 
+  // BUSQUEDA DE UNIDADES DE MEDIDA
   const unidadMedidaService = new UnidadMedidaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
   useEffect(() => {
     const fetchUnidadMedida = async () => {
       try {
+        const token = await getAccessTokenSilently();
         const unidades = await unidadMedidaService.getAll(URL + '/UnidadMedida', token);
         setUnidadesMedida(unidades);
       } catch (error) {
@@ -50,7 +54,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       }
     };
     fetchUnidadMedida();
-  }, [token]);
+  }, [modalName]);
 
   const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number | undefined>(undefined);
   const handleUnidadMedidaChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -65,6 +69,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
+        const token = await getAccessTokenSilently();
         const categorias = await categoriaService.getAll(URL + '/categoria', token);
         setCategorias(categorias);
       } catch (error) {
@@ -72,7 +77,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       }
     };
     fetchCategorias();
-  }, [token]);
+  }, [modalName]);
 
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number | undefined>(undefined);
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -84,6 +89,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
   const handleSubmit = async (values: ArticuloInsumo) => {
     try {
+      const token = await getAccessTokenSilently();
       const body: ArticuloInsumoPost = {
         denominacion: values.denominacion,
         precioVenta: values.precioVenta,
@@ -92,12 +98,15 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         stockActual: values.stockActual,
         stockMaximo: values.stockMaximo,
         esParaElaborar: values.esParaElaborar,
-        idCategoria: selectedCategoriaId || values.categoria.id
+        idCategoria: selectedCategoriaId || values.categoria.id,
+        imagenes: selectedFiles
       };
+      console.log(body);
+      console.log(values);
       if (isEditMode) {
         await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body, token);
       } else {
-        await articuloInsumoService.postx(`${URL}/ArticuloInsumo`, body, token);
+        await articuloInsumoService.postz(`${URL}/ArticuloInsumo/crearCompleto`, body, token); // Agrega un nuevo articuloInsumo si no está en modo de edición
       }
       getArticuloInsumos();
     } catch (error) {
@@ -114,7 +123,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       unidadMedida: {
         id: 0,
         eliminado: false,
-        denominacion: ''
+        denominacion: ""
       },
       esParaElaborar: false,
       precioCompra: 0,
@@ -123,10 +132,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       categoria: {
         id: 0,
         eliminado: false,
-        denominacion: '',
+        denominacion: "",
         esInsumo: false,
-        categoriaPadre: undefined
-      }
+        categoriaPadre: undefined,
+      },
+      imagenes: []
     };
   }
 
@@ -135,6 +145,19 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     setSelectedUnidadMedidaId(undefined);
   };
 
+  // Estado para almacenar archivos seleccionados para subir
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
+
+  const handleDeleteImg = () => {
+    console.log("borrar");
+    // setImagenCargada(undefined);
+  };
+
+  // Renderiza el componente de modal genérico
   return (
     <GenericModal
       modalName={modalName}
@@ -145,6 +168,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       isEditMode={isEditMode}
       onClose={onClose}
     >
+      {/* Campos del formulario */}
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px', width: '100%' }}>
         <div style={{ flex: '0 0 80%' }}>
           <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
@@ -153,7 +177,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
           <SelectFieldValue
             label="Es Para Elaborar"
             name="esParaElaborar"
-            type="text"
+            type='text'
             options={[
               { label: 'Sí', value: 'true' },
               { label: 'No', value: 'false' }
@@ -187,7 +211,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
             title="UnidadMedida"
             items={unidadesMedida.reduce((mapa, unidadMedida) => {
               mapa.set(unidadMedida.id, unidadMedida.denominacion);
-              return mapa;
+              return mapa
             }, new Map<number, string>())}
             handleChange={handleUnidadMedidaChange}
             selectedValue={selectedUnidadMedidaId || (initialValues.unidadMedida.id !== 0 ? initialValues.unidadMedida.id : undefined)}
@@ -199,13 +223,31 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         title="Categoria padre"
         items={categorias.reduce((mapa, categoria) => {
           mapa.set(categoria.id, categoria.denominacion);
-          return mapa;
+          return mapa
         }, new Map<number, string>())}
         handleChange={handleCategoriaChange}
         selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
       />
+
+      {/* Campo para subir imágenes */}
+      <div>
+        <label htmlFor="imagenes">Subir Imágenes</label>
+        <input
+          type="file"
+          id="imagenes"
+          name="imagenes"
+          multiple
+          onChange={handleFileChange}
+        />
+      </div>
+
+      {/* Mostrar la galería de imágenes si hay imágenes cargadas */}
+      {initialValues.imagenes && initialValues.imagenes.length > 0 && (
+        <Gallery images={initialValues.imagenes} handleDelete={handleDeleteImg} />
+      )}
     </GenericModal>
   );
 };
 
 export default ModalArticuloInsumo;
+

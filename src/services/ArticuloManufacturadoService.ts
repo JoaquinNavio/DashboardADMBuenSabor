@@ -3,7 +3,7 @@
 import IArticuloManufacturado from "../types/IArticuloManufacturado";
 import IArticuloManufacturadoDetalle from "../types/IArticuloManufacturadoDetalle";
 import ArticuloManufacturadoPost from "../types/post/ArticuloManufacturadoPost";
-import  BackendClient  from "./BackendClient";
+import BackendClient from "./BackendClient";
 
 // Clase ArticuloManufacturadoService que extiende BackendClient para interactuar con la API de articuloManufacturado
 
@@ -18,6 +18,51 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       },
       body: JSON.stringify(data),
     };
+    return this.request(path, options);
+  }
+
+  async postz(url: string, data: ArticuloManufacturadoPost): Promise<IArticuloManufacturado> {
+    const path = url;
+    const formData = new FormData();
+
+    // Añadir los campos del objeto data a FormData
+    formData.append('denominacion', data.denominacion);
+    formData.append('descripcion', data.descripcion); // Convertir booleano a string
+    formData.append('idCategoria', data.idCategoria.toString());
+    formData.append('idUnidadMedida', data.idUnidadMedida.toString());
+    formData.append('tiempoEstimadoMinutos', data.tiempoEstimadoMinutos.toString());
+    formData.append('precioVenta', data.precioVenta.toString());
+    formData.append('preparacion', data.preparacion);
+
+    // Añadir los detalles a FormData
+    data.detalles.forEach((detalle, index) => {
+      if (detalle.cantidad !== undefined) {
+          formData.append(`detalles[${index}].cantidad`, detalle.cantidad.toString());
+      }
+      if (detalle.idArticuloInsumo !== undefined) {
+          formData.append(`detalles[${index}].idArticuloInsumo`, detalle.idArticuloInsumo.toString());
+      }
+      if (detalle.idArticuloManufacturado !== undefined) {
+          formData.append(`detalles[${index}].idArticuloManufacturado`, detalle.idArticuloManufacturado.toString());
+      }
+  });
+
+    // Añadir las imágenes a FormData si fileList está definido
+    if (data.imagenes) { // Verifica que data.imagenes no sea null
+      Array.from(data.imagenes).forEach((file) => {
+        formData.append("files", file); // Utilizar 'files' como clave
+      });
+    }
+
+    const options: RequestInit = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        // 'Content-Type': no se especifica para permitir que el navegador establezca el límite correcto para multipart/form-data
+      },
+      body: formData,
+    };
+
     return this.request(path, options);
   }
 
@@ -61,5 +106,5 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       return Promise.reject(error);
     }
   }
-      
+
 }

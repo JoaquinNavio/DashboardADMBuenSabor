@@ -94,7 +94,16 @@ const ArticuloInsumoComponent = () => {
   };
 
   const columns: Column[] = [
-    { id: "image", label: "Imagen", renderCell: (articuloInsumo) => <img src={articuloInsumo.image?.url || "https://imgs.search.brave.com/RWwLZANOOYEVZjIBSJkFbk6jWyf4PAtQ7f5e-vhJ-sM/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9wb3dl/cnVzZXJzLm1pY3Jv/c29mdC5jb20vdDUv/aW1hZ2Uvc2VydmVy/cGFnZS9pbWFnZS1p/ZC85MzQxOWlDNzg1/NUU3OEUzOUZFNjNE/L2ltYWdlLXNpemUv/bGFyZ2UvaXMtbW9k/ZXJhdGlvbi1tb2Rl/L3RydWU_dj12MiZw/eD05OTk.jpeg"} width={75}/> },
+    {
+      id: "image",
+      label: "Imagen",
+      renderCell: (articuloInsumo) => {
+        const imageUrl = articuloInsumo.imagenes.length > 0
+          ? articuloInsumo.imagenes[0].url
+          : "https://imgs.search.brave.com/RWwLZANOOYEVZjIBSJkFbk6jWyf4PAtQ7f5e-vhJ-sM/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9wb3dl/cnVzZXJzLm1pY3Jv/c29mdC5jb20vdDUv/aW1hZ2Uvc2VydmVy/cGFnZS9pbWFnZS1p/ZC85MzQxOWlDNzg1/NUU3OEUzOUZFNjNE/L2ltYWdlLXNpemUv/bGFyZ2UvaXMtbW9k/ZXJhdGlvbi1tb2Rl/L3RydWU_dj12MiZw/eD05OTk.jpeg";
+        return <img src={imageUrl} width={75} />;
+      }
+    },
     { id: "denominacion", label: "Denominacion", renderCell: (articuloInsumo) => <>{articuloInsumo.denominacion}</> },
     { 
       id: "precioVenta", 
@@ -109,9 +118,8 @@ const ArticuloInsumoComponent = () => {
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (articuloInsumo) => <>{articuloInsumo.stockMaximo}</> },
     { id: "unidadMedida", label: "Unidad Medida", renderCell: (articuloInsumo) => (articuloInsumo.unidadMedida.denominacion),},
     { id: "categoria", label: "Categoria", renderCell: (articuloInsumo) => articuloInsumo.categoria ? articuloInsumo.categoria.denominacion : null },
-
   ];
-
+  
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 10 }}>
       <Container>
@@ -138,24 +146,25 @@ const ArticuloInsumoComponent = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteArticuloInsumo} onEdit={handleEdit} />
         <ModalArticuloInsumo 
-        modalName="modalArticulo" 
-        initialValues={articuloInsumoEditar || { 
-          id:0,
-          image: {id:0, eliminado:false, url: "", name: ""},
-          eliminado: false, 
-          denominacion: '', 
-          precioVenta: 0, 
-          unidadMedida: generateInitialUnidadMedida(), 
-          categoria: {id: 0, eliminado: false, denominacion:'', es_insumo: false},
-          esParaElaborar: false,
-          precioCompra: 0, 
-          stockActual: 0, 
-          stockMaximo: 0 }} 
-        isEditMode={isEditing} 
-        getArticuloInsumos={fetchArticuloInsumos} />
+          modalName="modalArticulo" 
+          initialValues={articuloInsumoEditar || { 
+            id:0,
+            image: {id:0, eliminado:false, url: "", name: ""},
+            eliminado: false, 
+            denominacion: '', 
+            precioVenta: 0, 
+            unidadMedida: generateInitialUnidadMedida(), 
+            categoria: {id: 0, eliminado: false, denominacion:'', es_insumo: false},
+            esParaElaborar: false,
+            precioCompra: 0, 
+            stockActual: 0, 
+            stockMaximo: 0 }} 
+          isEditMode={isEditing} 
+          getArticuloInsumos={fetchArticuloInsumos} />
       </Container>
     </Box>
   );
-};
-
-export default ArticuloInsumoComponent;
+  };
+  
+  export default ArticuloInsumoComponent;
+  
