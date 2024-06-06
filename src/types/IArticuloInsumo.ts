@@ -4,7 +4,7 @@ import IImage from "./IImage";
 import IUnidadMedida from "./IUnidadMedida";
 
 export default interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
-    image: IImage,
+    imagenes: IImage[],
     denominacion: string;
     precioVenta: number;
     unidadMedida: IUnidadMedida;

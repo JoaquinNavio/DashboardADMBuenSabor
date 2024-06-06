@@ -6,7 +6,7 @@ import IUnidadMedida from "./IUnidadMedida";
 
 
 export default interface IArticuloManufacturado extends DataModel<IArticuloManufacturado>{
-    image: IImage,
+    imagenes: IImage[],
     tiempoEstimadoMinutos: number,
     descripcion:string,
     preparacion:string,

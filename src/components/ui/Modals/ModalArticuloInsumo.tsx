@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import GenericModal from './GenericModal'; 
-import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
-import ArticuloInsumoService from '../../../services/ArticuloInsumoService'; 
-import ArticuloInsumo from '../../../types/IArticuloInsumo'; 
+import GenericModal from './GenericModal';
+import TextFieldValue from '../TextFieldValue/TextFieldValue';
+import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
+import ArticuloInsumo from '../../../types/IArticuloInsumo';
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 import SelectList from '../SelectList/SelectList';
@@ -11,6 +11,8 @@ import ArticuloInsumoPost from '../../../types/post/ArticuloInsumoPost';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
+import { Gallery } from '../Gallery/Gallery';
+import { TextField } from '@mui/material';
 
 // Define las props del componente de modal de articuloInsumo
 interface ModalArticuloInsumoProps {
@@ -43,10 +45,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
   const url = import.meta.env.VITE_API_URL;
 
-// BUSQUEDA DE UNIDADES DE MEDIDA
+  // BUSQUEDA DE UNIDADES DE MEDIDA
   const unidadMedidaService = new UnidadMedidaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
-  useEffect(()=>{
+  useEffect(() => {
     const fetchUnidadMedida = async () => {
       try {
         const unidades = await unidadMedidaService.getAll(URL + '/UnidadMedida');
@@ -88,7 +90,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       setSelectedCategoriaId(categoriaId)
     }
   };
-// ----------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------
 
 
   // Función para manejar el envío del formulario
@@ -99,16 +101,18 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         precioVenta: values.precioVenta,
         idUnidadMedida: selectedUnidadMedidaId || values.unidadMedida.id,
         precioCompra: values.precioCompra,
-        stockActual:values.stockActual,
-        stockMaximo:values.stockMaximo,
-        esParaElaborar:values.esParaElaborar,
-        idCategoria:selectedCategoriaId || values.categoria.id
+        stockActual: values.stockActual,
+        stockMaximo: values.stockMaximo,
+        esParaElaborar: values.esParaElaborar,
+        idCategoria: selectedCategoriaId || values.categoria.id,
+        imagenes: selectedFiles
       }
-      console.log(values)
+      console.log(body);
+      console.log(values);
       if (isEditMode) {
         await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body); // Actualiza el articuloInsumo si está en modo de edición
       } else {
-        await articuloInsumoService.postx(`${URL}/ArticuloInsumo`, body); // Agrega un nuevo articuloInsumo si no está en modo de edición
+        await articuloInsumoService.postz(`${URL}/ArticuloInsumo/crearCompleto`, body); // Agrega un nuevo articuloInsumo si no está en modo de edición
       }
       getArticuloInsumos(); // Actualiza la lista de articuloInsumos
     } catch (error) {
@@ -119,35 +123,47 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   // Si no está en modo de edición, se limpian los valores iniciales
   if (!isEditMode) {
     initialValues = {
-        id:0,
+      id: 0,
+      eliminado: false,
+      denominacion: '',
+      precioVenta: 0,
+      unidadMedida: {
+        id: 0,
         eliminado: false,
-        denominacion: '',
-        precioVenta: 0,
-        unidadMedida: {
-          id:0,
-          eliminado: false,
-          denominacion: ""
-        },
-        esParaElaborar: false,
-        precioCompra: 0,
-        stockActual: 0,
-        stockMaximo: 0,
-        categoria: {
-          id:0,
-          eliminado: false,
-          denominacion: "",
-          esInsumo:false,
-          categoriaPadre: undefined,
-        },
+        denominacion: ""
+      },
+      esParaElaborar: false,
+      precioCompra: 0,
+      stockActual: 0,
+      stockMaximo: 0,
+      categoria: {
+        id: 0,
+        eliminado: false,
+        denominacion: "",
+        esInsumo: false,
+        categoriaPadre: undefined,
+      },
+      imagenes: []
     };
   }
 
-  const onClose = () =>{
+  const onClose = () => {
     setSelectedCategoriaId(undefined)
     setSelectedUnidadMedidaId(undefined)
   }
 
+// Estado para almacenar archivos seleccionados para subir
+const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
   
+  const handleDeleteImg = () => {
+    console.log("borrar");
+    // setImagenCargada(undefined);
+   };
+
   // Renderiza el componente de modal genérico
   return (
     <GenericModal
@@ -160,67 +176,97 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       onClose={onClose}
     >
       {/* Campos del formulario */}
-      <div  style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%'}}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px', width: '100%' }}>
         <div style={{ flex: '0 0 80%' }}>
-        <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
+          <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
         </div>
         <div style={{ flex: '1' }}>
-        <SelectFieldValue
-          label="Es Para Elaborar"
-          name="esParaElaborar"
-          type='text'
-          options={[
-            { label: 'Sí', value: 'true' },
-            { label: 'No', value: 'false' }
-          ]}
-          placeholder="Es Para Elaborar?"
-          disabled={isEditMode}
-        />
+          <SelectFieldValue
+            label="Es Para Elaborar"
+            name="esParaElaborar"
+            type='text'
+            options={[
+              { label: 'Sí', value: 'true' },
+              { label: 'No', value: 'false' }
+            ]}
+            placeholder="Es Para Elaborar?"
+            disabled={isEditMode}
+          />
         </div>
       </div>
-      
-        
-        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
-          <div>
+
+
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px' }}>
+        <div>
           <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
-          </div>
-          <div>
+        </div>
+        <div>
           <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="Precio Venta" />
-          </div>
         </div>
-      
-         
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px'}}>
+      </div>
+
+
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px' }}>
         <div>
-        <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
+          <TextFieldValue label="Stock Actual" name="stockActual" type="number" placeholder="Stock Actual" />
         </div>
         <div>
-        <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
+          <TextFieldValue label="Stock Maximo" name="stockMaximo" type="number" placeholder="Stock Maximo" />
         </div>
       </div>
       <div style={{ display: 'flex', gap: '20px' }}>
         <div style={{ flex: 1 }}>
-            <SelectList
-              title="UnidadMedida"
-              items={unidadesMedida.reduce((mapa, unidadMedida) => {
-                mapa.set(unidadMedida.id, unidadMedida.denominacion); 
-                return mapa
-              }, new Map<number, string>())}
-              handleChange={handleUnidadMedidaChange}
-              selectedValue={selectedUnidadMedidaId || (initialValues.unidadMedida.id !== 0 ? initialValues.unidadMedida.id : undefined)}
-            />
+          <SelectList
+            title="UnidadMedida"
+            items={unidadesMedida.reduce((mapa, unidadMedida) => {
+              mapa.set(unidadMedida.id, unidadMedida.denominacion);
+              return mapa
+            }, new Map<number, string>())}
+            handleChange={handleUnidadMedidaChange}
+            selectedValue={selectedUnidadMedidaId || (initialValues.unidadMedida.id !== 0 ? initialValues.unidadMedida.id : undefined)}
+          />
         </div>
       </div>
-      
+
       <SelectList
-              title="Categoria padre"
-              items={categorias.reduce((mapa, categoria) => {
-                mapa.set(categoria.id, categoria.denominacion); 
-                return mapa
-              }, new Map<number, string>())}
-              handleChange={handleCategoriaChange}
-              selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
-            />
+        title="Categoria padre"
+        items={categorias.reduce((mapa, categoria) => {
+          mapa.set(categoria.id, categoria.denominacion);
+          return mapa
+        }, new Map<number, string>())}
+        handleChange={handleCategoriaChange}
+        selectedValue={selectedCategoriaId || (initialValues.categoria.id !== 0 ? initialValues.categoria.id : undefined)}
+      />
+      <div>
+        <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imagenes</label>
+        <div
+          title="Imagenes"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "2vh",
+            padding: ".4rem",
+          }}
+        >
+          {/* Campo de entrada de archivos */}
+          <TextField
+            id="outlined-basic"
+            variant="outlined"
+            type="file"
+            onChange={handleFileChange}
+            inputProps={{
+              multiple: true,
+            }}
+          />
+        </div>
+        {/* Componente de galería para mostrar las imágenes */}
+
+        {isEditMode && (
+          <Gallery images={initialValues.imagenes} handleDeleteImg={handleDeleteImg} />
+        )}
+
+      </div>
     </GenericModal>
   );
 };
