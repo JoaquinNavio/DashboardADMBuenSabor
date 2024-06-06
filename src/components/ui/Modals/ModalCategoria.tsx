@@ -11,17 +11,16 @@ import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 import CategoriaPost from '../../../types/post/CategoriaPost';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import { useAuth0 } from "@auth0/auth0-react";
 
-// Define las props del componente de modal de categoria
 interface ModalCategoriaProps {
-  modalName: string; // Nombre del modal
-  initialValues: Categoria; // Valores iniciales del formulario
-  isEditMode: boolean; // Indicador de modo de edición
-  getCategorias: () => Promise<void>; // Función para obtener categorias
-  categoriaAEditar?: Categoria; // Categoria a editar
+  modalName: string;
+  initialValues: Categoria;
+  isEditMode: boolean;
+  getCategorias: () => Promise<void>;
+  categoriaAEditar?: Categoria;
 }
 
-// Componente de modal de categoria
 const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   modalName,
   initialValues,
@@ -29,94 +28,84 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   getCategorias,
   categoriaAEditar,
 }) => {
-  const showModal = useSelector((state: RootState) => state.modal[modalName]);
+  const { getAccessTokenSilently } = useAuth0();
+  const categoriaService = new CategoriaService();
+  const URL = import.meta.env.VITE_API_URL;
 
-  const categoriaService = new CategoriaService(); // Instancia del servicio de categoria
-  const URL = import.meta.env.VITE_API_URL; // URL de la API
-
-  // Esquema de validación con Yup
   const validationSchema = Yup.object().shape({
-    denominacion: Yup.string()
-      .required('Campo requerido'), // Campo CUIL requerido
+    denominacion: Yup.string().required('Campo requerido'),
   });
 
-  // Función para manejar el envío del formulario
   const handleSubmit = async (values: Categoria) => {
     const body: CategoriaPost = {
-      categoriaPadreId:selectedCategoriaPadreId ,
-      denominacion:values.denominacion,
-      esInsumo:values.esInsumo,
-      
-    }
+      categoriaPadreId: selectedCategoriaPadreId,
+      denominacion: values.denominacion,
+      esInsumo: values.esInsumo,
+    };
+
     try {
+      const token = await getAccessTokenSilently();
       if (isEditMode) {
-        await categoriaService.putx(`${URL}/categoria`, values.id, body); // Actualiza la categoria si está en modo de edición
+        await categoriaService.putx(`${URL}/categoria`, values.id, body, token);
       } else {
-        await categoriaService.postx(`${URL}/categoria`, body); // Agrega una nueva categoria si no está en modo de edición
+        await categoriaService.postx(`${URL}/categoria`, body, token);
       }
-      getCategorias(); // Actualiza la lista de categorias
+      getCategorias();
     } catch (error) {
-      console.error('Error al enviar los datos:', error); // Manejo de errores
+      console.error('Error al enviar los datos:', error);
     }
   };
 
-  // Si no está en modo de edición, se limpian los valores iniciales
+  let initialValuesCopy = { ...initialValues }; // Crear una copia de los valores iniciales para evitar la mutación
+
   if (!isEditMode) {
-    initialValues = {
+    initialValuesCopy = {
       id: 0,
-      eliminado:false,
+      eliminado: false,
       denominacion: '',
       esInsumo: false,
-      categoriaPadre:undefined
+      categoriaPadre: undefined,
     };
-  }  
+  }
 
-
-  const url = import.meta.env.VITE_API_URL;
-  const dispatch = useAppDispatch();
   const [filteredData, setFilteredData] = useState<Categoria[]>([]);
   const [selectedCategoriaPadreId, setCategoriaPadreId] = useState<number | undefined>(0);
 
-  
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const categorias = await categoriaService.getAll(url + '/categoria');
-        dispatch(setCategoria(categorias));
+        const token = await getAccessTokenSilently();
+        const categorias = await categoriaService.getAll(`${URL}/categoria`, token);
         setFilteredData(categorias);
       } catch (error) {
         console.error("Error al obtener las Categorias:", error);
       }
     };
     fetchCategorias();
-  }, [showModal] );
-  
+  }, [modalName]);
+
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const idCategoriaSelected = parseInt(event.target.value);
-    // Buscar la localidad por su nombre en el array de localidades
     if (idCategoriaSelected) {
-      // Asignar el ID de la localidad seleccionada
       setCategoriaPadreId(idCategoriaSelected);
     }
   };
 
-  function onClose(){
-    setCategoriaPadreId(undefined)
-  }
+  const onClose = () => {
+    setCategoriaPadreId(undefined);
+  };
 
-  // Renderiza el componente de modal genérico
   return (
     <GenericModal
       modalName={modalName}
       title={isEditMode ? 'Editar Categoria' : 'Añadir Categoria'}
-      initialValues={categoriaAEditar || initialValues} // Usa la categoria a editar si está disponible, de lo contrario, usa los valores iniciales
+      initialValues={categoriaAEditar || initialValuesCopy}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
       onClose={onClose}
     >
-      {/* Campos del formulario */}
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%'}}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'start', gap:'10px', width: '100%' }}>
         <div style={{ flex: '0 0 80%' }}>
           <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación"/>
         </div>
@@ -135,20 +124,18 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
         </div>
       </div>
       <div>
-      <SelectList
-              title="Categoría padre"
-              items={filteredData.reduce((mapa, categoria) => {
-                mapa.set(categoria.id, categoria.denominacion); 
-                return mapa
-              }, new Map<number, string>())}
-              handleChange={handleCategoriaChange}
-              selectedValue={selectedCategoriaPadreId || (initialValues.categoriaPadre?.id)}
-            />
+        <SelectList
+          title="Categoría padre"
+          items={filteredData.reduce((mapa, categoria) => {
+            mapa.set(categoria.id, categoria.denominacion); 
+            return mapa
+          }, new Map<number, string>())}
+          handleChange={handleCategoriaChange}
+          selectedValue={selectedCategoriaPadreId || (initialValuesCopy.categoriaPadre?.id)}
+        />
       </div>
-      
-      
     </GenericModal>
   );
 };
 
-export default ModalCategoria; // Exporta el componente ModalCategoria
+export default ModalCategoria;

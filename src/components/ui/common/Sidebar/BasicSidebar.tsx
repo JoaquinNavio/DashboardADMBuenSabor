@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { cilBarChart, cilBuilding,cilFactory , cilCart, cilFastfood, cilPeople,cilLineWeight } from "@coreui/icons";
+import { cilBarChart, cilBuilding,cilFactory , cilCart, cilPeople,cilLineWeight } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { CNavGroup, CNavItem, CNavTitle, CSidebar, CSidebarNav } from "@coreui/react";
 import '@coreui/coreui/dist/css/coreui.min.css';
@@ -29,17 +29,12 @@ const BasicSidebar: React.FC = () => {
                             Empresas
                         </Link>
                     </CNavItem>
-                    
                     <CNavItem>
                             <Link to="/categorias" className="nav-link">
                                 <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
                                 Categorías
                             </Link>
                         </CNavItem>
-
-                    
-
-                    
                     <CNavItem>
                         <Link to="/articuloInsumos" className="nav-link">
                             <CIcon customClassName="nav-icon" icon={cilCart} />

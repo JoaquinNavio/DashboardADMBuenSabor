@@ -12,11 +12,15 @@ import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida';
 import ArticuloManufacturado from '../components/screens/ArticuloManufacturado/ArticuloManufacturado';
 import ArticuloInsumo from '../components/screens/ArticuloInsumo/ArticuloInsumo';
 import { Promocion } from '../components/screens/Promocion/Promocion';
+import ClientProfilePage from '../components/screens/User/ClientProfilePage';
+import CallbackPage from '../components/auth0/CallbackPage';
+import ErrorPage from '../components/screens/User/ErrorPage';
+import { AuthenticationGuard } from '../components/auth0/AuthenticationGuard';
 
 
 const Rutas: React.FC = () => {
   return (
-    <Router>
+    <>
       <div className='navbar'>
       <BaseNavbar />
       </div>
@@ -25,17 +29,23 @@ const Rutas: React.FC = () => {
         </div>
         <div className="content">
           <Routes>
-            <Route path="/" element={<Inicio />} />
-            <Route path="/empresas" element={<Empresa />} />
-            <Route path="/categorias" element={<Categoria />} />
-            <Route path="/empresas/:empresaId" element={<Sucursal />} />
-            <Route path="/articuloInsumos" element={<ArticuloInsumo/>} />
-            <Route path="/articulosManufacturados" element={<ArticuloManufacturado/>} />
-            <Route path="/unidadesMedida" element={<UnidadMedida/>} />
-            <Route path="/promociones" element={<Promocion></Promocion>} />
+            <Route path="/" element={<AuthenticationGuard component={Inicio}></AuthenticationGuard>} />
+            <Route path="/empresas" element={<AuthenticationGuard component={Empresa}></AuthenticationGuard>} />
+            <Route path="/categorias" element={<AuthenticationGuard component={Categoria }></AuthenticationGuard>} />
+            <Route path="/empresas/:empresaId" element={<AuthenticationGuard component={Sucursal}></AuthenticationGuard> } />
+            <Route path="/articuloInsumos" element={<AuthenticationGuard component={ArticuloInsumo}></AuthenticationGuard>} />
+            <Route path="/articulosManufacturados" element={<AuthenticationGuard component={ArticuloManufacturado}></AuthenticationGuard>} />
+            <Route path="/unidadesMedida" element={<AuthenticationGuard component={UnidadMedida}></AuthenticationGuard>} />
+            <Route path="/promociones" element={<AuthenticationGuard component={Promocion}></AuthenticationGuard>} />
+            <Route path="/cliente/perfil" element={<AuthenticationGuard component={ClientProfilePage}></AuthenticationGuard>} />
+
+
+            <Route path="/callbasck" element={<CallbackPage></CallbackPage>} />
+            <Route path="+" element={<ErrorPage></ErrorPage>} />
+
           </Routes>
         </div>
-    </Router>
+    </>
   );
 }
 
