@@ -12,10 +12,12 @@ import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalArticuloInsumo from "../../ui/Modals/ModalArticuloInsumo";
 import IUnidadMedida from "../../../types/IUnidadMedida";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const ArticuloInsumoComponent = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  const { getAccessTokenSilently } = useAuth0();
   const articuloInsumoService = new ArticuloInsumoService();
   const globalArticuloInsumos = useAppSelector(
     (state) => state.articuloInsumo.data
@@ -27,7 +29,12 @@ const ArticuloInsumoComponent = () => {
 
   const fetchArticuloInsumos = async () => {
     try {
-      const articuloInsumos = await articuloInsumoService.getAll(url + '/ArticuloInsumo');
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        },
+      });
+      const articuloInsumos = await articuloInsumoService.getAll(url + '/ArticuloInsumo', token);
       console.log(articuloInsumos);
       dispatch(setArticuloInsumo(articuloInsumos));
       setFilteredData(articuloInsumos);
@@ -46,14 +53,18 @@ const ArticuloInsumoComponent = () => {
 
   const onDeleteArticuloInsumo = async (articuloInsumo: ArticuloInsumo) => {
     try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        },
+      });
       await onDelete(
         articuloInsumo,
         async (articuloInsumoToDelete: ArticuloInsumo) => {
-          await articuloInsumoService.delete(url + '/ArticuloInsumo', articuloInsumoToDelete.id);
+          await articuloInsumoService.delete(url + '/ArticuloInsumo', articuloInsumoToDelete.id, token);
         },
         fetchArticuloInsumos,
-        () => {
-        },
+        () => {},
         (error: any) => {
           console.error("Error al eliminar articuloInsumo:", error);
         }

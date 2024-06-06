@@ -4,6 +4,7 @@ import GenericModal from './GenericModal';
 import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalUnidadMedidaProps {
   modalName: string;
@@ -20,6 +21,7 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   getUnidades,
   UnidadAEditar,
 }) => {
+  const { getAccessTokenSilently } = useAuth0();
   const unidadMedidaService = new UnidadMedidaService();
   const URL = import.meta.env.VITE_API_URL;
 
@@ -29,10 +31,12 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
 
   const handleSubmit = async (values: IUnidadMedida) => {
     try {
+      const token = await getAccessTokenSilently();
+
       if (isEditMode) {
-        await unidadMedidaService.put(`${URL}/UnidadMedida`, values.id, values);
+        await unidadMedidaService.put(`${URL}/UnidadMedida`, values.id, values, token);
       } else {
-        await unidadMedidaService.post(`${URL}/UnidadMedida`, values);
+        await unidadMedidaService.post(`${URL}/UnidadMedida`, values, token);
       }
       getUnidades();
     } catch (error) {
