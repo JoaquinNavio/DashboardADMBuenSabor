@@ -213,14 +213,29 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   }, [showModal]);
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [imageInputs, setImageInputs] = useState<number[]>([]);
+
   useEffect(() => {
     if (showModal) {
       setSelectedFiles(null);
+      setImageInputs([]);
     }
   }, [showModal]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles(event.target.files);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => {
+        const updatedFiles = prev ? [...prev] : [];
+        updatedFiles[index] = newFiles[0];
+        return updatedFiles;
+      });
+    }
+  };
+
+  const addNewImageInput = () => {
+    setImageInputs([...imageInputs, imageInputs.length]);
   };
 
   const handleDeleteImg = () => {
@@ -237,7 +252,6 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       isEditMode={isEditMode}
       onClose={onClose}
     >
-
       <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
       <TextFieldValue label="Descripción" name="descripcion" type="text" placeholder="Ingrese descripción" />
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: '10px' }}>
@@ -261,28 +275,26 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         />
       </div>
 
-      {
-        articulosInsumosItems.map(item => {
-          const detalle = detalles.find(detalle => detalle.id === item.idDetalle);
-          return (
-            <ItemDetalleArticuloManufacturado
-              key={item.idComponent}
-              idComponent={item.idComponent}
-              idDetalle={detalle?.id}
-              insumos={articulosInsumo}
-              handleItemChange={handleItemChange}
-              removeComponent={removeItem}
-              selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
-              cantidad={item.cantidad || detalle?.cantidad}
-              categorias={categorias}
-            />
-          )
-        })
-      }
+      {articulosInsumosItems.map(item => {
+        const detalle = detalles.find(detalle => detalle.id === item.idDetalle);
+        return (
+          <ItemDetalleArticuloManufacturado
+            key={item.idComponent}
+            idComponent={item.idComponent}
+            idDetalle={detalle?.id}
+            insumos={articulosInsumo}
+            handleItemChange={handleItemChange}
+            removeComponent={removeItem}
+            selectedArticuloInsumoId={item.selectedArticuloInsumoId || detalle?.articuloInsumo.id}
+            cantidad={item.cantidad || detalle?.cantidad}
+            categorias={categorias}
+          />
+        );
+      })}
       <button type="button" style={{ margin: '10px' }} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Insumo</button>
 
       <div>
-        <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imagenes</label>
+        <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imágenes</label>
         <div
           title="Imagenes"
           style={{
@@ -293,16 +305,21 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
             padding: ".4rem",
           }}
         >
-          <TextField
-            id="outlined-basic"
-            variant="outlined"
-            type="file"
-            onChange={handleFileChange}
-            inputProps={{
-              multiple: true,
-            }}
-          />
+          {imageInputs.map((input, index) => (
+            <div key={index}>
+              <TextField
+                id={`outlined-basic-${index}`}
+                variant="outlined"
+                type="file"
+                onChange={(event) => handleFileChange(event, index)}
+                inputProps={{
+                  multiple: true,
+                }}
+              />
+            </div>
+          ))}
         </div>
+        <button type="button" className='btn btn-secondary' onClick={addNewImageInput}>{<Add />} Añadir Nueva Imagen</button>
         {isEditMode && (
           <Gallery images={initialValues.imagenes} handleDeleteImg={handleDeleteImg} />
         )}

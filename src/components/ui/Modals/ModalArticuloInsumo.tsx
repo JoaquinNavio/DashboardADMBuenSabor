@@ -12,8 +12,11 @@ import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
 import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 import { Gallery } from '../Gallery/Gallery';
-import { TextField } from '@mui/material';
+import { TextField, Button } from '@mui/material';
+import { Add } from '@mui/icons-material';
 import { useAuth0 } from "@auth0/auth0-react";
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 interface ModalArticuloInsumoProps {
   modalName: string;
@@ -40,7 +43,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     stockMaximo: Yup.number().required('Campo requerido')
   });
 
-  // BUSQUEDA DE UNIDADES DE MEDIDA
   const unidadMedidaService = new UnidadMedidaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
   useEffect(() => {
@@ -143,13 +145,36 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const onClose = () => {
     setSelectedCategoriaId(undefined);
     setSelectedUnidadMedidaId(undefined);
+    setImageInputs([]);
+    setSelectedFiles([]);
   };
 
   // Estado para almacenar archivos seleccionados para subir
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [imageInputs, setImageInputs] = useState<number[]>([]);
+  const showModal = useSelector((state: RootState) => state.modal[modalName]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles(event.target.files);
+  useEffect(() => {
+    if (showModal) {
+      setSelectedFiles([]);
+      setImageInputs([]);
+    }
+  }, [showModal]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => {
+        const updatedFiles = [...prev];
+        updatedFiles[index] = newFiles[0];
+        return updatedFiles;
+      });
+    }
+  };
+
+  const addNewImageInput = () => {
+    setImageInputs([...imageInputs, imageInputs.length]);
   };
 
   const handleDeleteImg = () => {
@@ -157,7 +182,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     // setImagenCargada(undefined);
   };
 
-  // Renderiza el componente de modal genérico
   return (
     <GenericModal
       modalName={modalName}
@@ -231,23 +255,38 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
       {/* Campo para subir imágenes */}
       <div>
-        <label htmlFor="imagenes">Subir Imágenes</label>
-        <input
-          type="file"
-          id="imagenes"
-          name="imagenes"
-          multiple
-          onChange={handleFileChange}
-        />
+        <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imágenes</label>
+        <div
+          title="Imagenes"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "2vh",
+            padding: ".4rem",
+          }}
+        >
+          {imageInputs.map((input, index) => (
+            <div key={index}>
+              <TextField
+                id={`outlined-basic-${index}`}
+                variant="outlined"
+                type="file"
+                onChange={(event) => handleFileChange(event, index)}
+                inputProps={{
+                  multiple: true,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <Button variant="contained" color="primary" startIcon={<Add />} onClick={addNewImageInput}>Añadir Nueva Imagen</Button>
+        {isEditMode && (
+          <Gallery images={initialValues.imagenes} handleDelete={handleDeleteImg} />
+        )}
       </div>
-
-      {/* Mostrar la galería de imágenes si hay imágenes cargadas */}
-      {initialValues.imagenes && initialValues.imagenes.length > 0 && (
-        <Gallery images={initialValues.imagenes} handleDelete={handleDeleteImg} />
-      )}
     </GenericModal>
   );
 };
 
 export default ModalArticuloInsumo;
-
