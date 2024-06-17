@@ -16,6 +16,7 @@ import ClientProfilePage from '../components/screens/User/ClientProfilePage';
 import CallbackPage from '../components/auth0/CallbackPage';
 import ErrorPage from '../components/screens/User/ErrorPage';
 import { AuthenticationGuard } from '../components/auth0/AuthenticationGuard';
+import Empleado from '../components/screens/Empleado/Empleado';
 
 
 const Rutas: React.FC = () => {
@@ -38,6 +39,7 @@ const Rutas: React.FC = () => {
             <Route path="/unidadesMedida" element={<AuthenticationGuard component={UnidadMedida}></AuthenticationGuard>} />
             <Route path="/promociones" element={<AuthenticationGuard component={Promocion}></AuthenticationGuard>} />
             <Route path="/cliente/perfil" element={<AuthenticationGuard component={ClientProfilePage}></AuthenticationGuard>} />
+            <Route path="/empleados" element={<AuthenticationGuard component={Empleado}></AuthenticationGuard>} />
 
 
             <Route path="/callbasck" element={<CallbackPage></CallbackPage>} />

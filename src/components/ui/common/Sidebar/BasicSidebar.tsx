@@ -59,27 +59,12 @@ const BasicSidebar: React.FC = () => {
                             Promociones
                         </Link>
                     </CNavItem>
-                    <CNavGroup
-                        toggler={
-                            <>
-                                <CIcon customClassName="nav-icon" icon={cilPeople} />
-                                Empleados
-                            </>
-                        }
-                    >
-                        <CNavItem>
+                    <CNavItem>
                             <Link to="/empleados" className="nav-link" >
-                                <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
+                            <CIcon customClassName="nav-icon" icon={cilPeople} />
                                 Lista de Empleados
                             </Link>
                         </CNavItem>
-                        <CNavItem>
-                            <Link to="/roles" className="nav-link">
-                                <span className="nav-icon"><span className="nav-icon-bullet"></span></span>
-                                Roles
-                            </Link>
-                        </CNavItem>
-                    </CNavGroup>
                 </CSidebarNav>
             </CSidebar>
         </div>

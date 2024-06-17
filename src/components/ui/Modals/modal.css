@@ -3,3 +3,29 @@
     margin: 0 auto;
   }
   
+.custom-modal .modal-body {
+  padding: 2rem;
+}
+
+.custom-modal .card {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.custom-modal .form-control {
+  margin-bottom: 1rem;
+}
+
+.custom-modal .form-label {
+  font-weight: 500;
+}
+
+.custom-modal .btn {
+  margin-top: 1rem;
+}
