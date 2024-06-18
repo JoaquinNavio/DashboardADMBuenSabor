@@ -36,6 +36,8 @@ const EmpresaSucursalSelector: React.FC = () => {
     try {
       const token = await getAccessTokenSilently();
       const empresaConSucursales = await empresaService.get(`${url}/empresa/sucursales`, empresa.id, token);
+
+      console.log(empresaConSucursales.sucursales);
       setSucursales(empresaConSucursales.sucursales);
     } catch (error) {
       console.error('Error al obtener las sucursales:', error);
@@ -49,7 +51,7 @@ const EmpresaSucursalSelector: React.FC = () => {
 
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 10 }}>
-      <Container>
+      <Container style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Typography variant="h5" gutterBottom>
           Selecciona una Empresa
         </Typography>
@@ -61,7 +63,7 @@ const EmpresaSucursalSelector: React.FC = () => {
                 <CardMedia
                   component="img"
                   height="140"
-                  image="/static/images/cards/empresa-placeholder.png" // Reemplaza con la ruta real de la imagen
+                  image={empresa.url_imagen}
                   alt={empresa.nombre}
                 />
                 <CardContent>
@@ -92,7 +94,7 @@ const EmpresaSucursalSelector: React.FC = () => {
                     <CardMedia
                       component="img"
                       height="140"
-                      image="/static/images/cards/sucursal-placeholder.png" // Reemplaza con la ruta real de la imagen
+                      image={sucursal.url_imagen}
                       alt={sucursal.nombre}
                     />
                     <CardContent>
