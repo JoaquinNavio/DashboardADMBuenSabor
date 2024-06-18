@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { cilBarChart, cilBuilding,cilFactory , cilCart, cilPeople,cilLineWeight } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
-import { CNavGroup, CNavItem, CNavTitle, CSidebar, CSidebarNav } from "@coreui/react";
+import {  CNavItem, CNavTitle, CSidebar, CSidebarNav } from "@coreui/react";
 import '@coreui/coreui/dist/css/coreui.min.css';
 import { cilDollar } from "@coreui/icons";
 

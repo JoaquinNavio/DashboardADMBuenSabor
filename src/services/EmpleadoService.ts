@@ -2,8 +2,23 @@
 import IEmpleado from "../types/Empleado";
 import BackendClient from "./BackendClient";
 
-
 export default class EmpleadoService extends BackendClient<IEmpleado> {
+  async getEmpleadoById(url: string, id: number, token: string): Promise<IEmpleado> {
+    return this.get(url, id, token);
+  }
+
+  async getEmpleadoByEmail(url: string, email: string, token: string): Promise<IEmpleado> {
+    const path = `${url}/empleado/email/${email}`;
+    const options: RequestInit = {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return this.request(path, options, token);
+  }
+
   async postEmpleado(url: string, data: FormData, token: string): Promise<IEmpleado> {
     const path = url;
     const options: RequestInit = {

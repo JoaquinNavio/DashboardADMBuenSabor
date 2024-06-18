@@ -1,71 +1,47 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Container, Typography, Grid } from '@mui/material';
+import { useAuth0 } from '@auth0/auth0-react';
+import EmpleadoService from '../../../services/EmpleadoService';
 
 
-// Contenido para las tarjetas de inicio
-/*
-const productosContent = {
-    url: 'https://images.unsplash.com/photo-1615996001375-c7ef13294436?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    title: 'Productos',
-    content: 'Añade nuevos platos o actualiza los precios para mejorar la experiencia de tus clientes.',
-};
 
-const empresasContent = {
-    url: 'https://images.unsplash.com/photo-1524414139215-35c99f80112d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    title: 'Empresas',
-    content: 'Agrega, actualiza o elimina información sobre tus empresas asociadas.'
-};
-
-const promocionesContent = {
-    url: 'https://images.unsplash.com/photo-1581495701295-13b43b0f4ae8?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    title: 'Promociones',
-    content: 'Personaliza tus ofertas y haz que destaquen para que tus clientes no puedan resistirse.',
-};
-
-// Estilo para las tarjetas
-const cardStyle = {
-    width: "100%",
-    height: "100%",
-};
-*/
-//Renderización del componente
 const Inicio: React.FC = () => {
+    const { user, getAccessTokenSilently } = useAuth0();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkUserRole = async () => {
+            try {
+                const token = await getAccessTokenSilently();
+                const empleadoService = new EmpleadoService();
+                const empleado = await empleadoService.getEmpleadoByEmail(`${import.meta.env.VITE_API_URL}`, user?.email, token);
+
+                if (empleado.tipoEmpleado === 'ADMIN') {
+                    navigate('/select');
+                    
+                } else {
+                    localStorage.setItem('sucursal_id', empleado.sucursal_id.toString());
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error al verificar el rol del usuario:', error);
+                setLoading(false);
+            }
+        };
+
+        checkUserRole();
+    }, [getAccessTokenSilently, navigate, user]);
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+
     return (
-        <h1>Inicio</h1>
-        /*
-        <Box component="main" sx={{ flexGrow: 1, pt: 10}}>
-            <Container>
-                <Typography component="h1" variant="h5" color="initial" >Bienvenido</Typography>
-                        
-                <Grid container spacing={3} sx={{ py: 2, alignContent: 'center' , justifyContent: 'center' }}>
-                    <Grid item xs={12} md={6}>
-                        <ChartCard title="Gráfico de Barras">
-                            <BaseBar />
-                        </ChartCard>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ChartCard title="Gráfico de Pastel">
-                            <BasePie />
-                        </ChartCard>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={3} sx={{ alignContent: 'center' , justifyContent: 'center'}}>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={productosContent} />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={empresasContent} />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={promocionesContent} />
-                        </Box>
-                    </Grid>
-                </Grid>
-            </Container>
-        </Box>*/
+        <Box component="main" sx={{ flexGrow: 1, pt: 10 }}>
+            
+        </Box>
     );
 };
 
