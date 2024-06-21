@@ -32,12 +32,19 @@ const CategoriaComponent = () => {
           audience: import.meta.env.VITE_AUTH0_AUDIENCE,
         },
       });
-  
+
       // Imprimir el token JWT en la consola
       console.log("Token JWT:", token);
-  
-      const categorias = await categoriaService.getAll(url + '/categoria', token);
-      setCategorias(categorias);
+
+      const sucursalId = localStorage.getItem('sucursal_id');
+      console.log(sucursalId);
+
+      if (sucursalId) {
+        const categorias = await categoriaService.getAll(`${url}/categoria/sucursal/${sucursalId}`, token);
+        setCategorias(categorias);
+      } else {
+        console.error("No se encontró el ID de la sucursal en el local storage.");
+      }
     } catch (error) {
       console.error("Error al obtener las Categorias:", error);
     }

@@ -31,6 +31,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   isEditMode,
   getArticuloInsumos,
 }) => {
+  const sucursalId = localStorage.getItem('sucursal_id');
+
   const { getAccessTokenSilently } = useAuth0();
   const articuloInsumoService = new ArticuloInsumoService();
   const URL = import.meta.env.VITE_API_URL;
@@ -101,10 +103,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         stockMaximo: values.stockMaximo,
         esParaElaborar: values.esParaElaborar,
         idCategoria: selectedCategoriaId || values.categoria.id,
-        imagenes: selectedFiles
+        files: selectedFiles,
+        sucursal_id: parseInt(sucursalId)
       };
-      console.log(body);
-      console.log(values);
+      console.log(body)
       if (isEditMode) {
         await articuloInsumoService.putx(`${URL}/ArticuloInsumo`, values.id, body, token);
       } else {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
 import EmpleadoService from '../../../services/EmpleadoService';
 
@@ -23,6 +23,7 @@ const Inicio: React.FC = () => {
                     
                 } else {
                     localStorage.setItem('sucursal_id', empleado.sucursal_id.toString());
+
                     setLoading(false);
                 }
             } catch (error) {

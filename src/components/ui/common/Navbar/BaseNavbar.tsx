@@ -17,6 +17,7 @@ import LoginButton from './LoginButton';
 import RegistroButton from './RegistroButton';
 
 export default function PrimarySearchAppBar() {
+  const sucursalNombre = localStorage.getItem('selectedSucursalNombre');
   const [anchorEl, setAnchorEl] = React.useState(null);
   
   const {isAuthenticated}=useAuth0();
@@ -79,7 +80,7 @@ export default function PrimarySearchAppBar() {
             component="div"
             sx={{ justifyContent: 'center' }}
           >
-            El Buen Sabor Dashboard
+            El Buen Sabor Dashboard _____________ Sucursal seleccionada:{sucursalNombre}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <IconButton

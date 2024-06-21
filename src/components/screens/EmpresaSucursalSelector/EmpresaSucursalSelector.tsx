@@ -46,6 +46,7 @@ const EmpresaSucursalSelector: React.FC = () => {
 
   const handleSucursalSelect = (sucursal: Sucursal) => {
     localStorage.setItem('selectedSucursalId', sucursal.id.toString());
+    localStorage.setItem('selectedSucursalNombre', sucursal.nombre); // Guardar el nombre de la sucursal
     navigate('/articulosManufacturados');
   };
 

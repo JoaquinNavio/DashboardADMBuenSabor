@@ -24,6 +24,8 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   getCategorias,
   categoriaAEditar,
 }) => {
+  const sucursalId = localStorage.getItem('sucursal_id');
+
   const { getAccessTokenSilently } = useAuth0();
   const categoriaService = new CategoriaService();
   const URL = import.meta.env.VITE_API_URL;
@@ -37,6 +39,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       categoriaPadreId: selectedCategoriaPadreId === 0 ? undefined : selectedCategoriaPadreId,
       denominacion: values.denominacion,
       esInsumo: values.esInsumo,
+      sucursal_id: parseInt(sucursalId)
     };
 
     try {
@@ -73,7 +76,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
     const fetchCategorias = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const categorias = await categoriaService.getAll(`${URL}/categoria`, token);
+        const categorias = await categoriaService.getAll(`${URL}/categoria/sucursal/${sucursalId}`, token);
         setFilteredData(categorias);
       } catch (error) {
         console.error("Error al obtener las Categorias:", error);
@@ -81,6 +84,10 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
     };
     fetchCategorias();
   }, [modalName]);
+
+  useEffect(() => {
+    setCategoriaPadreId(initialValues.categoriaPadre?.id); // Asegurar que el valor inicial del select esté bien definido
+  }, [initialValues]);
 
   const handleCategoriaChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const idCategoriaSelected = parseInt(event.target.value);
@@ -131,7 +138,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
             return mapa
           }, new Map<number, string>())}
           handleChange={handleCategoriaChange}
-          selectedValue={selectedCategoriaPadreId || (initialValuesCopy.categoriaPadre?.id)}
+          selectedValue={selectedCategoriaPadreId || initialValuesCopy.categoriaPadre?.id}
         />
       </div>
     </GenericModal>
