@@ -32,6 +32,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   getArticuloInsumos,
 }) => {
   const sucursalId = localStorage.getItem('sucursal_id');
+  console.log("SUCRUSAL ID",sucursalId);
 
   const { getAccessTokenSilently } = useAuth0();
   const articuloInsumoService = new ArticuloInsumoService();
@@ -93,6 +94,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
   const handleSubmit = async (values: ArticuloInsumo) => {
     try {
+      console.log("SUCRUSAL ID FORM",sucursalId);
       const token = await getAccessTokenSilently();
       const body: ArticuloInsumoPost = {
         denominacion: values.denominacion,
