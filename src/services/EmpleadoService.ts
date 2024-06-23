@@ -1,4 +1,3 @@
-// services/EmpleadoService.ts
 import IEmpleado from "../types/Empleado";
 import BackendClient from "./BackendClient";
 
@@ -33,7 +32,7 @@ export default class EmpleadoService extends BackendClient<IEmpleado> {
   }
 
   async putEmpleado(url: string, id: number, data: FormData, token: string): Promise<IEmpleado> {
-    const path = `${url}/${id}`;
+    const path = `${url}/update/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {
@@ -44,4 +43,18 @@ export default class EmpleadoService extends BackendClient<IEmpleado> {
     };
     return this.request(path, options, token);
   }
+
+  async deleteEmpleado(url: string, id: number, token: string): Promise<void> {
+    const path = `${url}/${id}`;
+    const options: RequestInit = {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    await this.request(path, options, token);
+  }
+
+ 
 }

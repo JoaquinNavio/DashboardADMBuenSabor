@@ -1,4 +1,3 @@
-// components/pages/Empleado/Empleado.tsx
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
@@ -11,24 +10,26 @@ import { handleSearch, onDelete } from "../../../utils/utils";
 import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalEmpleado from "../../ui/Modals/ModalEmpleado";
-import IEmpleado from "../../../types/IEmpleado";
 import { useAuth0 } from "@auth0/auth0-react";
+import IEmpleado from '../../../types/Empleado';
 
 const Empleado = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const { getAccessTokenSilently } = useAuth0();
   const empleadoService = new EmpleadoService();
-  const globalEmpleados = useAppSelector((state) => state.empleado.data || []); // Asegurarse que `data` esté definido
+  const globalEmpleados = useAppSelector((state) => state.empleado.data || []);
 
   const [filteredData, setFilteredData] = useState<IEmpleado[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [empleadoEditar, setEmpleadoEditar] = useState<IEmpleado | undefined>();
 
   const fetchEmpleados = async () => {
+    const sucursalId = localStorage.getItem('sucursal_id');
+
     try {
       const token = await getAccessTokenSilently();
-      const empleados = await empleadoService.getAll(url + '/empleados', token);
+      const empleados = await empleadoService.getAll(`${url}/empleado/sucursal/${sucursalId}`, token);
       dispatch(setEmpleado(empleados));
       setFilteredData(empleados);
     } catch (error) {
@@ -50,7 +51,7 @@ const Empleado = () => {
       await onDelete(
         empleado,
         async (empleadoToDelete: IEmpleado) => {
-          await empleadoService.delete(url + '/empleados', empleadoToDelete.id, token);
+          await empleadoService.delete(url + '/empleado', empleadoToDelete.id, token);
         },
         fetchEmpleados,
         () => {},
@@ -80,7 +81,17 @@ const Empleado = () => {
     { id: "telefono", label: "Teléfono", renderCell: (empleado) => <>{empleado.telefono}</> },
     { id: "email", label: "Email", renderCell: (empleado) => <>{empleado.email}</> },
     { id: "tipoEmpleado", label: "Tipo de Empleado", renderCell: (empleado) => <>{empleado.tipoEmpleado}</> },
-    { id: "imagenPersona", label: "Imagen", renderCell: (empleado) => <img src={empleado.imagenPersona.url} width={75} /> },
+    { 
+      id: "imagenPersona", 
+      label: "Imagen", 
+      renderCell: (empleado) => (
+        <img 
+          src={empleado.imagen?.url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1200px-Imagen_no_disponible.svg.png'} 
+          width={75} 
+          alt="Imagen del empleado" 
+        />
+      )
+    }
   ];
 
   return (
@@ -119,7 +130,10 @@ const Empleado = () => {
             tipoEmpleado: "Cocinero",
             imagenPersona: { id: 0, url: "", name: "" },
             domicilios: []
-          }} isEditMode={isEditing} onSubmit={fetchEmpleados} />
+          }} 
+          isEditMode={isEditing} 
+          getEmpleados={fetchEmpleados} // Pasar fetchEmpleados aquí
+        />
       </Container>
     </Box>
   );
