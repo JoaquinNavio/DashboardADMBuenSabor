@@ -151,20 +151,21 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         throw new Error("Token no disponible");
       }
 
-      const domicilio = {
-        calle: values.domicilio.calle,
-        numero: values.domicilio.numero,
-        cp: values.domicilio.cp,
-        piso: values.domicilio.piso,
-        nroDpto: values.domicilio.nroDpto,
-        idLocalidad: selectedLocalidadId || values.domicilio.idLocalidad,
-      };
+      const domicilio = values.domicilio;
 
       const formData = new FormData();
       formData.append('nombre', values.nombre);
       formData.append('horarioApertura', values.horarioApertura);
       formData.append('horarioCierre', values.horarioCierre);
-      formData.append('domicilio', JSON.stringify(domicilio));
+      
+      formData.append('domicilio.calle', domicilio.calle);
+      formData.append('domicilio.numero', domicilio.numero.toString());
+      formData.append('domicilio.cp', domicilio.cp.toString());
+      formData.append('domicilio.piso', domicilio.piso.toString());
+      formData.append('domicilio.nroDpto', domicilio.nroDpto.toString());
+      formData.append('domicilio.idLocalidad', (selectedLocalidadId || domicilio.idLocalidad).toString());
+
+
       formData.append('idEmpresa', idEmpresa.toString());
       formData.append('esCasaMatriz', values.esCasaMatriz ? 'true' : 'false');
 
