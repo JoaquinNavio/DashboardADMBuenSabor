@@ -17,6 +17,7 @@ export const Promocion = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const { getAccessTokenSilently } = useAuth0();
+  const sucursalId = localStorage.getItem('sucursal_id');
 
   const promocionService = new PromocionService();
 
@@ -32,7 +33,7 @@ export const Promocion = () => {
   const fetchPromociones = async () => {
     try {
       const token = await getAccessTokenSilently();
-      const promociones = await promocionService.getAll(url + '/promociones', token);
+      const promociones = await promocionService.getAll(url + '/promociones/sucursal/' + sucursalId, token);
       dispatch(setPromociones(promociones));
       setFilteredData(promociones);
     } catch (error) {

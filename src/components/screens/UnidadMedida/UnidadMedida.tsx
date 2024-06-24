@@ -24,6 +24,7 @@ const UnidadMedida = () => {
   const [unidadMedidaEditar, setUnidadMedidaEditar] = useState<IUnidadMedida | undefined>();
   const globalUnidadMedida = useAppSelector((state) => state.unidadMedida.data);
   const [filteredData, setFilteredData] = useState<IUnidadMedida[]>([]);
+  const sucursalId = localStorage.getItem('sucursal_id');
 
   useEffect(() => {
     fetchUnidadMedida();
@@ -37,7 +38,7 @@ const UnidadMedida = () => {
         },
       });
 
-      const unidades = await unidadMedidaService.getAll(url + '/UnidadMedida', token);
+      const unidades = await unidadMedidaService.getAll(url + '/UnidadMedida/sucursal/'+ sucursalId, token);
       dispatch(setUnidadMedida(unidades));
       setFilteredData(unidades);
     } catch (error) {

@@ -26,6 +26,7 @@ const ArticuloInsumoComponent = () => {
   const [filteredData, setFilteredData] = useState<ArticuloInsumo[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [articuloInsumoEditar, setArticuloInsumoEditar] = useState<ArticuloInsumo | undefined>();
+  const sucursalId = localStorage.getItem('sucursal_id');
 
   const fetchArticuloInsumos = async () => {
     try {
@@ -34,7 +35,7 @@ const ArticuloInsumoComponent = () => {
           audience: import.meta.env.VITE_AUTH0_AUDIENCE,
         },
       });
-      const articuloInsumos = await articuloInsumoService.getAll(url + '/ArticuloInsumo', token);
+      const articuloInsumos = await articuloInsumoService.getAll(url + '/ArticuloInsumo/sucursal/' + sucursalId, token);
       console.log(articuloInsumos);
       dispatch(setArticuloInsumo(articuloInsumos));
       setFilteredData(articuloInsumos);

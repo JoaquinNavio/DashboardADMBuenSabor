@@ -25,11 +25,12 @@ const ArticuloManufacturado= () => {
   const [filteredData, setFilteredData] = useState<IArticuloManufacturado[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [articuloManufacturadoEditar, setArticuloManufacturadoEditar] = useState<IArticuloManufacturado | undefined>();
+  const sucursalId = localStorage.getItem('sucursal_id');
 
   const fetchArticuloManufacturados = async () => {
     try {
       const token = await getAccessTokenSilently();
-      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/ArticuloManufacturado', token);
+      const articuloManufacturados = await articuloManufacturadoService.getAll(url + '/ArticuloManufacturado/sucursal/' + sucursalId, token);
       console.log(articuloManufacturados);
       dispatch(setArticuloManufacturado(articuloManufacturados));
       setFilteredData(articuloManufacturados);
