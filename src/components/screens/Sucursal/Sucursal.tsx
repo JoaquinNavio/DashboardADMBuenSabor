@@ -1,28 +1,23 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Container } from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import Column from '../../../types/Column';
-import Sucursal from '../../../types/ISucursal';
-import EmpresaService from '../../../services/EmpresaService';
-import { toggleModal } from '../../../redux/slices/ModalReducer';
-import { handleSearch, onDelete } from '../../../utils/utils';
-import SearchBar from '../../ui/common/SearchBar/SearchBar';
-import TableComponent from '../../ui/Table/Table';
-import { setSucursal } from '../../../redux/slices/SucursalReducer';
-import ModalSucursal from '../../ui/Modals/ModalSucursal';
-import SucursalService from '../../../services/SucursalService';
-import IEmpresa from "../../../types/IEmpresa";
-import SucursalPost from "../../../types/post/SucursalPost";
-import ISucursal from "../../../types/ISucursal";
-import { CheckCircleOutline, HighlightOff } from '@mui/icons-material';
+import { Box, Typography, Button, Container } from "@mui/material";
+import { Add, CheckCircleOutline, HighlightOff } from "@mui/icons-material";
+import { useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import Column from "../../../types/Column";
+import Sucursal from "../../../types/ISucursal";
+import EmpresaService from "../../../services/EmpresaService";
+import SucursalService from "../../../services/SucursalService";
+import { toggleModal } from "../../../redux/slices/ModalReducer";
+import { handleSearch, onDelete } from "../../../utils/utils";
+import SearchBar from "../../ui/common/SearchBar/SearchBar";
+import TableComponent from "../../ui/Table/Table";
+import { setSucursal } from "../../../redux/slices/SucursalReducer";
+import ModalSucursal from "../../ui/Modals/ModalSucursal";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const SucursalesEmpresa = () => {
+const SucursalComponent = () => {
   const { empresaId } = useParams<{ empresaId: string }>();
   const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
-  const [empresa, setEmpresa] = useState<IEmpresa>();
   const dispatch = useAppDispatch();
   const { getAccessTokenSilently } = useAuth0();
 
@@ -31,9 +26,9 @@ const SucursalesEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
 
   const sucursalesEmpresa = useAppSelector((state) => state.sucursal.data);
-  const [filteredData, setFilteredData] = useState<(ISucursal | SucursalPost)[]>([]);
+  const [filteredData, setFilteredData] = useState<Sucursal[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [sucursalEditar, setSucursalEditar] = useState<Sucursal | SucursalPost>();
+  const [sucursalEditar, setSucursalEditar] = useState<Sucursal | undefined>();
   const [casaMatrizDisabled, setCasaMatrizDisabled] = useState<boolean>(false);
 
   const fetchSucursal = async () => {
@@ -43,6 +38,7 @@ const SucursalesEmpresa = () => {
         const empresa = await empresaService.get(`${url}/empresa/sucursales`, parseInt(empresaId), token);
         dispatch(setSucursal(empresa.sucursales));
         setFilteredData(empresa.sucursales);
+        setNombreEmpresa(empresa.nombre);
       } else {
         console.error("Error: empresaId es undefined");
       }
@@ -52,28 +48,8 @@ const SucursalesEmpresa = () => {
   };
 
   useEffect(() => {
-    const fetchEmpresa = async () => {
-      try {
-        if (empresaId !== undefined) {
-          const token = await getAccessTokenSilently();
-          const idEmpresa: number = parseInt(empresaId);
-          const empresa = await empresaService.get(`${url}/empresa/sucursales`, idEmpresa, token);
-          dispatch(setSucursal(empresa.sucursales));
-          setFilteredData(empresa.sucursales);
-          setNombreEmpresa(empresa.nombre);
-          setEmpresa(empresa);
-
-          const hasCasaMatriz = empresa.sucursales.some((sucursal: ISucursal) => sucursal.esCasaMatriz);
-          setCasaMatrizDisabled(hasCasaMatriz);
-        }
-      } catch (error) {
-        console.error('Error al obtener la empresa:', error);
-      }
-    };
-
     fetchSucursal();
-    fetchEmpresa();
-  }, [empresaId, url, dispatch]);
+  }, [empresaId]);
 
   const onSearch = (query: string) => {
     handleSearch(query, sucursalesEmpresa, 'nombre', setFilteredData);
@@ -113,12 +89,12 @@ const SucursalesEmpresa = () => {
   };
 
   const columns: Column[] = [
-    { id: 'nombre', label: 'Nombre', renderCell: (sucursal) => <>{sucursal.nombre}</> },
-    { id: 'horarioApertura', label: 'Horario de Apertura', renderCell: (sucursal) => <>{sucursal.horarioApertura}</> },
-    { id: 'horarioCierre', label: 'Horario de Cierre', renderCell: (sucursal) => <>{sucursal.horarioCierre}</> },
+    { id: "nombre", label: "Nombre", renderCell: (sucursal) => <>{sucursal.nombre}</> },
+    { id: "horarioApertura", label: "Horario de Apertura", renderCell: (sucursal) => <>{sucursal.horarioApertura}</> },
+    { id: "horarioCierre", label: "Horario de Cierre", renderCell: (sucursal) => <>{sucursal.horarioCierre}</> },
     {
-      id: 'direccion',
-      label: 'Dirección',
+      id: "direccion",
+      label: "Dirección",
       renderCell: (sucursal) => (
         <div>
           <p>{sucursal.domicilio.calle}, {sucursal.domicilio.numero}</p>
@@ -127,40 +103,33 @@ const SucursalesEmpresa = () => {
       ),
     },
     {
-      id: 'casaMatriz',
-      label: 'Casa Matriz',
+      id: "esCasaMatriz",
+      label: "Casa Matriz",
       renderCell: (sucursal) => (
         <div className={sucursal.esCasaMatriz ? 'casa-matriz' : ''}>
           {sucursal.esCasaMatriz ? <CheckCircleOutline color="primary" /> : <HighlightOff color="error" />}
         </div>
       ),
     },
+    {
+      id: "url_imagen",
+      label: "Imagen",
+      renderCell: (sucursal) => (
+        <img
+          src={sucursal.url_imagen || 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1200px-Imagen_no_disponible.svg.png'}
+          width={75}
+          alt="Imagen de la sucursal"
+        />
+      ),
+    },
   ];
-
-  const generateInitialSucursal = (idEmpresa: number): SucursalPost => {
-    return {
-      nombre: '',
-      horarioApertura: '',
-      horarioCierre: '',
-      domicilio: {
-        calle: '',
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        idLocalidad: 0,
-      },
-      idEmpresa: idEmpresa,
-      esCasaMatriz: false
-    };
-  };
 
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 10 }}>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
           <Typography variant="h5" gutterBottom>
-            Sucursales habilitadas de {nombreEmpresa}
+            Sucursales de {nombreEmpresa}
           </Typography>
           <Button
             onClick={handleAddSucursal}
@@ -173,7 +142,7 @@ const SucursalesEmpresa = () => {
             variant="contained"
             startIcon={<Add />}
           >
-            Sucursales
+            Sucursal
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
@@ -182,10 +151,10 @@ const SucursalesEmpresa = () => {
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteSucursal} onEdit={handleEdit} />
         <ModalSucursal
           modalName="modal"
-          initialValues={sucursalEditar || generateInitialSucursal(empresa?.id || 0)}
+          initialValues={sucursalEditar || { nombre: "", horarioApertura: "", horarioCierre: "", domicilio: { calle: "", numero: 0, cp: 0, piso: 0, nroDpto: 0, idLocalidad: 0 }, esCasaMatriz: false, idEmpresa: parseInt(empresaId || "0") }}
           isEditMode={isEditing}
           getSucursales={fetchSucursal}
-          idEmpresa={empresa?.id || 0}
+          idEmpresa={parseInt(empresaId || "0")}
           casaMatrizDisabled={casaMatrizDisabled}
         />
       </Container>
@@ -193,4 +162,4 @@ const SucursalesEmpresa = () => {
   );
 };
 
-export default SucursalesEmpresa;
+export default SucursalComponent;

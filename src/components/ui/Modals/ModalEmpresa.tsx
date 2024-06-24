@@ -5,14 +5,13 @@ import TextFieldValue from '../TextFieldValue/TextFieldValue';
 import EmpresaService from '../../../services/EmpresaService'; 
 import Empresa from '../../../types/IEmpresa'; 
 import { useAuth0 } from "@auth0/auth0-react";
-import { TextField } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 
 interface ModalEmpresaProps {
   modalName: string;
   initialValues: Empresa;
   isEditMode: boolean;
   getEmpresas: () => Promise<void>;
-  empresaAEditar?: Empresa;
 }
 
 const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
@@ -20,7 +19,6 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
   initialValues,
   isEditMode,
   getEmpresas,
-  empresaAEditar,
 }) => {
   const { getAccessTokenSilently } = useAuth0();
   const empresaService = new EmpresaService();
@@ -38,9 +36,9 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setSelectedFile(files[0]);
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
     }
   };
 
@@ -53,13 +51,14 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
       formData.append('cuil', values.cuil.toString());
       if (selectedFile) {
         formData.append('imagen', selectedFile);
+      } else if (initialValues.url_imagen) {
+        formData.append('imagenUrl', initialValues.url_imagen);
       }
 
-      
       if (isEditMode) {
-        await empresaService.put(`${URL}/empresa`, values.id, formData, token);
+        await empresaService.putEmpresa(`${URL}/empresa`, values.id, formData, token);
       } else {
-        await empresaService.post(`${URL}/empresa`, formData, token);
+        await empresaService.postEmpresa(`${URL}/empresa`, formData, token);
       }
       await getEmpresas();
     } catch (error) {
@@ -68,23 +67,11 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
     }
   };
 
-  if (!isEditMode) {
-    initialValues = {
-      id: 0,
-      eliminado: false,
-      nombre: '',
-      razonSocial: '',
-      cuil: 0,
-      sucursales: [],
-      
-    };
-  }
-
   return (
     <GenericModal
       modalName={modalName}
       title={isEditMode ? 'Editar Empresa' : 'Añadir Empresa'}
-      initialValues={empresaAEditar || initialValues}
+      initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
@@ -101,7 +88,17 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
           type="file"
           onChange={handleFileChange}
         />
+        {isEditMode && initialValues.url_imagen && (
+          <img
+            src={initialValues.url_imagen}
+            alt="Imagen de la empresa"
+            style={{ width: '75px', height: '75px', objectFit: 'cover', marginTop: '10px' }}
+          />
+        )}
       </div>
+      <Button variant="contained" color="primary" type="submit">
+        {isEditMode ? 'Actualizar' : 'Crear'}
+      </Button>
     </GenericModal>
   );
 };

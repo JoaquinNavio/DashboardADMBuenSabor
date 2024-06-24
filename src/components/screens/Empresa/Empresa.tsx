@@ -4,7 +4,6 @@ import { Add, Visibility, AddCircle } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setEmpresa } from "../../../redux/slices/EmpresaReducer";
 import { useAuth0 } from "@auth0/auth0-react";
-
 import EmpresaService from "../../../services/EmpresaService";
 import Column from "../../../types/Column";
 import Empresa from "../../../types/IEmpresa";
@@ -15,7 +14,6 @@ import SearchBar from "../../ui/common/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalEmpresa from "../../ui/Modals/ModalEmpresa";
 import ModalSucursal from "../../ui/Modals/ModalSucursal";
-import SucursalPost from "../../../types/post/SucursalPost";
 
 const EmpresaComponent = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -27,12 +25,11 @@ const EmpresaComponent = () => {
   const [filteredData, setFilteredData] = useState<Empresa[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [empresaEditar, setEmpresaEditar] = useState<Empresa | undefined>();
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | undefined>();
 
   const fetchEmpresas = async () => {
     try {
       const token = await getAccessTokenSilently();
-      console.log(token)
-
       const empresas = await empresaService.getAll(url + '/empresa', token);
       dispatch(setEmpresa(empresas));
       setFilteredData(empresas);
@@ -52,8 +49,6 @@ const EmpresaComponent = () => {
   const onDeleteEmpresa = async (empresa: Empresa) => {
     try {
       const token = await getAccessTokenSilently();
-            console.log(token)
-
       await onDelete(
         empresa,
         async (empresaToDelete: Empresa) => {
@@ -82,32 +77,25 @@ const EmpresaComponent = () => {
   };
 
   const handleAddSucursal = (empresa: Empresa) => {
+    setSelectedEmpresaId(empresa.id);
     dispatch(toggleModal({ modalName: "modalSucursal" }));
-    setEmpresaEditar(empresa);
-  };
-
-  const generateInitialSucursal = (idEmpresa: number): SucursalPost => {
-    return {
-      nombre: '',
-      horarioApertura: '',
-      horarioCierre: '',
-      domicilio: {
-        calle: '',
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        idLocalidad: 0,
-      },
-      idEmpresa: idEmpresa,
-      esCasaMatriz: false
-    };
   };
 
   const columns: Column[] = [
     { id: "nombre", label: "Nombre", renderCell: (empresa) => <>{empresa.nombre}</> },
     { id: "razonSocial", label: "Razón Social", renderCell: (empresa) => <>{empresa.razonSocial}</> },
     { id: "cuil", label: "CUIL", renderCell: (empresa) => <>{empresa.cuil}</> },
+    {
+      id: "url_imagen",
+      label: "Imagen",
+      renderCell: (empresa) => (
+        <img 
+          src={empresa.url_imagen || 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Imagen_no_disponible.svg/1200px-Imagen_no_disponible.svg.png'} 
+          width={75} 
+          alt="Imagen de la empresa" 
+        />
+      )
+    },
     {
       id: "sucursales",
       label: "Sucursales",
@@ -155,16 +143,33 @@ const EmpresaComponent = () => {
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteEmpresa} onEdit={handleEdit} />
         <ModalEmpresa
           modalName="modal"
-          initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, sucursales: [] }}
+          initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, url_imagen: "", sucursales: [] }}
           isEditMode={isEditing}
           getEmpresas={fetchEmpresas}
         />
         <ModalSucursal
           modalName="modalSucursal"
-          initialValues={empresaEditar ? generateInitialSucursal(empresaEditar.id) : generateInitialSucursal(0)}
+          initialValues={{
+            id: 0,
+            eliminado: false,
+            nombre: "",
+            horarioApertura: "",
+            horarioCierre: "",
+            domicilio: {
+              calle: "",
+              numero: 0,
+              cp: 0,
+              piso: 0,
+              nroDpto: 0,
+              idLocalidad: 0,
+            },
+            idEmpresa: selectedEmpresaId || 0,
+            esCasaMatriz: false,
+            url_imagen: "",
+          }}
           isEditMode={false}
-          getSucursales={fetchEmpresas}
-          idEmpresa={empresaEditar?.id || 0}
+          getSucursales={fetchEmpresas} // Reutilizando fetchEmpresas para refrescar las sucursales después de agregar una nueva
+          idEmpresa={selectedEmpresaId || 0}
           casaMatrizDisabled={false}
         />
       </Container>

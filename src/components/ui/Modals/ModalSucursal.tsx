@@ -13,6 +13,7 @@ import IPais from '../../../types/IPais';
 import ProvinciaService from '../../../services/ProvinciaService';
 import PaisService from '../../../services/PaisService';
 import { useAuth0 } from "@auth0/auth0-react";
+import { TextField, Button } from '@mui/material';
 
 interface ModalSucursalProps {
   modalName: string;
@@ -46,6 +47,8 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [selectedPaisId, setSelectedPaisId] = useState<number | undefined>(undefined);
   const [selectedProvinciaId, setSelectedProvinciaId] = useState<number | undefined>(undefined);
   const [selectedLocalidadId, setSelectedLocalidadId] = useState<number | undefined>(undefined);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -129,23 +132,18 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     setSelectedLocalidadId(localidadIdSelected);
   };
 
-  if (!isEditMode) {
-    initialValues = {
-      nombre: '',
-      horarioApertura: '',
-      horarioCierre: '',
-      domicilio: {
-        calle: '',
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        idLocalidad: 0
-      },
-      idEmpresa: idEmpresa,
-      esCasaMatriz: false,
-    };
-  }
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const logFormData = (formData: FormData) => {
+    for (let pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+  };
 
   const handleSubmit = async (values: SucursalPost | ISucursal) => {
     try {
@@ -159,31 +157,32 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         cp: values.domicilio.cp,
         piso: values.domicilio.piso,
         nroDpto: values.domicilio.nroDpto,
-        idLocalidad: selectedLocalidadId || 0,
+        idLocalidad: selectedLocalidadId || values.domicilio.idLocalidad,
       };
 
-      let sucursalData: SucursalPost | ISucursal;
+      const formData = new FormData();
+      formData.append('nombre', values.nombre);
+      formData.append('horarioApertura', values.horarioApertura);
+      formData.append('horarioCierre', values.horarioCierre);
+      formData.append('domicilio', JSON.stringify(domicilio));
+      formData.append('idEmpresa', idEmpresa.toString());
+      formData.append('esCasaMatriz', values.esCasaMatriz ? 'true' : 'false');
 
-      if (isEditMode) {
-        const { id, ...rest } = values as ISucursal;
-        sucursalData = {
-          ...rest,
-          domicilio: domicilio,
-          esCasaMatriz: casaMatrizDisabled,
-          idEmpresa: idEmpresa,
-        };
-        await sucursalService.put(`${URL}/sucursal`, id, sucursalData, token);
-      } else {
-        sucursalData = {
-          ...values,
-          domicilio: domicilio,
-          esCasaMatriz: casaMatrizDisabled,
-          idEmpresa: idEmpresa,
-        };
-        await sucursalService.post(`${URL}/sucursal`, sucursalData, token);
+      if (selectedFile) {
+        formData.append('imagen', selectedFile);
+      } else if (isEditMode && (values as ISucursal).url_imagen) {
+        formData.append('imagenUrl', (values as ISucursal).url_imagen);
       }
 
-      getSucursales();
+      logFormData(formData);  // Log the FormData before sending it
+
+      if (isEditMode) {
+        await sucursalService.putSucursal(`${URL}/sucursal`, (values as ISucursal).id, formData, token);
+      } else {
+        await sucursalService.postSucursal(`${URL}/sucursal`, formData, token);
+      }
+
+      await getSucursales();
     } catch (error) {
       console.error('Error al enviar los datos:', error);
     }
@@ -192,8 +191,8 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   return (
     <GenericModal
       modalName={modalName}
-      title={isEditMode ? 'Editar Sucursal' : `Añadir Sucursal`}
-      initialValues={sucursalAEditar || initialValues}
+      title={isEditMode ? 'Editar Sucursal' : 'Añadir Sucursal'}
+      initialValues={initialValues}
       validationSchema={Yup.object().shape({
         nombre: Yup.string().required('Campo requerido'),
         horarioCierre: Yup.string().required('Campo requerido'),
@@ -276,12 +275,41 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
           <h3 style={{ fontSize: '1.2rem' }}>Es casa matriz?</h3>
           <input
             type="checkbox"
-            checked={casaMatrizDisabled}
-            disabled={casaMatrizDisabled}
+            checked={initialValues.esCasaMatriz}
+            onChange={() => {}}
             style={{ marginLeft: 10 }}
           />
         </label>
+        <div>
+          <label style={{ fontWeight: 'bold', fontSize: '18px' }}>Imagen</label>
+          <div
+            title="Imagen Sucursal"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "2vh",
+              padding: ".4rem",
+            }}
+          >
+            <TextField
+              variant="outlined"
+              type="file"
+              onChange={handleFileChange}
+            />
+            {isEditMode && (initialValues as ISucursal).url_imagen && (
+              <img
+                src={(initialValues as ISucursal).url_imagen}
+                alt="Imagen de la sucursal"
+                style={{ width: '75px', height: '75px', objectFit: 'cover' }}
+              />
+            )}
+          </div>
+        </div>
       </div>
+      <Button variant="contained" color="primary" type="submit">
+        {isEditMode ? 'Actualizar' : 'Crear'}
+      </Button>
     </GenericModal>
   );
 };
