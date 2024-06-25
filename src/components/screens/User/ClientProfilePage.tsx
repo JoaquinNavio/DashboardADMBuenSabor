@@ -11,9 +11,7 @@ const ClientProfilePage = () => {
 
   return isAuthenticated ? (
     <div className="flex-col text-center">
-            <p>{user?.email}</p>
-
-            <p>{user?.email}</p>
+        <p>         </p>
 
 
       <img className="inline mb-2" src={user?.picture} alt={user?.name} />

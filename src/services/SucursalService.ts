@@ -16,7 +16,7 @@ export default class SucursalService extends BackendClient<ISucursal> {
   }
 
   async putSucursal(url: string, id: number, data: FormData, token: string): Promise<ISucursal> {
-    const path = `${url}/${id}`;
+    const path = `${url}/update/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {

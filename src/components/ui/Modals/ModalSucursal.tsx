@@ -11,9 +11,9 @@ import ILocalidad from '../../../types/ILocalidad';
 import IProvincia from '../../../types/IProvincia';
 import IPais from '../../../types/IPais';
 import ProvinciaService from '../../../services/ProvinciaService';
-import PaisService from '../../../services/PaisService';
 import { useAuth0 } from "@auth0/auth0-react";
 import { TextField, Button } from '@mui/material';
+import PaisService from '../../../services/PaisService';
 
 interface ModalSucursalProps {
   modalName: string;
@@ -44,9 +44,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
-  const [selectedPaisId, setSelectedPaisId] = useState<number | undefined>(undefined);
-  const [selectedProvinciaId, setSelectedProvinciaId] = useState<number | undefined>(undefined);
-  const [selectedLocalidadId, setSelectedLocalidadId] = useState<number | undefined>(undefined);
+  const [selectedPaisId, setSelectedPaisId] = useState<number | undefined>(initialValues.domicilio?.localidad?.provincia?.pais?.id);
+  const [selectedProvinciaId, setSelectedProvinciaId] = useState<number | undefined>(initialValues.domicilio?.localidad?.provincia?.id);
+  const [selectedLocalidadId, setSelectedLocalidadId] = useState<number | undefined>(initialValues.domicilio?.localidad?.id);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -111,6 +111,14 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     fetchLocalidades();
   }, [selectedProvinciaId, token, URL]);
 
+  useEffect(() => {
+    if (isEditMode) {
+      setSelectedPaisId(initialValues.domicilio?.localidad?.provincia?.pais?.id);
+      setSelectedProvinciaId(initialValues.domicilio?.localidad?.provincia?.id);
+      setSelectedLocalidadId(initialValues.domicilio?.localidad?.id);
+    }
+  }, [isEditMode, initialValues]);
+
   const handlePaisChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const paisIdSelected = parseInt(event.target.value);
     setSelectedPaisId(paisIdSelected);
@@ -165,17 +173,14 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       formData.append('domicilio.nroDpto', domicilio.nroDpto.toString());
       formData.append('domicilio.idLocalidad', (selectedLocalidadId || domicilio.idLocalidad).toString());
 
-
       formData.append('idEmpresa', idEmpresa.toString());
       formData.append('esCasaMatriz', values.esCasaMatriz ? 'true' : 'false');
 
       if (selectedFile) {
         formData.append('imagen', selectedFile);
-      } else if (isEditMode && (values as ISucursal).url_imagen) {
-        formData.append('imagenUrl', (values as ISucursal).url_imagen);
       }
 
-      logFormData(formData);  // Log the FormData before sending it
+      logFormData(formData);
 
       if (isEditMode) {
         await sucursalService.putSucursal(`${URL}/sucursal`, (values as ISucursal).id, formData, token);
@@ -227,10 +232,10 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso" />
+            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso" defaultValue={initialValues.domicilio?.piso || ''} />
           </div>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number" placeholder="Número de Departamento" />
+            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number" placeholder="Número de Departamento" defaultValue={initialValues.domicilio?.nroDpto || ''} />
           </div>
         </div>
         <div style={{ display: 'flex', gap: '20px' }}>
