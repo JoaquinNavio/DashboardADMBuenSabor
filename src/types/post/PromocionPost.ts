@@ -11,6 +11,7 @@ export default interface PromocionPost{
     precioPromocional:number;
     tipoPromocion: number;
     eliminado:boolean;
+    sucursal_id: number;
 
     detalles:PromocionArticuloPost[]
 } 
