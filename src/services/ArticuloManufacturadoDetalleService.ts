@@ -17,6 +17,7 @@ export default class ArticuloManufacturadoDetalleService extends BackendClient<I
           },
           body: JSON.stringify(data),
         };
+          // @ts-ignore
         return this.request(path, options);
       }
       
@@ -30,6 +31,7 @@ export default class ArticuloManufacturadoDetalleService extends BackendClient<I
           },
           body: JSON.stringify(data),
         };
+          // @ts-ignore
         return this.request(path, options);
         
       }

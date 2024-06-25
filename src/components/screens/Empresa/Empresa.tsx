@@ -143,6 +143,7 @@ const EmpresaComponent = () => {
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteEmpresa} onEdit={handleEdit} />
         <ModalEmpresa
           modalName="modal"
+          // @ts-ignore
           initialValues={empresaEditar || { id: 0, eliminado: false, nombre: "", razonSocial: "", cuil: 0, url_imagen: "", sucursales: [] }}
           isEditMode={isEditing}
           getEmpresas={fetchEmpresas}

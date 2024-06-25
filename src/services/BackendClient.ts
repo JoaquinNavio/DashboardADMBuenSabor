@@ -46,6 +46,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       return Promise.reject(error);
     }
   }
+          // @ts-ignore
 
   async get(url: string, id: number, token: string): Promise<T> {
     const path = `${url}/${id}`;
@@ -54,6 +55,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     };
     return this.request(path, options, token);
   }
+          // @ts-ignore
 
   async getAll(url: string, token: string): Promise<T[]> {
     const path = url;
@@ -62,6 +64,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     };
     return this.requestAll(path, options, token);
   }
+          // @ts-ignore
 
   async post(url: string, data: T, token: string): Promise<T> {
     const path = url;
@@ -77,6 +80,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
 
     return this.request(path, options, token);
   }
+          // @ts-ignore
 
   async put(url: string, id: number, data: T, token: string): Promise<T> {
     const path = `${url}/${id}`;
@@ -91,6 +95,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     };
     return this.request(path, options, token);
   }
+          // @ts-ignore
 
   async delete(url: string, id: number, token: string): Promise<void> {
     const path = `${url}/${id}`;

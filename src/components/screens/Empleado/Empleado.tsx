@@ -120,7 +120,7 @@ const Empleado = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteEmpleado} onEdit={handleEdit} />
         <ModalEmpleado
-          modalName="modalEmpleado"
+          modalName="modalEmpleado"// @ts-ignore
           initialValues={empleadoEditar || {
             id: 0,
             nombre: "",

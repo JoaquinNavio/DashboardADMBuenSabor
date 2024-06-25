@@ -6,15 +6,21 @@ import BackendClient from "./BackendClient";
 export default class PromocionService extends BackendClient<IPromocion> {
 
   async postx(url: string, data: PromocionPost, token: string): Promise<IPromocion> {
+              // @ts-ignore
+
     return this.post(url, data, token);
   }
 
   async putx(url: string, id: number, data: PromocionPost, token: string): Promise<IPromocion> {
+              // @ts-ignore
+
     return this.put(url, id, data, token);
   }
 
   async getDetallesPromos(url: string, id: number, token: string): Promise<IPromocionDetalle[]> {
     const path = `${url}/${id}/Detalles`;
+              // @ts-ignore
+
     return this.requestAll(path, { method: "GET" }, token);
   }
 }

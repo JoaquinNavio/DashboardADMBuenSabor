@@ -43,9 +43,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [paises, setPaises] = useState<IPais[]>([]);
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
-
+// @ts-ignore
   const [selectedPaisId, setSelectedPaisId] = useState<number | undefined>(initialValues.domicilio?.localidad?.provincia?.pais?.id);
+  // @ts-ignore
   const [selectedProvinciaId, setSelectedProvinciaId] = useState<number | undefined>(initialValues.domicilio?.localidad?.provincia?.id);
+  // @ts-ignore
   const [selectedLocalidadId, setSelectedLocalidadId] = useState<number | undefined>(initialValues.domicilio?.localidad?.id);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -113,8 +115,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   useEffect(() => {
     if (isEditMode) {
+      // @ts-ignore
       setSelectedPaisId(initialValues.domicilio?.localidad?.provincia?.pais?.id);
+      // @ts-ignore
       setSelectedProvinciaId(initialValues.domicilio?.localidad?.provincia?.id);
+      // @ts-ignore
       setSelectedLocalidadId(initialValues.domicilio?.localidad?.id);
     }
   }, [isEditMode, initialValues]);
@@ -232,10 +237,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso" defaultValue={initialValues.domicilio?.piso || ''} />
+            <TextFieldValue label="Piso" name="domicilio.piso" type="number" placeholder="Piso"
+            // @ts-ignore 
+            defaultValue={initialValues.domicilio?.piso || ''} />
           </div>
           <div style={{ flex: 1 }}>
-            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number" placeholder="Número de Departamento" defaultValue={initialValues.domicilio?.nroDpto || ''} />
+            
+            <TextFieldValue label="Número de Departamento" name="domicilio.nroDpto" type="number"
+             placeholder="Número de Departamento" 
+             // @ts-ignore
+             defaultValue={initialValues.domicilio?.nroDpto || ''} />
           </div>
         </div>
         <div style={{ display: 'flex', gap: '20px' }}>

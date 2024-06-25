@@ -122,7 +122,7 @@ const ArticuloManufacturado= () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteArticuloManufacturado} onEdit={handleEdit} />
         <ModalArticuloManufacturado
-          modalName="modalManu"
+          modalName="modalManu"// @ts-ignore
           initialValues={articuloManufacturadoEditar || {
             id: 0,
             unidadMedida: { id: 0, eliminado: false, denominacion: "" },

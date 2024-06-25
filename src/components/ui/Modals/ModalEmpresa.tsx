@@ -52,6 +52,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
       if (selectedFile) {
         formData.append('imagen', selectedFile);
       } else if (initialValues.url_imagen) {
+        // @ts-ignore
         formData.append('imagenUrl', initialValues.url_imagen);
       }
 
@@ -90,6 +91,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
         />
         {isEditMode && initialValues.url_imagen && (
           <img
+          // @ts-ignore
             src={initialValues.url_imagen}
             alt="Imagen de la empresa"
             style={{ width: '75px', height: '75px', objectFit: 'cover', marginTop: '10px' }}

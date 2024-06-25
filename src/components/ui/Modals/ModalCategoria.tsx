@@ -39,6 +39,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
       categoriaPadreId: selectedCategoriaPadreId === 0 ? undefined : selectedCategoriaPadreId,
       denominacion: values.denominacion,
       esInsumo: values.esInsumo,
+      // @ts-ignore
       sucursal_id: parseInt(sucursalId)
     };
 

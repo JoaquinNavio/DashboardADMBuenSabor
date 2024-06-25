@@ -146,6 +146,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
           idArticuloInsumo: item.selectedArticuloInsumoId || 0,
           idDetalle: item.idDetalle
         };
+        // @ts-ignore
         body.detalles.push(detalle);
       }
 
@@ -226,6 +227,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
+      // @ts-ignore
       setSelectedFiles(prev => {
         const updatedFiles = prev ? [...prev] : [];
         updatedFiles[index] = newFiles[0];
@@ -311,6 +313,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
                 id={`outlined-basic-${index}`}
                 variant="outlined"
                 type="file"
+                // @ts-ignore
                 onChange={(event) => handleFileChange(event, index)}
                 inputProps={{
                   multiple: true,

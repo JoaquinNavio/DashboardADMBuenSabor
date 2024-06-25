@@ -103,7 +103,6 @@ export default function ItemPromocion(props: ItemPromocionProps) {
                 </label>
                 </div>
             </div>
-           
             <div style={{display: 'flex', justifyContent: 'end'}}>
             <button
                 type="button"

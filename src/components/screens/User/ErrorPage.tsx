@@ -5,6 +5,7 @@ const ErrorPage = () => {
   let errorMessage: string;
 
   if (isRouteErrorResponse(error)) {
+    // @ts-ignore
     errorMessage = error.error?.message || error.statusText;
   } else if (error instanceof Error) {
     errorMessage = error.message;

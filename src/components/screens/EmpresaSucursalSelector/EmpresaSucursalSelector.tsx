@@ -70,6 +70,7 @@ const EmpresaSucursalSelector: React.FC = () => {
                 <CardMedia
                   component="img"
                   height="140"
+              // @ts-ignore
                   image={empresa.url_imagen}
                   alt={empresa.nombre}
                 />

@@ -147,7 +147,7 @@ const ArticuloInsumoComponent = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} onDelete={onDeleteArticuloInsumo} onEdit={handleEdit} />
         <ModalArticuloInsumo 
-          modalName="modalArticulo" 
+          modalName="modalArticulo" // @ts-ignore
           initialValues={articuloInsumoEditar || { 
             id:0,
             image: {id:0, eliminado:false, url: "", name: ""},

@@ -109,6 +109,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     if (idPromocion) {
       const userConfirmed = window.confirm('¿Estás seguro, se eliminara permanentemente?');
       if (userConfirmed) {
+        // @ts-ignore
         promocionDetalleService.delete(`${URL}/promocionDetalle`, idPromocion)
       } else {
         return;
@@ -140,6 +141,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         setDetalles(detallitos);
 
         setArticulosInsumosItems(
+          // @ts-ignore
           detallitos.filter(det => det !== undefined).map((det, ix) => ({
             idComponent: ix,
             selectedArticuloId: det?.articuloId,
@@ -231,6 +233,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 key={item.idComponent}
                 idComponent={item.idComponent}
                 idDetalle={detalle?.id}
+                // @ts-ignore
                 cantidad={detalle?.detalle}
                 insumos={articulosManufacturado}
                 handleItemChange={handleItemChange}

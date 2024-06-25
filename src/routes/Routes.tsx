@@ -1,6 +1,5 @@
-// routes/Routes.tsx
 import React from 'react';
-import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import BaseNavbar from '../components/ui/common/Navbar/BaseNavbar';
 import BasicSidebar from '../components/ui/common/Sidebar/BasicSidebar';
 import Categoria from '../components/screens/Categoria/Categoria';
@@ -18,6 +17,7 @@ import ErrorPage from '../components/screens/User/ErrorPage';
 import { AuthenticationGuard } from '../components/auth0/AuthenticationGuard';
 import Empleado from '../components/screens/Empleado/Empleado';
 import EmpresaSucursalSelector from '../components/screens/EmpresaSucursalSelector/EmpresaSucursalSelector';
+import LoginHandler from '../components/LoginHandler'; // Importa LoginHandler
 
 const Rutas: React.FC = () => {
   const location = useLocation();
@@ -29,7 +29,8 @@ const Rutas: React.FC = () => {
       {!hideNavbarAndSidebar && <BasicSidebar />}
       <div className={hideNavbarAndSidebar ? "full-content" : "content"}>
         <Routes>
-          <Route path="/" element={<AuthenticationGuard component={Inicio} />} />
+          <Route path="/" element={<AuthenticationGuard component={LoginHandler} />} />
+          <Route path="/inicio" element={<AuthenticationGuard component={Inicio} />} />
           <Route path="/empresas" element={<AuthenticationGuard component={Empresa} />} />
           <Route path="/categorias" element={<AuthenticationGuard component={Categoria} />} />
           <Route path="/empresas/:empresaId" element={<AuthenticationGuard component={Sucursal} />} />

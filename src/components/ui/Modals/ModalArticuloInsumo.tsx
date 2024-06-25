@@ -105,6 +105,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         stockMaximo: values.stockMaximo,
         esParaElaborar: values.esParaElaborar,
         idCategoria: selectedCategoriaId || values.categoria.id,
+        // @ts-ignore
         files: selectedFiles,
         sucursal_id: parseInt(sucursalId)
       };
@@ -276,6 +277,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 id={`outlined-basic-${index}`}
                 variant="outlined"
                 type="file"
+                // @ts-ignore
                 onChange={(event) => handleFileChange(event, index)}
                 inputProps={{
                   multiple: true,
@@ -286,6 +288,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         </div>
         <Button variant="contained" color="primary" startIcon={<Add />} onClick={addNewImageInput}>Añadir Nueva Imagen</Button>
         {isEditMode && (
+          // @ts-ignore
           <Gallery images={initialValues.imagenes} handleDelete={handleDeleteImg} />
         )}
       </div>

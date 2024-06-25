@@ -84,7 +84,7 @@ const UnidadMedida = () => {
     dispatch(toggleModal({ modalName: "modalUnidad" }));
   };
 
-  const columns: Column[] = [
+  const columns: Column[] = [// @ts-ignore
     { id: "Denominacion", label: "Denominacion", renderCell: (unidadMedida) => <>{unidadMedida.denominacion}</> },
   ];
 

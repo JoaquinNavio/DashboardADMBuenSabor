@@ -22,15 +22,16 @@ const BasicSidebar: React.FC = () => {
                     <CNavTitle>
                         Dashboard
                     </CNavTitle>
-                    <CNavItem>
-                        <Link to="/" className="nav-link" >
+                    
+
+                    {isAdmin && (
+                        <>
+                        <CNavItem>
+                        <Link to="/inicio" className="nav-link" >
                             <CIcon customClassName="nav-icon" icon={cilBarChart} />
                             Inicio
                         </Link>
                     </CNavItem>
-
-                    {isAdmin && (
-                        <>
                             <CNavItem>
                                 <Link to="/select" className="nav-link" >
                                     <CIcon customClassName="nav-icon" icon={cilSwapHorizontal} />

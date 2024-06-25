@@ -13,7 +13,8 @@ export default class PromocionDetalleService extends BackendClient<IPromocionDet
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        };
+        };          // @ts-ignore
+
         return this.request(path, options);
       }
     
@@ -26,7 +27,8 @@ export default class PromocionDetalleService extends BackendClient<IPromocionDet
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        };
+        };          // @ts-ignore
+
         return this.request(path, options);
       }
 

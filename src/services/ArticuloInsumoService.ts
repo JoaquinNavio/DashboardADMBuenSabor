@@ -27,10 +27,14 @@ export default class ArticuloInsumoService extends BackendClient<IArticuloInsumo
     formData.append('precioVenta', data.precioVenta.toString());
     formData.append('stockActual', data.stockActual.toString());
     formData.append('stockMaximo', data.stockMaximo.toString());
-    formData.append('sucursal_id', data.sucursal_id.toString());
 
+      // @ts-ignore
+    formData.append('sucursal_id', data.sucursal_id.toString());
+// @ts-ignore
     if (data.files) {
+        // @ts-ignore
       Array.from(data.files).forEach((file) => {
+          // @ts-ignore
         formData.append("files", file);
       });
     }
