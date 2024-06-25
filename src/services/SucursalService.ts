@@ -1,3 +1,4 @@
+import axios from "axios";
 import ISucursal from "../types/ISucursal";
 import BackendClient from "./BackendClient";
 
@@ -14,7 +15,15 @@ export default class SucursalService extends BackendClient<ISucursal> {
     };
     return this.request(path, options, token);
   }
-
+  
+  async getById(baseURL: string, sucursalId: number, token: string) {
+    const response = await axios.get(`${baseURL}/sucursal/${sucursalId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return response.data;
+}
   async putSucursal(url: string, id: number, data: FormData, token: string): Promise<ISucursal> {
     const path = `${url}/update/${id}`;
     const options: RequestInit = {

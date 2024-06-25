@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, Card, CardContent, CardMedia, Grid } from '@mui/material';
+import { Box, Container, Typography, Card, CardContent, CardMedia, Grid, Paper } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import EmpresaService from '../../../services/EmpresaService';
@@ -37,7 +37,6 @@ const EmpresaSucursalSelector: React.FC = () => {
       const token = await getAccessTokenSilently();
       const empresaConSucursales = await empresaService.get(`${url}/empresa/sucursales`, empresa.id, token);
 
-      console.log(empresaConSucursales.sucursales);
       setSucursales(empresaConSucursales.sucursales);
     } catch (error) {
       console.error('Error al obtener las sucursales:', error);
@@ -46,22 +45,28 @@ const EmpresaSucursalSelector: React.FC = () => {
 
   const handleSucursalSelect = (sucursal: Sucursal) => {
     localStorage.setItem('sucursal_id', sucursal.id.toString());
-    console.log("SUCURSAL ID DESDE HANDLE", sucursal.id.toString());
-    localStorage.setItem('selectedSucursalNombre', sucursal.nombre); // Guardar el nombre de la sucursal
+    localStorage.setItem('selectedSucursalNombre', sucursal.nombre);
     navigate('/articulosManufacturados');
   };
 
   return (
     <Box component="main" sx={{ flexGrow: 1, my: 10 }}>
-      <Container style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Typography variant="h5" gutterBottom>
+      <Container style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography variant="h4" gutterBottom>
           Selecciona una Empresa
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {empresas.map((empresa) => (
             <Grid item xs={12} sm={6} md={4} key={empresa.id}>
-              <Card onClick={() => handleEmpresaSelect(empresa)}>
+              <Card
+                onClick={() => handleEmpresaSelect(empresa)}
+                sx={{
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'scale(1.05)' },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="140"
@@ -85,14 +90,21 @@ const EmpresaSucursalSelector: React.FC = () => {
         </Grid>
 
         {selectedEmpresa && (
-          <>
-            <Typography variant="h5" gutterBottom sx={{ mt: 5 }}>
+          <Paper elevation={3} sx={{ mt: 5, p: 3, width: '100%', maxWidth: '800px' }}>
+            <Typography variant="h5" gutterBottom sx={{ textAlign: 'center' }}>
               Sucursales de {selectedEmpresa.nombre}
             </Typography>
             <Grid container spacing={3}>
               {sucursales.map((sucursal) => (
                 <Grid item xs={12} sm={6} md={4} key={sucursal.id}>
-                  <Card onClick={() => handleSucursalSelect(sucursal)}>
+                  <Card
+                    onClick={() => handleSucursalSelect(sucursal)}
+                    sx={{
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                      '&:hover': { transform: 'scale(1.05)' },
+                    }}
+                  >
                     <CardMedia
                       component="img"
                       height="140"
@@ -100,7 +112,7 @@ const EmpresaSucursalSelector: React.FC = () => {
                       alt={sucursal.nombre}
                     />
                     <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
+                      <Typography gutterBottom variant="h6" component="div">
                         {sucursal.nombre}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -114,7 +126,7 @@ const EmpresaSucursalSelector: React.FC = () => {
                 </Grid>
               ))}
             </Grid>
-          </>
+          </Paper>
         )}
       </Container>
     </Box>

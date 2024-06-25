@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Chart } from 'react-google-charts';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Charts.css';
+import SucursalService from '../../../services/SucursalService';
 
 const Inicio: React.FC = () => {
     const { user, getAccessTokenSilently } = useAuth0();
@@ -22,12 +23,21 @@ const Inicio: React.FC = () => {
             try {
                 const token = await getAccessTokenSilently();
                 const empleadoService = new EmpleadoService();
+                const sucursalService = new SucursalService();
                 const empleado = await empleadoService.getEmpleadoByEmail(`${import.meta.env.VITE_API_URL}`, user?.email, token);
-
+                
                 if (empleado.tipoEmpleado === 'ADMIN') {
+                    localStorage.setItem('tipo_empleado', empleado.tipoEmpleado.toString());
+                    localStorage.removeItem('sucursal_id');
+                    localStorage.removeItem('selectedSucursalNombre');
+                    setLoading(false);
                     navigate('/select');
                 } else {
                     localStorage.setItem('sucursal_id', empleado.sucursal_id.toString());
+                    localStorage.setItem('tipo_empleado', empleado.tipoEmpleado.toString());
+
+                    const sucursal = await sucursalService.getById(`${import.meta.env.VITE_API_URL}`, empleado.sucursal_id, token);
+                    localStorage.setItem('selectedSucursalNombre', sucursal.nombre);
                     setLoading(false);
                 }
             } catch (error) {
