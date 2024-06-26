@@ -10,7 +10,6 @@ import SelectList from '../SelectList/SelectList';
 import ArticuloInsumoPost from '../../../types/post/ArticuloInsumoPost';
 import ICategoria from '../../../types/ICategoria';
 import CategoriaService from '../../../services/CategoriaService';
-import SelectFieldValue from '../SelectFieldValue/SelectFieldValue';
 import { Gallery } from '../Gallery/Gallery';
 import { TextField, Button } from '@mui/material';
 import { Add } from '@mui/icons-material';
@@ -32,7 +31,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   getArticuloInsumos,
 }) => {
   const sucursalId = localStorage.getItem('sucursal_id');
-  console.log("SUCRUSAL ID",sucursalId);
+  console.log("SUCRUSAL ID", sucursalId);
 
   const { getAccessTokenSilently } = useAuth0();
   const articuloInsumoService = new ArticuloInsumoService();
@@ -75,7 +74,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     const fetchCategorias = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const categorias = await categoriaService.getAll(URL + '/categoria', token);
+        const categorias = await categoriaService.getAll(URL + '/categoria/Insumo', token);
         setCategorias(categorias);
       } catch (error) {
         console.error('Error al obtener las Categorias:', error);
@@ -92,18 +91,29 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     }
   };
 
+  const [isParaElaborar, setIsParaElaborar] = useState(initialValues.esParaElaborar);
+  const [precioVenta, setPrecioVenta] = useState(initialValues.precioVenta);
+
+  const handleParaElaborarChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value === 'true';
+    setIsParaElaborar(value);
+    if (value) {
+      setPrecioVenta(0);
+    }
+  };
+
   const handleSubmit = async (values: ArticuloInsumo) => {
     try {
-      console.log("SUCRUSAL ID FORM",sucursalId);
+      console.log("SUCRUSAL ID FORM", sucursalId);
       const token = await getAccessTokenSilently();
       const body: ArticuloInsumoPost = {
         denominacion: values.denominacion,
-        precioVenta: values.precioVenta,
+        precioVenta: precioVenta,
         idUnidadMedida: selectedUnidadMedidaId || values.unidadMedida.id,
         precioCompra: values.precioCompra,
         stockActual: values.stockActual,
         stockMaximo: values.stockMaximo,
-        esParaElaborar: values.esParaElaborar,
+        esParaElaborar: isParaElaborar,
         idCategoria: selectedCategoriaId || values.categoria.id,
         // @ts-ignore
         files: selectedFiles,
@@ -203,17 +213,17 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
           <TextFieldValue label="Denominación" name="denominacion" type="text" placeholder="Ingrese denominación" />
         </div>
         <div style={{ flex: '1' }}>
-          <SelectFieldValue
-            label="Es Para Elaborar"
+          <label style={{fontWeight:'bold'}}>Es Para Elaborar</label>
+          <select
             name="esParaElaborar"
-            type='text'
-            options={[
-              { label: 'Sí', value: 'true' },
-              { label: 'No', value: 'false' }
-            ]}
-            placeholder="Es Para Elaborar?"
+            onChange={handleParaElaborarChange}
+            defaultValue={isParaElaborar ? 'true' : 'false'}
             disabled={isEditMode}
-          />
+            className='form-control'
+          >
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
         </div>
       </div>
 
@@ -222,7 +232,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
           <TextFieldValue label="Precio Compra" name="precioCompra" type="number" placeholder="Precio Compra" />
         </div>
         <div>
-          <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="Precio Venta" />
+          <TextFieldValue label="Precio Venta" name="precioVenta" type="number" placeholder="Precio Venta" disabled={isParaElaborar} />
         </div>
       </div>
 
