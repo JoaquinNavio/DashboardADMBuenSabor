@@ -63,7 +63,7 @@ export default function ItemPromocion(props: ItemPromocionProps) {
             <SelectList
                 title="Filtrar articulo por categoría"
                 items={props.categorias.reduce((mapa, categoria) => {
-                    if (categoria.esInsumo) {
+                    if (categoria) {
                         mapa.set(categoria.id, categoria.denominacion);
                     }
                     return mapa;

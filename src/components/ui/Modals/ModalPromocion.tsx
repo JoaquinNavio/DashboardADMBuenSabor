@@ -163,19 +163,19 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   
 
   const categoriaService = new CategoriaService();
-  const [categorias, setCategorias] = useState<ICategoria[]>([]);
-  useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        const categorias = await categoriaService.getAll(URL + '/categoria', token);
-        setCategorias(categorias);
-      } catch (error) {
-        console.error("Error al obtener las Categorias:", error);
-      }
-    };
-    fetchCategorias();
-  }, [showModal]);
+const [categorias, setCategorias] = useState<ICategoria[]>([]);
+useEffect(() => {
+  const fetchCategorias = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const categorias = await categoriaService.getAll(URL + '/categoria/NoInsumo', token);
+      setCategorias(categorias);
+    } catch (error) {
+      console.error("Error al obtener las Categorias:", error);
+    }
+  };
+  fetchCategorias();
+}, [showModal]);
 
   const calcularTotalSubtotales = (): number => {
     let total = 0;
