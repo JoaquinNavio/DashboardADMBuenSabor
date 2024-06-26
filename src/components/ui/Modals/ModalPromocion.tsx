@@ -35,7 +35,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const promocionService = new PromocionService();
   const URL = import.meta.env.VITE_API_URL;
   const promocionDetalleService = new PromocionDetalleService;
-  const sucursalId = localStorage.getItem('sucursal_id');
 
   const validationSchema = Yup.object().shape({
     // Define your validation schema here
@@ -56,7 +55,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         tipoPromocion: values.tipoPromocion,
         eliminado: false,
         detalles: [],
-        sucursal_id: parseInt(sucursalId)
       }
       for (const item of articulosInsumosItems) {
         const detalle = {
@@ -66,7 +64,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         };
         body.detalles.push(detalle);
       }
-      console.log(body)
       if (isEditMode) {
         await promocionService.putx(`${URL}/promociones/updateWithDetails`, values.id, body, token);
       } else {
@@ -105,12 +102,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   }[]>([]);
 
   const addNewItem = () => {
-    setArticulosInsumosItems([
-      ...articulosInsumosItems, 
-      { idComponent: articulosInsumosItems.length, selectedArticuloId: undefined, cantidad: undefined, idDetalle: undefined }
-    ]);
+    setArticulosInsumosItems([...articulosInsumosItems, { idComponent: articulosInsumosItems.length }]);
   }
-  
 
   const removeItem = (idComponent: number, idPromocion: number) => {
     if (idPromocion) {
@@ -146,9 +139,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         const token = await getAccessTokenSilently();
         const detallitos: IPromocionDetalle[] = await promocionService.getDetallesPromos(`${URL}/promociones`, initialValues.id, token);
         setDetalles(detallitos);
-  
+
         setArticulosInsumosItems(
-          //@ts-ignore
+          // @ts-ignore
           detallitos.filter(det => det !== undefined).map((det, ix) => ({
             idComponent: ix,
             selectedArticuloId: det?.articuloId,
@@ -160,7 +153,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     };
     fetchDetalles();
   }, [showModal, initialValues.id]);
-  
 
   const categoriaService = new CategoriaService();
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
@@ -202,7 +194,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         <div style={{ flex: 1 }}>
           <TextFieldValue label="Denominacion" name="denominacion" type="text" placeholder="Denominacion" />
         </div>
-
         <div style={{ display: 'flex', gap: '10px' }}>
           <div style={{ flex: 1 }}>
             <TextFieldValue label="Fecha desde" name="fechaDesde" type="date" placeholder="Fecha desde" />
@@ -210,18 +201,13 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           <div style={{ flex: 1 }}>
             <TextFieldValue label="Fecha hasta" name="fechaHasta" type="date" placeholder="Fecha hasta" />
           </div>
-          
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-        <div style={{ flex: 1 }}>
+          <div style={{ flex: 1 }}>
             <TextFieldValue label="Hora desde" name="horaDesde" type="time" placeholder="Hora desde" />
           </div>
           <div style={{ flex: 1 }}>
             <TextFieldValue label="Hora hasta" name="horaHasta" type="time" placeholder="Hora hasta" />
           </div>
         </div>
-
-
         <div style={{ flex: 1 }}>
           <TextFieldValue label="Descripcion" name="descripcionDescuento" type="text" placeholder="Descripcion" />
         </div>
@@ -239,25 +225,24 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           />
         </div>
         {
-  articulosInsumosItems.map(item => {
-    const detalle = detalles.find(detalle => detalle?.id === item.idDetalle);
-    console.log(detalle);  // Asegúrate de que detalle no sea undefined
-    return (
-      <ItemPromocion
-        key={item.idComponent}
-        idComponent={item.idComponent}
-        idDetalle={detalle?.id}
-        // @ts-ignore
-        cantidad={detalle?.detalle}
-        insumos={articulosManufacturado}
-        handleItemChange={handleItemChange}
-        removeComponent={removeItem}
-        selectedArticuloId={item.selectedArticuloId || detalle?.articulo?.id}
-        categorias={categorias}
-      />
-    )
-  })
-}
+          articulosInsumosItems.map(item => {
+            const detalle = detalles.find(detalle => detalle?.id === item.idDetalle);
+            console.log(detalle)
+            return (
+              <ItemPromocion
+                key={item.idComponent}
+                idComponent={item.idComponent}
+                idDetalle={detalle?.id}
+                // @ts-ignore
+                cantidad={detalle?.detalle}
+                insumos={articulosManufacturado}
+                handleItemChange={handleItemChange}
+                removeComponent={removeItem}
+                selectedArticuloId={item.selectedArticuloId || detalle?.articulo?.id}
+                categorias={categorias}
+              />
+            )
+          })}
         <button type="button" style={{ margin: '10px' }} className='btn btn-primary' onClick={addNewItem}>{<Add />} Agregar Articulo</button>
         <div style={{ display: 'flex' }}>
           <div>Precio final sin descuento: {calcularTotalSubtotales()}</div>

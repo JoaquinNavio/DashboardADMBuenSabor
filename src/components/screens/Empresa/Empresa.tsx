@@ -73,20 +73,6 @@ const EmpresaComponent = () => {
 
   const handleAddEmpresa = () => {
     setIsEditing(false);
-    setEmpresaEditar({
-      id: 0,
-      eliminado: false,
-      nombre: "",
-      razonSocial: "",
-      cuil: 0,
-      url_imagen: {
-        url:"",
-        name:"",
-        id:0,
-        eliminado:false
-      },
-      sucursales: []
-    });
     dispatch(toggleModal({ modalName: "modal" }));
   };
 

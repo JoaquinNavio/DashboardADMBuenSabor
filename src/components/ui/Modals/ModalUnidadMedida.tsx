@@ -24,7 +24,6 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
   const { getAccessTokenSilently } = useAuth0();
   const unidadMedidaService = new UnidadMedidaService();
   const URL = import.meta.env.VITE_API_URL;
-  const sucursalId = localStorage.getItem('sucursal_id');
 
   const validationSchema = Yup.object().shape({
     denominacion: Yup.string().required('Campo requerido'),
@@ -50,7 +49,6 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({
       id: 0,
       eliminado: false,
       denominacion: '',
-      sucursal_id: parseInt(sucursalId)
     };
   }
 

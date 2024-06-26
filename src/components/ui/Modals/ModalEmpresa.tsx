@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import * as Yup from 'yup';
 import GenericModal from './GenericModal'; 
 import TextFieldValue from '../TextFieldValue/TextFieldValue'; 
@@ -52,8 +52,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
       if (selectedFile) {
         formData.append('imagen', selectedFile);
       } else if (initialValues.url_imagen) {
-                  //@ts-ignore
-
+        // @ts-ignore
         formData.append('imagenUrl', initialValues.url_imagen);
       }
 
@@ -69,26 +68,11 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
     }
   };
 
-  // Resetea los valores iniciales cuando no está en modo de edición
-  useEffect(() => {
-    if (!isEditMode) {
-      setSelectedFile(null);
-    }
-  }, [isEditMode]);
-
   return (
     <GenericModal
       modalName={modalName}
       title={isEditMode ? 'Editar Empresa' : 'Añadir Empresa'}
-      initialValues={isEditMode ? initialValues : {
-        id: 0,
-        eliminado: false,
-        nombre: "",
-        razonSocial: "",
-        cuil: "",
-        url_imagen: "",
-        sucursales: []
-      }}
+      initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       isEditMode={isEditMode}
@@ -107,7 +91,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
         />
         {isEditMode && initialValues.url_imagen && (
           <img
-          //@ts-ignore
+          // @ts-ignore
             src={initialValues.url_imagen}
             alt="Imagen de la empresa"
             style={{ width: '75px', height: '75px', objectFit: 'cover', marginTop: '10px' }}
