@@ -100,12 +100,13 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
   const categoriaService = new CategoriaService();
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
   const sucursalId = localStorage.getItem('sucursal_id');
+  const categoriasNoElaborar = categorias.filter(categoria =>  !categoria.esInsumo);
 
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const categorias = await categoriaService.getAll(URL + '/categoria/NoInsumo', token);
+        const categorias = await categoriaService.getAll(URL + '/categoria', token);
         setCategorias(categorias);
       } catch (error) {
         console.error("Error al obtener las Categorias:", error);
@@ -270,7 +271,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
       <div style={{ marginBottom: '15px' }}>
         <SelectList
           title="Categoria"
-          items={categorias.reduce((mapa, categoria) => {
+          items={categoriasNoElaborar.reduce((mapa, categoria) => {
             mapa.set(categoria.id, categoria.denominacion);
             return mapa
           }, new Map<number, string>())}
