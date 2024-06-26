@@ -17,7 +17,10 @@ const LoginHandler: React.FC = () => {
           console.log("NASHE");
           const sucursalService = new SucursalService();
           const token = await getAccessTokenSilently();
+          console.log(token)
+          console.log("url:  "+url + user.email)
           const empleado = await empleadoService.getEmpleadoByEmail(`${url}`, user.email, token);
+          
           console.log(empleado)
           if (empleado.tipoEmpleado === "ADMIN") {
             localStorage.setItem('tipo_empleado', empleado.tipoEmpleado.toString());
@@ -33,11 +36,11 @@ const LoginHandler: React.FC = () => {
             localStorage.setItem('selectedSucursalNombre', sucursal.nombre);
             navigate("/articulosManufacturados");
           }else if(!empleado){
-            navigate("/categoria");
+            navigate("/categorias");
           }
         } catch (error) {
           console.error("Error al obtener el empleado:", error);
-          navigate("/categoria");
+          navigate("/categorias");
         }
       } else {
         navigate("/");
