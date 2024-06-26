@@ -92,7 +92,12 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   };
 
   const [isParaElaborar, setIsParaElaborar] = useState(initialValues.esParaElaborar);
-  const [precioVenta, setPrecioVenta] = useState(initialValues.precioVenta);
+const [precioVenta, setPrecioVenta] = useState(initialValues.precioVenta);
+
+useEffect(() => {
+  setIsParaElaborar(initialValues.esParaElaborar);
+  setPrecioVenta(initialValues.precioVenta);
+}, [initialValues]);
 
   const handleParaElaborarChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value === 'true';
@@ -215,15 +220,14 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
         <div style={{ flex: '1' }}>
           <label style={{fontWeight:'bold'}}>Es Para Elaborar</label>
           <select
-            name="esParaElaborar"
-            onChange={handleParaElaborarChange}
-            defaultValue={isParaElaborar ? 'true' : 'false'}
-            disabled={isEditMode}
-            className='form-control'
-          >
-            <option value="true">Sí</option>
-            <option value="false">No</option>
-          </select>
+    name="esParaElaborar"
+    onChange={handleParaElaborarChange}
+    value={isParaElaborar ? 'true' : 'false'}
+    className='form-control'
+  >
+    <option value="true">Sí</option>
+    <option value="false">No</option>
+  </select>
         </div>
       </div>
 
