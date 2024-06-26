@@ -1,4 +1,3 @@
-
 import IUnidadMedida from '../../types/IUnidadMedida';
 import { createGenericSlice } from './GenericReducer';
 

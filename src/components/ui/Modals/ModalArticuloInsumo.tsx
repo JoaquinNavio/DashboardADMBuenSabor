@@ -75,7 +75,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     const fetchCategorias = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const categorias = await categoriaService.getAll(URL + '/categoria', token);
+        const categorias = await categoriaService.getAll(URL + '/categoria/Insumo', token);
         setCategorias(categorias);
       } catch (error) {
         console.error('Error al obtener las Categorias:', error);

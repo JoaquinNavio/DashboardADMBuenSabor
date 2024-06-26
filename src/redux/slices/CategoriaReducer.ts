@@ -10,3 +10,4 @@ export const { setData: setCategoria, resetData: resetCategoria } = categoriaSli
 
 // Exportamos el reducer específico para el slice de categoria
 export default categoriaSlice.reducer;
+

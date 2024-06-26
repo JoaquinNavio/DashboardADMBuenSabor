@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
-import { Add, CheckCircleOutline, HighlightOff } from "@mui/icons-material";
+import { Add, CheckCircleOutline, FilterRounded, HighlightOff } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -25,6 +25,8 @@ const CategoriaComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [categoriaEditar, setCategoriaEditar] = useState<Categoria | undefined>();
 
+  const [filteredCategorias, setFilteredCategorias] = useState<Categoria[]>([]);
+
   const fetchCategorias = async () => {
     try {
       const token = await getAccessTokenSilently({
@@ -42,6 +44,7 @@ const CategoriaComponent = () => {
       if (sucursalId) {
         const categorias = await categoriaService.getAll(`${url}/categoria/sucursal/${sucursalId}`, token);
         setCategorias(categorias);
+        setFilteredCategorias(categorias);
       } else {
         console.error("No se encontró el ID de la sucursal en el local storage.");
       }
@@ -55,7 +58,16 @@ const CategoriaComponent = () => {
   }, [dispatch]);
 
   const onSearch = (query: string) => {
-    handleSearch(query, globalCategorias, 'denominacion', setCategorias);
+    console.log(categorias);
+    if (query === "") {
+      setFilteredCategorias(categorias);
+    } else {
+      const filtered = categorias.filter((categoria) =>
+        categoria.denominacion.toLowerCase().includes(query.toLowerCase())
+      );
+      console.log("FIltrado",filtered);
+      setFilteredCategorias(filtered);
+    }
   };
 
   const onDeleteCategoria = async (categoria: Categoria) => {
@@ -121,7 +133,7 @@ const CategoriaComponent = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>
-        <TableComponent data={categorias} columns={columns} onDelete={onDeleteCategoria} onEdit={handleEdit} />
+        <TableComponent data={filteredCategorias} columns={columns} onDelete={onDeleteCategoria} onEdit={handleEdit} />
         <ModalCategoria modalName="modal" initialValues={categoriaEditar || { id: 0, eliminado: false, denominacion: "", esInsumo: false, categoriaPadre: undefined }} isEditMode={isEditing} getCategorias={fetchCategorias} />
       </Container>
     </Box>

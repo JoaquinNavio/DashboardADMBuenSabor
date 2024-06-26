@@ -47,6 +47,7 @@ const UnidadMedida = () => {
   };
 
   const onSearch = (query: string) => {
+    //console.log("GLOBAL",globalUnidadMedida);
     handleSearch(query, globalUnidadMedida, 'denominacion', setFilteredData);
   };
 

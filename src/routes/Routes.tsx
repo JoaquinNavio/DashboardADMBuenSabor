@@ -25,7 +25,9 @@ const Rutas: React.FC = () => {
 
   return (
     <>
-      {!hideNavbarAndSidebar && <BaseNavbar />}
+    <div style={{position:'fixed', width:'100%'}}>
+      {!hideNavbarAndSidebar && <BaseNavbar/>}
+      </div>
       {!hideNavbarAndSidebar && <BasicSidebar />}
       <div className={hideNavbarAndSidebar ? "full-content" : "content"}>
         <Routes>
