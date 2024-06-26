@@ -14,6 +14,7 @@ const LoginHandler: React.FC = () => {
     const fetchEmpleado = async () => {
       if (isAuthenticated && user?.email) {
         try {
+          console.log("NASHE")
           const sucursalService = new SucursalService();
           const token = await getAccessTokenSilently();
           const empleado = await empleadoService.getEmpleadoByEmail(`${url}`, user.email, token);
