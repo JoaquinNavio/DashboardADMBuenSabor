@@ -52,7 +52,7 @@ const CategoriaComponent = () => {
 
   useEffect(() => {
     fetchCategorias();
-  }, []);
+  }, [dispatch]);
 
   const onSearch = (query: string) => {
     handleSearch(query, globalCategorias, 'denominacion', setCategorias);

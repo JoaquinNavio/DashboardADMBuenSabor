@@ -324,9 +324,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
           </div>
         </div>
       </div>
-      <Button variant="contained" color="primary" type="submit">
-        {isEditMode ? 'Actualizar' : 'Crear'}
-      </Button>
+
     </GenericModal>
   );
 };

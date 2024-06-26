@@ -53,7 +53,7 @@ const ModalEmpleado: React.FC<ModalEmpleadoProps> = ({
       formData.append('apellido', values.apellido);
       formData.append('telefono', values.telefono);
       formData.append('email', values.email);
-      formData.append('tipoEmpleado', values.tipoEmpleado);
+      formData.append('tipoEmpleado', values.tipoEmpleado.toUpperCase());
       formData.append('sucursal_id', sucursalId || '0');
 
       if (selectedFile) {
@@ -164,9 +164,6 @@ const ModalEmpleado: React.FC<ModalEmpleadoProps> = ({
           )}
         </div>
       </div>
-      <Button variant="contained" color="primary" type="submit">
-        {isEditMode ? 'Actualizar' : 'Crear'}
-      </Button>
     </GenericModal>
   );
 };

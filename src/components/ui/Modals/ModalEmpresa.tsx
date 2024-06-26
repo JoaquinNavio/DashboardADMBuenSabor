@@ -114,9 +114,6 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({
           />
         )}
       </div>
-      <Button variant="contained" color="primary" type="submit">
-        {isEditMode ? 'Actualizar' : 'Crear'}
-      </Button>
     </GenericModal>
   );
 };
