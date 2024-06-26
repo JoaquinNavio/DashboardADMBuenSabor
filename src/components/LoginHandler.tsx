@@ -14,7 +14,7 @@ const LoginHandler: React.FC = () => {
     const fetchEmpleado = async () => {
       if (isAuthenticated && user?.email) {
         try {
-          console.log("NASHE")
+          console.log("NASHE");
           const sucursalService = new SucursalService();
           const token = await getAccessTokenSilently();
           const empleado = await empleadoService.getEmpleadoByEmail(`${url}`, user.email, token);
@@ -37,7 +37,7 @@ const LoginHandler: React.FC = () => {
           }
         } catch (error) {
           console.error("Error al obtener el empleado:", error);
-          navigate("/");
+          navigate("/categoria");
         }
       } else {
         navigate("/");
