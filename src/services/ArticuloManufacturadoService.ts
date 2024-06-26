@@ -29,7 +29,8 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
     formData.append('tiempoEstimadoMinutos', data.tiempoEstimadoMinutos.toString());
     formData.append('precioVenta', data.precioVenta.toString());
     formData.append('preparacion', data.preparacion);
-
+    formData.append('sucursal_id', data.sucursal_id.toString());
+    
     data.detalles.forEach((detalle, index) => {
       if (detalle.cantidad !== undefined) {
           formData.append(`detalles[${index}].cantidad`, detalle.cantidad.toString());
@@ -40,6 +41,7 @@ export default class ArticuloManufacturadoService extends BackendClient<IArticul
       if (detalle.idArticuloManufacturado !== undefined) {
           formData.append(`detalles[${index}].idArticuloManufacturado`, detalle.idArticuloManufacturado.toString());
       }
+
     });
 
     if (data.imagenes) {

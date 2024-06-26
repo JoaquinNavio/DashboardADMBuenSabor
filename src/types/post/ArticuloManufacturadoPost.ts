@@ -12,5 +12,6 @@ export default interface ArticuloManufacturadoPost{
     idUnidadMedida:number,
     idCategoria:number,
     detalles:ArticuloManufacturadoDetallePost[],
-    imagenes: FileList | null
+    imagenes: FileList | null,
+    sucursal_id:number
 }

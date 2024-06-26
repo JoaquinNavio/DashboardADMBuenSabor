@@ -99,6 +99,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
 
   const categoriaService = new CategoriaService();
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
+  const sucursalId = localStorage.getItem('sucursal_id');
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -137,7 +138,8 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         idUnidadMedida: 1,
         idCategoria: selectedCategoriaId || initialValues.categoria.id,
         detalles: [],
-        imagenes: selectedFiles
+        imagenes: selectedFiles,
+        sucursal_id: parseInt(sucursalId)
       };
 
       for (const item of articulosInsumosItems) {
@@ -149,7 +151,7 @@ const ModalArticuloManufacturado: React.FC<ModalArticuloManufacturadoProps> = ({
         // @ts-ignore
         body.detalles.push(detalle);
       }
-
+   console.log(body);
       if (isEditMode) {
         await articuloManufacturadoService.putx(`${URL}/ArticuloManufacturado/updateWithDetails`, values.id, body, token);
       } else {
