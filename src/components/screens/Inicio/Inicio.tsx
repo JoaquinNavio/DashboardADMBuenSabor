@@ -22,17 +22,17 @@ const Inicio: React.FC = () => {
     useEffect(() => {
 
         const fetchPedidosPorFormaPago = async () => {
-            const response = await axios.get('http://localhost:8080/api/pedidos/por-forma-pago');
+            const response = await axios.get('https://backbuensabor-l60d.onrender.com/api/pedidos/por-forma-pago');
             setPedidosPorFormaPago(response.data);
         };
 
         const fetchPedidosPorMes = async () => {
-            const response = await axios.get('http://localhost:8080/api/pedidos/por-mes');
+            const response = await axios.get('https://backbuensabor-l60d.onrender.com/api/pedidos/por-mes');
             setPedidosPorMes(response.data);
         };
 
         const fetchPedidosPorArticulo = async () => {
-            const response = await axios.get('http://localhost:8080/api/pedidos/por-articulo');
+            const response = await axios.get('https://backbuensabor-l60d.onrender.com/api/pedidos/por-articulo');
             setPedidosPorArticulo(response.data);
         };
 
