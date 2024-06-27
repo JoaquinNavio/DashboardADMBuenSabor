@@ -79,7 +79,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   };
 
   const onClose = () => {
-    // Optional: handle on close logic if needed
+    setArticulosInsumosItems([]);
+    setDetalles([]);
   };
 
   const articuloManufacturadoService = new ArticuloManufacturadoService();

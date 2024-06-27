@@ -15,6 +15,7 @@ const BasicSidebar: React.FC = () => {
     }
     const isAdmin = tipoEmpleado === 'ADMIN';
     const isCocinero = tipoEmpleado === 'COCINERO';
+    const isVisor = tipoEmpleado === 'VISOR';
     return (
         <div>
             <CSidebar className="border-end d-flex flex-column" style={{ height: '100vh' }}>
@@ -24,7 +25,7 @@ const BasicSidebar: React.FC = () => {
                     </CNavTitle>
                     
 
-                    {isAdmin && (
+                    {(isAdmin || isVisor) && (
                         <>
                         <CNavItem>
                         <Link to="/inicio" className="nav-link" >
@@ -59,7 +60,7 @@ const BasicSidebar: React.FC = () => {
                         </>
                     )}
 
-                    {(isAdmin || isCocinero) && (
+                    {(isAdmin || isCocinero || isVisor) && (
                         <>
                             <CNavItem>
                                 <Link to="/categorias" className="nav-link">

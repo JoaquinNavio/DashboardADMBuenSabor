@@ -27,7 +27,7 @@ const LoginHandler: React.FC = () => {
             localStorage.removeItem('sucursal_id');
             localStorage.removeItem('selectedSucursalNombre');
             navigate('/select');
-          } else if(empleado.tipoEmpleado === "COCINERO") {
+          } else if(empleado.tipoEmpleado === "COCINERO" || empleado.tipoEmpleado === "VISOR") {
             localStorage.removeItem('sucursal_id');
             localStorage.removeItem('selectedSucursalNombre');
             localStorage.setItem('sucursal_id', empleado.sucursal_id.toString());
@@ -36,7 +36,7 @@ const LoginHandler: React.FC = () => {
             localStorage.setItem('selectedSucursalNombre', sucursal.nombre);
             navigate("/articulosManufacturados");
           }else if(!empleado){
-            navigate("/categorias");
+            navigate("/");
           }
         } catch (error) {
           console.error("Error al obtener el empleado:", error);
